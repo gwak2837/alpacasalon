@@ -1,0 +1,29 @@
+{
+  "name": "알파카살롱 (Alpaca salon)",
+  "short_name": "알파카살롱",
+  "theme_color": "#7C2F70",
+  "background_color": "#FCFCFC",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/images/icon-144.webp",
+      "sizes": "144x144",
+      "type": "image/webp",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/icon-192.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/icon-512.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}
