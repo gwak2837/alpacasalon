@@ -1,0 +1,15 @@
+query Post($id: ID!) {
+  post(id: $id) {
+    id
+    creationTime
+    title
+    contents
+    imageUrls
+    commentCount
+    user {
+      id
+      nickname
+      imageUrl
+    }
+  }
+}

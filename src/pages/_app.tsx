@@ -1,7 +1,5 @@
 import 'react-toastify/dist/ReactToastify.min.css'
 import 'src/styles/animate.css'
-import 'antd/dist/antd.css'
-import 'src/styles/custom-antd.css'
 import 'normalize.css'
 import 'src/styles/global.css'
 
@@ -21,8 +19,8 @@ import { pageview } from 'src/utils/google-analytics'
 import styled from 'styled-components'
 
 const fade = cssTransition({
-  enter: 'animate_fadeIn',
-  exit: 'animate_fadeOut',
+  enter: 'fadeIn',
+  exit: 'fadeOut',
 })
 
 const Main = styled.main`

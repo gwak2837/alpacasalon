@@ -1,0 +1,5 @@
+mutation CreateComment($postId: ID!, $contents: NonEmptyString!, $commentId: ID) {
+  createComment(postId: $postId, contents: $contents, commentId: $commentId) {
+    id
+  }
+}

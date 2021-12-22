@@ -4,6 +4,9 @@ const withPWA = require('next-pwa')
 const runtimeCaching = require('next-pwa/cache')
 
 module.exports = withPWA({
+  experimental: {
+    styledComponents: true,
+  },
   i18n: {
     locales: ['ko', 'en'],
     defaultLocale: 'ko',

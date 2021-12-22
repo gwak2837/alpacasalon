@@ -1,0 +1,14 @@
+query Posts($pagination: Pagination!) {
+  posts(pagination: $pagination) {
+    id
+    creationTime
+    title
+    contents
+    commentCount
+    # imageUrls
+    user {
+      id
+      nickname
+    }
+  }
+}

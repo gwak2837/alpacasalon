@@ -1,0 +1,7 @@
+mutation ToggleLikingComment($id: ID!) {
+  toggleLikingComment(id: $id) {
+    id
+    isLiked
+    likedCount
+  }
+}

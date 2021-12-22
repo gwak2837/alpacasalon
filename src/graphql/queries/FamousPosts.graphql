@@ -1,0 +1,13 @@
+query FamousPosts {
+  famousPosts {
+    id
+    creationTime
+    title
+    contents
+    commentCount
+    user {
+      id
+      nickname
+    }
+  }
+}

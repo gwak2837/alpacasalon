@@ -34,6 +34,10 @@ h6 {
   font-weight: 600;
 }
 
+h5 {
+  font-size: 0.9rem;
+}
+
 button {
   background: none;
   border: none;
