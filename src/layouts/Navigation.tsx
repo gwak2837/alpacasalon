@@ -86,7 +86,7 @@ type Props = {
   children: ReactNode
 }
 
-export default function NavigationLayout({ children }: Props) {
+export default function Navigation({ children }: Props) {
   const { asPath } = useRouter()
   const { nickname } = useRecoilValue(currentUser)
 

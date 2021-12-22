@@ -6,7 +6,7 @@ import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
 import { useUserByNicknameQuery } from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
-import NavigationLayout from 'src/layouts/NavigationLayout'
+import Navigation from 'src/layouts/Navigation'
 import { ALPACA_SALON_BACKGROUND_COLOR, ALPACA_SALON_COLOR } from 'src/models/constants'
 import HeartIcon from 'src/svgs/HeartIcon'
 import SettingIcon from 'src/svgs/setting.svg'
@@ -115,5 +115,5 @@ export default function UserPage() {
 }
 
 UserPage.getLayout = function getLayout(page: ReactElement) {
-  return <NavigationLayout>{page}</NavigationLayout>
+  return <Navigation>{page}</Navigation>
 }

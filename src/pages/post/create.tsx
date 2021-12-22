@@ -61,7 +61,7 @@ export const FixedHeader = styled.header`
 
   > svg {
     padding: 1rem;
-    width: 3rem;
+    width: 1rem;
   }
 `
 
