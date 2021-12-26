@@ -18,8 +18,8 @@ const A = styled.a<{ selected: boolean }>`
   display: grid;
   justify-content: center;
   align-items: center;
-  margin: 2.25rem 2.25rem 0;
-  padding: 0 0 0.75rem;
+  margin: 0 2.25rem;
+  padding: 2rem 0 0.75rem;
 
   border-bottom: ${(p) => (p.selected ? `3px solid ${ALPACA_SALON_COLOR}` : '3px solid #fff')};
   color: ${(p) => (p.selected ? ALPACA_SALON_COLOR : ALPACA_SALON_ACHROMATIC_COLOR)};

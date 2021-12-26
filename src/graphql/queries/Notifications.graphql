@@ -1,0 +1,6 @@
+query Notifications {
+  notifications {
+    id
+    type
+  }
+}

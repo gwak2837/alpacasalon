@@ -110,7 +110,7 @@ export default function Navigation({ children }: Props) {
         <Link href="/post" passHref>
           <FillA selected={isPostsPageSelected}>
             <ChatIcon selected={isPostsPageSelected} />
-            <H4>자유 게시판</H4>
+            <H4>게시판</H4>
           </FillA>
         </Link>
 

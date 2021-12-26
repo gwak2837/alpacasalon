@@ -28,6 +28,7 @@ import { Frame16to11 } from './[id]'
 type PostCreationInput = {
   title: string
   contents: string
+  groupId: string
 }
 
 export type ImageInfo = {
@@ -180,6 +181,7 @@ export default function PostCreationPage() {
     defaultValues: {
       title: '',
       contents: '',
+      groupId: '',
     },
     reValidateMode: 'onBlur',
   })

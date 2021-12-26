@@ -24,7 +24,6 @@ const GridContainerTemplate = styled.div`
     grid-column: 2 / 3;
     grid-row: 2 / 3;
     width: 100%; // for safari
-    cursor: pointer;
   }
 `
 
@@ -32,11 +31,11 @@ const A = styled.a`
   position: absolute;
   top: 0;
   right: 0;
+  box-sizing: content-box;
+  width: 1.5rem;
   padding: 0.5rem;
 
   display: flex;
-
-  width: 1.5rem;
 `
 
 const FlexContainer = styled.div`

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { memo } from 'react'
@@ -16,9 +17,23 @@ const Li = styled.li`
   padding: 1rem 0.65rem;
 `
 
-const PrimaryH4 = styled.h5<{ disabled?: boolean }>`
-  color: ${(p) => (p.disabled ? ALPACA_SALON_GREY_COLOR : ALPACA_SALON_COLOR)};
-  font-weight: 600;
+const FlexCenter = styled.div`
+  display: flex;
+  align-items: center;
+
+  gap: 0.6rem;
+`
+
+const Width = styled.div`
+  width: 2.25rem;
+  height: 2.25rem;
+  position: relative;
+`
+
+const H5 = styled.h5<{ disabled?: boolean }>`
+  color: ${(p) => (p.disabled ? ALPACA_SALON_GREY_COLOR : '#000')};
+  transition: all 0.3s ease-out;
+  display: inline;
 `
 
 const H4 = styled.h4`
@@ -33,10 +48,6 @@ const OneLineP = styled.p`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-`
-
-const A = styled.a`
-  font-size: 0.9rem;
 `
 
 const GridContainerGap = styled.div`
@@ -75,7 +86,7 @@ type Props = {
 }
 
 function PostCard({ post }: Props) {
-  const authorNickname = post.user?.nickname ?? ''
+  const author = post.user
   const router = useRouter()
   const contents = post.contents.split(/\n/) as string[]
 
@@ -85,11 +96,41 @@ function PostCard({ post }: Props) {
 
   return (
     <Li onClick={goToPostDetailPage}>
-      <Link href={`/@${authorNickname}`} passHref>
-        <a onClick={stopPropagation} role="link" tabIndex={0}>
-          <PrimaryH4 disabled={!authorNickname}>{authorNickname ?? '탈퇴한 사용자'}</PrimaryH4>
-        </a>
-      </Link>
+      <FlexCenter>
+        {author && (
+          <Width>
+            <Image
+              src={author.imageUrl ?? '/images/default-profile-image.webp'}
+              alt="profile image"
+              layout="fill"
+              objectFit="cover"
+            />
+          </Width>
+        )}
+        <div>
+          {author ? (
+            <Link href={`/@${author.nickname}`} passHref>
+              <a onClick={stopPropagation} role="link" tabIndex={0}>
+                <H5>{author.nickname}</H5>
+              </a>
+            </Link>
+          ) : (
+            <H5 disabled onClick={stopPropagation} role="link" tabIndex={0}>
+              탈퇴한 사용자
+            </H5>
+          )}
+          {post.group && (
+            <>
+              <span>&nbsp;-&nbsp;</span>
+              <Link href={`/group/${post.group.id}`} passHref>
+                <a onClick={stopPropagation} role="link" tabIndex={0}>
+                  {post.group.name}
+                </a>
+              </Link>
+            </>
+          )}
+        </div>
+      </FlexCenter>
 
       <H4>{post.title}</H4>
 
@@ -97,15 +138,13 @@ function PostCard({ post }: Props) {
         {contents[0]}{' '}
         {contents.length > 1 && (
           <Link href={`/post/${post.id}`} passHref>
-            <A onClick={stopPropagation} role="link" tabIndex={0}>
-              ...
-            </A>
+            <a onClick={stopPropagation} role="link" tabIndex={0}>
+              <h5>...</h5>
+            </a>
           </Link>
         )}
       </OneLineP>
-
       <HorizontalBorder />
-
       <FlexContainerBetween>
         <GreySpan>{new Date(post.creationTime).toLocaleString()}</GreySpan>
         <BoldGreySpan>댓글 {post.commentCount}개</BoldGreySpan>

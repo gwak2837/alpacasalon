@@ -72,8 +72,9 @@ export type Group = {
   __typename?: 'Group'
   creationTime: Scalars['DateTime']
   description?: Maybe<Scalars['NonEmptyString']>
-  id: Scalars['UUID']
+  id: Scalars['ID']
   imageUrl?: Maybe<Scalars['URL']>
+  memberCount: Scalars['NonNegativeInt']
   modificationTime: Scalars['DateTime']
   name: Scalars['NonEmptyString']
 }
@@ -95,6 +96,7 @@ export type Mutation = {
   __typename?: 'Mutation'
   createComment?: Maybe<Comment>
   createGroup?: Maybe<Group>
+  createPoll?: Maybe<Poll>
   createPost?: Maybe<Post>
   deleteComment?: Maybe<Comment>
   deleteGroup?: Maybe<Group>
@@ -120,6 +122,10 @@ export type MutationCreateCommentArgs = {
 
 export type MutationCreateGroupArgs = {
   input: GroupCreationInput
+}
+
+export type MutationCreatePollArgs = {
+  input: PollCreationInput
 }
 
 export type MutationCreatePostArgs = {
@@ -206,6 +212,10 @@ export type PollComment = {
   title: Scalars['NonEmptyString']
 }
 
+export type PollCreationInput = {
+  title: Scalars['NonEmptyString']
+}
+
 export type PollSelection = {
   __typename?: 'PollSelection'
   contents: Scalars['NonEmptyString']
@@ -233,9 +243,10 @@ export type Post = {
 }
 
 export type PostCreationInput = {
-  contents: Scalars['String']
+  contents: Scalars['NonEmptyString']
+  groupId: Scalars['ID']
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
-  title: Scalars['String']
+  title: Scalars['NonEmptyString']
 }
 
 export type PostModificationInput = {
@@ -503,6 +514,23 @@ export type MeQuery = {
   me?: { __typename?: 'User'; id: any; nickname?: any | null | undefined } | null | undefined
 }
 
+export type MyGroupsQueryVariables = Exact<{ [key: string]: never }>
+
+export type MyGroupsQuery = {
+  __typename?: 'Query'
+  myGroups?:
+    | Array<{
+        __typename?: 'Group'
+        id: string
+        name: any
+        description?: any | null | undefined
+        imageUrl?: any | null | undefined
+        memberCount: any
+      }>
+    | null
+    | undefined
+}
+
 export type PostQueryVariables = Exact<{
   id: Scalars['ID']
 }>
@@ -550,6 +578,7 @@ export type PostsQuery = {
           | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
           | null
           | undefined
+        group?: { __typename?: 'Group'; id: string; name: any } | null | undefined
       }>
     | null
     | undefined
@@ -1131,6 +1160,48 @@ export function useMeLazyQuery(
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>
+export const MyGroupsDocument = gql`
+  query MyGroups {
+    myGroups {
+      id
+      name
+      description
+      imageUrl
+      memberCount
+    }
+  }
+`
+
+/**
+ * __useMyGroupsQuery__
+ *
+ * To run a query within a React component, call `useMyGroupsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyGroupsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyGroupsQuery(
+  baseOptions?: Apollo.QueryHookOptions<MyGroupsQuery, MyGroupsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<MyGroupsQuery, MyGroupsQueryVariables>(MyGroupsDocument, options)
+}
+export function useMyGroupsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<MyGroupsQuery, MyGroupsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<MyGroupsQuery, MyGroupsQueryVariables>(MyGroupsDocument, options)
+}
+export type MyGroupsQueryHookResult = ReturnType<typeof useMyGroupsQuery>
+export type MyGroupsLazyQueryHookResult = ReturnType<typeof useMyGroupsLazyQuery>
+export type MyGroupsQueryResult = Apollo.QueryResult<MyGroupsQuery, MyGroupsQueryVariables>
 export const PostDocument = gql`
   query Post($id: ID!) {
     post(id: $id) {
@@ -1189,6 +1260,10 @@ export const PostsDocument = gql`
       user {
         id
         nickname
+      }
+      group {
+        id
+        name
       }
     }
   }
@@ -1310,6 +1385,7 @@ export type GroupKeySpecifier = (
   | 'description'
   | 'id'
   | 'imageUrl'
+  | 'memberCount'
   | 'modificationTime'
   | 'name'
   | GroupKeySpecifier
@@ -1319,12 +1395,14 @@ export type GroupFieldPolicy = {
   description?: FieldPolicy<any> | FieldReadFunction<any>
   id?: FieldPolicy<any> | FieldReadFunction<any>
   imageUrl?: FieldPolicy<any> | FieldReadFunction<any>
+  memberCount?: FieldPolicy<any> | FieldReadFunction<any>
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
   name?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type MutationKeySpecifier = (
   | 'createComment'
   | 'createGroup'
+  | 'createPoll'
   | 'createPost'
   | 'deleteComment'
   | 'deleteGroup'
@@ -1342,6 +1420,7 @@ export type MutationKeySpecifier = (
 export type MutationFieldPolicy = {
   createComment?: FieldPolicy<any> | FieldReadFunction<any>
   createGroup?: FieldPolicy<any> | FieldReadFunction<any>
+  createPoll?: FieldPolicy<any> | FieldReadFunction<any>
   createPost?: FieldPolicy<any> | FieldReadFunction<any>
   deleteComment?: FieldPolicy<any> | FieldReadFunction<any>
   deleteGroup?: FieldPolicy<any> | FieldReadFunction<any>

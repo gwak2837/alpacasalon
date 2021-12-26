@@ -11,10 +11,8 @@ import {
   useUserByNicknameQuery,
 } from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
-import { ALPACA_SALON_BACKGROUND_COLOR, ALPACA_SALON_COLOR } from 'src/models/constants'
 import { currentUser } from 'src/models/recoil'
 import BackIcon from 'src/svgs/back-icon.svg'
-import HeartIcon from 'src/svgs/HeartIcon'
 import { getUserNickname } from 'src/utils'
 import styled from 'styled-components'
 
@@ -61,42 +59,10 @@ const GridContainerButtons = styled.div`
   padding: 2rem 0.5rem;
 `
 
-const Wrapper = styled.div`
-  width: 1.4rem;
-  display: flex;
-  align-items: center;
-
-  svg {
-    width: 100%; // for Safari
-  }
-`
-
-const FlexContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.4rem;
-
-  width: fit-content;
-  margin: 0 auto;
-  padding: 1rem;
-  background: ${ALPACA_SALON_BACKGROUND_COLOR};
-  border-radius: 20px;
-`
-
 export const FlexContainerColumnEnd = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-`
-
-const Nickname = styled.h2`
-  margin: 1rem;
-  text-align: center;
-`
-
-const PrimaryColorText = styled.h4`
-  color: ${ALPACA_SALON_COLOR};
 `
 
 const description = '알파카의 정보를 알아보세요'
