@@ -4,7 +4,10 @@ import { useRouter } from 'next/router'
 import React, { ReactElement } from 'react'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
-import { useUserByNicknameQuery } from 'src/graphql/generated/types-and-hooks'
+import {
+  useNotificationsQuery,
+  useUserByNicknameQuery,
+} from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import Navigation from 'src/layouts/Navigation'
 import { ALPACA_SALON_BACKGROUND_COLOR, ALPACA_SALON_COLOR } from 'src/models/constants'
@@ -81,8 +84,13 @@ export default function UserPage() {
     skip: !userNickname,
     variables: { nickname: userNickname },
   })
-
   const user = data?.userByNickname
+
+  const { data: data2 } = useNotificationsQuery({
+    onError: toastApolloError,
+    skip: !userNickname,
+  })
+  const notifications = data2?.notifications
 
   useNeedToLogin()
 
@@ -109,6 +117,10 @@ export default function UserPage() {
         받은 공감 개수
         <PrimaryColorText>{user?.likedCount ?? '-'}</PrimaryColorText>
       </FlexContainer>
+
+      {notifications?.map((notification, i) => (
+        <pre key={i}>{JSON.stringify(notification, null, 2)}</pre>
+      ))}
     </PageHead>
   )
 }

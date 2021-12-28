@@ -1,6 +1,12 @@
 query Notifications {
   notifications {
     id
+    creationTime
     type
+    contents
+    sender {
+      id
+      nickname
+    }
   }
 }

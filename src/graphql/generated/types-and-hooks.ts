@@ -271,7 +271,7 @@ export type Query = {
   /** 내가 쓴 댓글 */
   myComments?: Maybe<Array<Comment>>
   myGroups?: Maybe<Array<Group>>
-  myNotifications?: Maybe<Array<Notification>>
+  notifications?: Maybe<Array<Notification>>
   participatingPolls?: Maybe<Array<Poll>>
   /** 글 상세 */
   post?: Maybe<Post>
@@ -526,6 +526,26 @@ export type MyGroupsQuery = {
         description?: any | null | undefined
         imageUrl?: any | null | undefined
         memberCount: any
+      }>
+    | null
+    | undefined
+}
+
+export type NotificationsQueryVariables = Exact<{ [key: string]: never }>
+
+export type NotificationsQuery = {
+  __typename?: 'Query'
+  notifications?:
+    | Array<{
+        __typename?: 'Notification'
+        id: any
+        creationTime: any
+        type: Type
+        contents: any
+        sender?:
+          | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
+          | null
+          | undefined
       }>
     | null
     | undefined
@@ -1202,6 +1222,60 @@ export function useMyGroupsLazyQuery(
 export type MyGroupsQueryHookResult = ReturnType<typeof useMyGroupsQuery>
 export type MyGroupsLazyQueryHookResult = ReturnType<typeof useMyGroupsLazyQuery>
 export type MyGroupsQueryResult = Apollo.QueryResult<MyGroupsQuery, MyGroupsQueryVariables>
+export const NotificationsDocument = gql`
+  query Notifications {
+    notifications {
+      id
+      creationTime
+      type
+      contents
+      sender {
+        id
+        nickname
+      }
+    }
+  }
+`
+
+/**
+ * __useNotificationsQuery__
+ *
+ * To run a query within a React component, call `useNotificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useNotificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNotificationsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useNotificationsQuery(
+  baseOptions?: Apollo.QueryHookOptions<NotificationsQuery, NotificationsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<NotificationsQuery, NotificationsQueryVariables>(
+    NotificationsDocument,
+    options
+  )
+}
+export function useNotificationsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<NotificationsQuery, NotificationsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<NotificationsQuery, NotificationsQueryVariables>(
+    NotificationsDocument,
+    options
+  )
+}
+export type NotificationsQueryHookResult = ReturnType<typeof useNotificationsQuery>
+export type NotificationsLazyQueryHookResult = ReturnType<typeof useNotificationsLazyQuery>
+export type NotificationsQueryResult = Apollo.QueryResult<
+  NotificationsQuery,
+  NotificationsQueryVariables
+>
 export const PostDocument = gql`
   query Post($id: ID!) {
     post(id: $id) {
@@ -1537,7 +1611,7 @@ export type QueryKeySpecifier = (
   | 'me'
   | 'myComments'
   | 'myGroups'
-  | 'myNotifications'
+  | 'notifications'
   | 'participatingPolls'
   | 'post'
   | 'posts'
@@ -1555,7 +1629,7 @@ export type QueryFieldPolicy = {
   me?: FieldPolicy<any> | FieldReadFunction<any>
   myComments?: FieldPolicy<any> | FieldReadFunction<any>
   myGroups?: FieldPolicy<any> | FieldReadFunction<any>
-  myNotifications?: FieldPolicy<any> | FieldReadFunction<any>
+  notifications?: FieldPolicy<any> | FieldReadFunction<any>
   participatingPolls?: FieldPolicy<any> | FieldReadFunction<any>
   post?: FieldPolicy<any> | FieldReadFunction<any>
   posts?: FieldPolicy<any> | FieldReadFunction<any>
