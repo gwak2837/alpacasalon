@@ -4,6 +4,7 @@ query Notifications {
     creationTime
     type
     contents
+    isRead
     sender {
       id
       nickname

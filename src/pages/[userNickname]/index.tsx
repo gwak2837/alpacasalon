@@ -1,11 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useEffect, useRef } from 'react'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
 import {
   useNotificationsQuery,
+  useReadNotificationsMutation,
   useUserByNicknameQuery,
 } from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
@@ -34,8 +35,7 @@ const A = styled.a`
   position: absolute;
   top: 0;
   right: 0;
-  box-sizing: content-box;
-  width: 1.5rem;
+  width: 3rem;
   padding: 0.5rem;
 
   display: flex;
@@ -76,6 +76,7 @@ const PrimaryColorText = styled.h4`
 const description = '알파카의 정보를 알아보세요'
 
 export default function UserPage() {
+  const isExecuted = useRef(false)
   const router = useRouter()
   const userNickname = getUserNickname(router)
 
@@ -84,13 +85,29 @@ export default function UserPage() {
     skip: !userNickname,
     variables: { nickname: userNickname },
   })
+
   const user = data?.userByNickname
 
   const { data: data2 } = useNotificationsQuery({
     onError: toastApolloError,
     skip: !userNickname,
   })
+
   const notifications = data2?.notifications
+  const unreadNotificationIds = notifications
+    ?.filter((notification) => !notification.isRead)
+    .map((notification) => notification.id)
+
+  const [readNotifications] = useReadNotificationsMutation({
+    onError: toastApolloError,
+  })
+
+  useEffect(() => {
+    if (unreadNotificationIds && unreadNotificationIds?.length > 0 && !isExecuted.current) {
+      readNotifications({ variables: { ids: unreadNotificationIds } })
+      isExecuted.current = true
+    }
+  }, [readNotifications, unreadNotificationIds])
 
   useNeedToLogin()
 

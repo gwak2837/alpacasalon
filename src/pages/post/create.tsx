@@ -42,7 +42,6 @@ export const AbsoluteH3 = styled.h3`
   left: 50%;
   transform: translate(-50%, -50%);
 
-  cursor: pointer;
   font-size: 1.1rem;
 `
 
@@ -62,7 +61,8 @@ export const FixedHeader = styled.header`
 
   > svg {
     padding: 1rem;
-    width: 1rem;
+    width: 3rem;
+    cursor: pointer;
   }
 `
 

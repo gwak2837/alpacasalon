@@ -104,6 +104,7 @@ export type Mutation = {
   joinGroup?: Maybe<Scalars['Boolean']>
   /** 로그아웃 성공 여부 반환 */
   logout: Scalars['Boolean']
+  readNotifications?: Maybe<Scalars['NonNegativeInt']>
   toggleLikingComment?: Maybe<Comment>
   /** 회원탈퇴 시 사용자 정보가 모두 초기화됩니다 */
   unregister?: Maybe<User>
@@ -148,6 +149,10 @@ export type MutationJoinGroupArgs = {
   id?: InputMaybe<Scalars['ID']>
 }
 
+export type MutationReadNotificationsArgs = {
+  ids: Array<Scalars['ID']>
+}
+
 export type MutationToggleLikingCommentArgs = {
   id: Scalars['ID']
 }
@@ -173,10 +178,17 @@ export type Notification = {
   __typename?: 'Notification'
   contents: Scalars['NonEmptyString']
   creationTime: Scalars['DateTime']
-  id: Scalars['UUID']
+  id: Scalars['ID']
+  isRead: Scalars['Boolean']
   receiver: User
   sender?: Maybe<User>
-  type: Type
+  type: NotificationType
+}
+
+export enum NotificationType {
+  LikingComment = 'LIKING_COMMENT',
+  NewComment = 'NEW_COMMENT',
+  NewSubcomment = 'NEW_SUBCOMMENT',
 }
 
 /** 기본값: 내림차순 */
@@ -315,12 +327,6 @@ export enum Status {
   Planned = 'PLANNED',
 }
 
-export enum Type {
-  LikingComment = 'LIKING_COMMENT',
-  NewComment = 'NEW_COMMENT',
-  NewSubcomment = 'NEW_SUBCOMMENT',
-}
-
 export type User = {
   __typename?: 'User'
   bio?: Maybe<Scalars['NonEmptyString']>
@@ -380,6 +386,15 @@ export type DeleteCommentMutation = {
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>
 
 export type LogoutMutation = { __typename?: 'Mutation'; logout: boolean }
+
+export type ReadNotificationsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID']
+}>
+
+export type ReadNotificationsMutation = {
+  __typename?: 'Mutation'
+  readNotifications?: any | null | undefined
+}
 
 export type ToggleLikingCommentMutationVariables = Exact<{
   id: Scalars['ID']
@@ -538,10 +553,11 @@ export type NotificationsQuery = {
   notifications?:
     | Array<{
         __typename?: 'Notification'
-        id: any
+        id: string
         creationTime: any
-        type: Type
+        type: NotificationType
         contents: any
+        isRead: boolean
         sender?:
           | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
           | null
@@ -790,6 +806,51 @@ export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<
   LogoutMutation,
   LogoutMutationVariables
+>
+export const ReadNotificationsDocument = gql`
+  mutation ReadNotifications($ids: [ID!]!) {
+    readNotifications(ids: $ids)
+  }
+`
+export type ReadNotificationsMutationFn = Apollo.MutationFunction<
+  ReadNotificationsMutation,
+  ReadNotificationsMutationVariables
+>
+
+/**
+ * __useReadNotificationsMutation__
+ *
+ * To run a mutation, you first call `useReadNotificationsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReadNotificationsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [readNotificationsMutation, { data, loading, error }] = useReadNotificationsMutation({
+ *   variables: {
+ *      ids: // value for 'ids'
+ *   },
+ * });
+ */
+export function useReadNotificationsMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ReadNotificationsMutation,
+    ReadNotificationsMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<ReadNotificationsMutation, ReadNotificationsMutationVariables>(
+    ReadNotificationsDocument,
+    options
+  )
+}
+export type ReadNotificationsMutationHookResult = ReturnType<typeof useReadNotificationsMutation>
+export type ReadNotificationsMutationResult = Apollo.MutationResult<ReadNotificationsMutation>
+export type ReadNotificationsMutationOptions = Apollo.BaseMutationOptions<
+  ReadNotificationsMutation,
+  ReadNotificationsMutationVariables
 >
 export const ToggleLikingCommentDocument = gql`
   mutation ToggleLikingComment($id: ID!) {
@@ -1229,6 +1290,7 @@ export const NotificationsDocument = gql`
       creationTime
       type
       contents
+      isRead
       sender {
         id
         nickname
@@ -1483,6 +1545,7 @@ export type MutationKeySpecifier = (
   | 'deletePost'
   | 'joinGroup'
   | 'logout'
+  | 'readNotifications'
   | 'toggleLikingComment'
   | 'unregister'
   | 'updateComment'
@@ -1501,6 +1564,7 @@ export type MutationFieldPolicy = {
   deletePost?: FieldPolicy<any> | FieldReadFunction<any>
   joinGroup?: FieldPolicy<any> | FieldReadFunction<any>
   logout?: FieldPolicy<any> | FieldReadFunction<any>
+  readNotifications?: FieldPolicy<any> | FieldReadFunction<any>
   toggleLikingComment?: FieldPolicy<any> | FieldReadFunction<any>
   unregister?: FieldPolicy<any> | FieldReadFunction<any>
   updateComment?: FieldPolicy<any> | FieldReadFunction<any>
@@ -1512,6 +1576,7 @@ export type NotificationKeySpecifier = (
   | 'contents'
   | 'creationTime'
   | 'id'
+  | 'isRead'
   | 'receiver'
   | 'sender'
   | 'type'
@@ -1521,6 +1586,7 @@ export type NotificationFieldPolicy = {
   contents?: FieldPolicy<any> | FieldReadFunction<any>
   creationTime?: FieldPolicy<any> | FieldReadFunction<any>
   id?: FieldPolicy<any> | FieldReadFunction<any>
+  isRead?: FieldPolicy<any> | FieldReadFunction<any>
   receiver?: FieldPolicy<any> | FieldReadFunction<any>
   sender?: FieldPolicy<any> | FieldReadFunction<any>
   type?: FieldPolicy<any> | FieldReadFunction<any>
