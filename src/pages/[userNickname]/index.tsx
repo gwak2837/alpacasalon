@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { ReactElement, useEffect, useRef } from 'react'
+import { useRecoilValue } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
 import {
@@ -12,6 +13,7 @@ import {
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import Navigation from 'src/layouts/Navigation'
 import { ALPACA_SALON_BACKGROUND_COLOR, ALPACA_SALON_COLOR } from 'src/models/constants'
+import { currentUser } from 'src/models/recoil'
 import HeartIcon from 'src/svgs/HeartIcon'
 import SettingIcon from 'src/svgs/setting.svg'
 import { getUserNickname } from 'src/utils'
@@ -36,9 +38,14 @@ const A = styled.a`
   top: 0;
   right: 0;
   width: 3rem;
+  height: 3rem;
   padding: 0.5rem;
 
   display: flex;
+
+  > svg {
+    width: 100%; // for safari
+  }
 `
 
 const FlexContainer = styled.div`
@@ -79,6 +86,7 @@ export default function UserPage() {
   const isExecuted = useRef(false)
   const router = useRouter()
   const userNickname = getUserNickname(router)
+  const { nickname } = useRecoilValue(currentUser)
 
   const { data } = useUserByNicknameQuery({
     fetchPolicy: 'cache-and-network',
@@ -116,11 +124,13 @@ export default function UserPage() {
   return (
     <PageHead title={`@${userNickname} - 알파카살롱`} description={description}>
       <GridContainerTemplate>
-        <Link href={`${router.asPath}/setting`} passHref>
-          <A>
-            <SettingIcon />
-          </A>
-        </Link>
+        {nickname === userNickname && (
+          <Link href={`${router.asPath}/setting`} passHref>
+            <A>
+              <SettingIcon />
+            </A>
+          </Link>
+        )}
         <Image
           src={user?.imageUrl ?? '/images/default-profile-image.webp'}
           alt="profile-image"
