@@ -81,6 +81,7 @@ export default function UserPage() {
   const userNickname = getUserNickname(router)
 
   const { data } = useUserByNicknameQuery({
+    fetchPolicy: 'cache-and-network',
     onError: toastApolloError,
     skip: !userNickname,
     variables: { nickname: userNickname },
@@ -89,6 +90,7 @@ export default function UserPage() {
   const user = data?.userByNickname
 
   const { data: data2 } = useNotificationsQuery({
+    fetchPolicy: 'cache-and-network',
     onError: toastApolloError,
     skip: !userNickname,
   })

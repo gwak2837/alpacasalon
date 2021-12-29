@@ -2,7 +2,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { Fragment, useState } from 'react'
-import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
 import {
@@ -361,9 +360,9 @@ function CommentCard({
   const { nickname } = useRecoilValue(currentUser)
 
   // https://github.com/apollographql/apollo-client/issues/5419#issuecomment-973154976 해결되면 삭제하기
-  useUserByNicknameQuery({
-    variables: { nickname: 'a' },
-  })
+  // useUserByNicknameQuery({
+  //   variables: { nickname: 'a' },
+  // })
 
   const [toggleLikingCommentMutation, { loading }] = useToggleLikingCommentMutation({
     onError: toastApolloError,

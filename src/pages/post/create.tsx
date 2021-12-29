@@ -8,7 +8,6 @@ import PageHead from 'src/components/PageHead'
 import {
   CreatePostMutationVariables,
   useCreatePostMutation,
-  usePostsQuery,
 } from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import {
@@ -189,12 +188,12 @@ export default function PostCreationPage() {
   const contentsLines = watch('contents').split('\n').length * 1.6
 
   // https://github.com/apollographql/apollo-client/issues/5419#issuecomment-973154976 해결되면 삭제하기
-  usePostsQuery({
-    onError: toastApolloError,
-    variables: {
-      pagination: { limit: 1 },
-    },
-  })
+  // usePostsQuery({
+  //   onError: toastApolloError,
+  //   variables: {
+  //     pagination: { limit: 1 },
+  //   },
+  // })
 
   const [createPostMutation] = useCreatePostMutation({
     onCompleted: ({ createPost }) => {
