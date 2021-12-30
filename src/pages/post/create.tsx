@@ -187,14 +187,6 @@ export default function PostCreationPage() {
 
   const contentsLines = watch('contents').split('\n').length * 1.6
 
-  // https://github.com/apollographql/apollo-client/issues/5419#issuecomment-973154976 해결되면 삭제하기
-  // usePostsQuery({
-  //   onError: toastApolloError,
-  //   variables: {
-  //     pagination: { limit: 1 },
-  //   },
-  // })
-
   const [createPostMutation] = useCreatePostMutation({
     onCompleted: ({ createPost }) => {
       if (createPost) {
@@ -203,6 +195,9 @@ export default function PostCreationPage() {
       }
     },
     onError: toastApolloError,
+    onQueryUpdated: (observableQuery) => {
+      observableQuery.refetch()
+    },
     refetchQueries: ['Posts'],
   })
 
