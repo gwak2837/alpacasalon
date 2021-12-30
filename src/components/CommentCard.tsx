@@ -359,14 +359,8 @@ function CommentCard({
   const router = useRouter()
   const { nickname } = useRecoilValue(currentUser)
 
-  // https://github.com/apollographql/apollo-client/issues/5419#issuecomment-973154976 해결되면 삭제하기
-  // useUserByNicknameQuery({
-  //   variables: { nickname: 'a' },
-  // })
-
   const [toggleLikingCommentMutation, { loading }] = useToggleLikingCommentMutation({
     onError: toastApolloError,
-    refetchQueries: ['UserByNickname'],
     variables: { id: comment.id },
   })
 
@@ -427,7 +421,7 @@ function CommentCard({
               <H5>{author?.nickname ?? '탈퇴한 사용자'}</H5>
             </A>
           </Link>
-          <GreyH5>{new Date(comment.creationTime).toLocaleTimeString()}</GreyH5>
+          <GreyH5>{new Date(comment.creationTime).toLocaleString()}</GreyH5>
         </GridGap>
 
         {contents && nickname === author?.nickname && (

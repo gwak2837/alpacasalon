@@ -1,0 +1,6 @@
+query MyGroupsInfo {
+  myGroups {
+    id
+    name
+  }
+}

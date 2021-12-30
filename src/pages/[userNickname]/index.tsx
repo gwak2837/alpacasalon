@@ -100,7 +100,7 @@ export default function UserPage() {
   const { data: data2 } = useNotificationsQuery({
     fetchPolicy: 'cache-and-network',
     onError: toastApolloError,
-    skip: !userNickname,
+    skip: !userNickname || nickname !== userNickname,
   })
 
   const notifications = data2?.notifications
@@ -113,11 +113,15 @@ export default function UserPage() {
   })
 
   useEffect(() => {
-    if (unreadNotificationIds && unreadNotificationIds?.length > 0 && !isExecuted.current) {
-      readNotifications({ variables: { ids: unreadNotificationIds } })
-      isExecuted.current = true
+    if (!isExecuted.current) {
+      if (nickname === userNickname) {
+        if (unreadNotificationIds && unreadNotificationIds?.length > 0) {
+          readNotifications({ variables: { ids: unreadNotificationIds } })
+          isExecuted.current = true
+        }
+      }
     }
-  }, [readNotifications, unreadNotificationIds])
+  }, [nickname, readNotifications, unreadNotificationIds, userNickname])
 
   useNeedToLogin()
 
@@ -147,8 +151,8 @@ export default function UserPage() {
         <PrimaryColorText>{user?.likedCount ?? '-'}</PrimaryColorText>
       </FlexContainer>
 
-      {notifications?.map((notification, i) => (
-        <pre key={i}>{JSON.stringify(notification, null, 2)}</pre>
+      {notifications?.map((notification) => (
+        <pre key={notification.id}>{JSON.stringify(notification, null, 2)}</pre>
       ))}
     </PageHead>
   )

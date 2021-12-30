@@ -268,6 +268,12 @@ export type PostModificationInput = {
   title?: InputMaybe<Scalars['String']>
 }
 
+export type PostsByGroupResult = {
+  __typename?: 'PostsByGroupResult'
+  isJoined: Scalars['Boolean']
+  posts: Array<Post>
+}
+
 export type Query = {
   __typename?: 'Query'
   /** 특정 게시글에 달린 댓글 */
@@ -289,7 +295,7 @@ export type Query = {
   post?: Maybe<Post>
   /** 글 목록 */
   posts?: Maybe<Array<Post>>
-  postsByGroup?: Maybe<Array<Post>>
+  postsByGroup?: Maybe<PostsByGroupResult>
   recommendationGroups?: Maybe<Array<Group>>
   /** 글 검색 */
   searchPosts?: Maybe<Array<Post>>
@@ -311,6 +317,10 @@ export type QueryPostArgs = {
 
 export type QueryPostsArgs = {
   pagination: Pagination
+}
+
+export type QueryPostsByGroupArgs = {
+  groupId: Scalars['ID']
 }
 
 export type QuerySearchPostsArgs = {
@@ -382,6 +392,12 @@ export type DeleteCommentMutation = {
   __typename?: 'Mutation'
   deleteComment?: { __typename?: 'Comment'; id: string } | null | undefined
 }
+
+export type JoinGroupMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']>
+}>
+
+export type JoinGroupMutation = { __typename?: 'Mutation'; joinGroup?: boolean | null | undefined }
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>
 
@@ -546,6 +562,13 @@ export type MyGroupsQuery = {
     | undefined
 }
 
+export type MyGroupsInfoQueryVariables = Exact<{ [key: string]: never }>
+
+export type MyGroupsInfoQuery = {
+  __typename?: 'Query'
+  myGroups?: Array<{ __typename?: 'Group'; id: string; name: any }> | null | undefined
+}
+
 export type NotificationsQueryVariables = Exact<{ [key: string]: never }>
 
 export type NotificationsQuery = {
@@ -615,6 +638,50 @@ export type PostsQuery = {
           | null
           | undefined
         group?: { __typename?: 'Group'; id: string; name: any } | null | undefined
+      }>
+    | null
+    | undefined
+}
+
+export type PostsByGroupQueryVariables = Exact<{
+  groupId: Scalars['ID']
+}>
+
+export type PostsByGroupQuery = {
+  __typename?: 'Query'
+  postsByGroup?:
+    | {
+        __typename?: 'PostsByGroupResult'
+        isJoined: boolean
+        posts: Array<{
+          __typename?: 'Post'
+          id: string
+          creationTime: any
+          title: any
+          contents: any
+          commentCount: any
+          user?:
+            | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
+            | null
+            | undefined
+        }>
+      }
+    | null
+    | undefined
+}
+
+export type RecommendationGroupsQueryVariables = Exact<{ [key: string]: never }>
+
+export type RecommendationGroupsQuery = {
+  __typename?: 'Query'
+  recommendationGroups?:
+    | Array<{
+        __typename?: 'Group'
+        id: string
+        name: any
+        description?: any | null | undefined
+        imageUrl?: any | null | undefined
+        memberCount: any
       }>
     | null
     | undefined
@@ -771,6 +838,48 @@ export type DeleteCommentMutationResult = Apollo.MutationResult<DeleteCommentMut
 export type DeleteCommentMutationOptions = Apollo.BaseMutationOptions<
   DeleteCommentMutation,
   DeleteCommentMutationVariables
+>
+export const JoinGroupDocument = gql`
+  mutation JoinGroup($id: ID) {
+    joinGroup(id: $id)
+  }
+`
+export type JoinGroupMutationFn = Apollo.MutationFunction<
+  JoinGroupMutation,
+  JoinGroupMutationVariables
+>
+
+/**
+ * __useJoinGroupMutation__
+ *
+ * To run a mutation, you first call `useJoinGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinGroupMutation, { data, loading, error }] = useJoinGroupMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useJoinGroupMutation(
+  baseOptions?: Apollo.MutationHookOptions<JoinGroupMutation, JoinGroupMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<JoinGroupMutation, JoinGroupMutationVariables>(
+    JoinGroupDocument,
+    options
+  )
+}
+export type JoinGroupMutationHookResult = ReturnType<typeof useJoinGroupMutation>
+export type JoinGroupMutationResult = Apollo.MutationResult<JoinGroupMutation>
+export type JoinGroupMutationOptions = Apollo.BaseMutationOptions<
+  JoinGroupMutation,
+  JoinGroupMutationVariables
 >
 export const LogoutDocument = gql`
   mutation Logout {
@@ -1283,6 +1392,54 @@ export function useMyGroupsLazyQuery(
 export type MyGroupsQueryHookResult = ReturnType<typeof useMyGroupsQuery>
 export type MyGroupsLazyQueryHookResult = ReturnType<typeof useMyGroupsLazyQuery>
 export type MyGroupsQueryResult = Apollo.QueryResult<MyGroupsQuery, MyGroupsQueryVariables>
+export const MyGroupsInfoDocument = gql`
+  query MyGroupsInfo {
+    myGroups {
+      id
+      name
+    }
+  }
+`
+
+/**
+ * __useMyGroupsInfoQuery__
+ *
+ * To run a query within a React component, call `useMyGroupsInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyGroupsInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyGroupsInfoQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyGroupsInfoQuery(
+  baseOptions?: Apollo.QueryHookOptions<MyGroupsInfoQuery, MyGroupsInfoQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<MyGroupsInfoQuery, MyGroupsInfoQueryVariables>(
+    MyGroupsInfoDocument,
+    options
+  )
+}
+export function useMyGroupsInfoLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<MyGroupsInfoQuery, MyGroupsInfoQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<MyGroupsInfoQuery, MyGroupsInfoQueryVariables>(
+    MyGroupsInfoDocument,
+    options
+  )
+}
+export type MyGroupsInfoQueryHookResult = ReturnType<typeof useMyGroupsInfoQuery>
+export type MyGroupsInfoLazyQueryHookResult = ReturnType<typeof useMyGroupsInfoLazyQuery>
+export type MyGroupsInfoQueryResult = Apollo.QueryResult<
+  MyGroupsInfoQuery,
+  MyGroupsInfoQueryVariables
+>
 export const NotificationsDocument = gql`
   query Notifications {
     notifications {
@@ -1436,6 +1593,124 @@ export function usePostsLazyQuery(
 export type PostsQueryHookResult = ReturnType<typeof usePostsQuery>
 export type PostsLazyQueryHookResult = ReturnType<typeof usePostsLazyQuery>
 export type PostsQueryResult = Apollo.QueryResult<PostsQuery, PostsQueryVariables>
+export const PostsByGroupDocument = gql`
+  query PostsByGroup($groupId: ID!) {
+    postsByGroup(groupId: $groupId) {
+      isJoined
+      posts {
+        id
+        creationTime
+        title
+        contents
+        commentCount
+        user {
+          id
+          nickname
+        }
+      }
+    }
+  }
+`
+
+/**
+ * __usePostsByGroupQuery__
+ *
+ * To run a query within a React component, call `usePostsByGroupQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePostsByGroupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePostsByGroupQuery({
+ *   variables: {
+ *      groupId: // value for 'groupId'
+ *   },
+ * });
+ */
+export function usePostsByGroupQuery(
+  baseOptions: Apollo.QueryHookOptions<PostsByGroupQuery, PostsByGroupQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<PostsByGroupQuery, PostsByGroupQueryVariables>(
+    PostsByGroupDocument,
+    options
+  )
+}
+export function usePostsByGroupLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<PostsByGroupQuery, PostsByGroupQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<PostsByGroupQuery, PostsByGroupQueryVariables>(
+    PostsByGroupDocument,
+    options
+  )
+}
+export type PostsByGroupQueryHookResult = ReturnType<typeof usePostsByGroupQuery>
+export type PostsByGroupLazyQueryHookResult = ReturnType<typeof usePostsByGroupLazyQuery>
+export type PostsByGroupQueryResult = Apollo.QueryResult<
+  PostsByGroupQuery,
+  PostsByGroupQueryVariables
+>
+export const RecommendationGroupsDocument = gql`
+  query RecommendationGroups {
+    recommendationGroups {
+      id
+      name
+      description
+      imageUrl
+      memberCount
+    }
+  }
+`
+
+/**
+ * __useRecommendationGroupsQuery__
+ *
+ * To run a query within a React component, call `useRecommendationGroupsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRecommendationGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRecommendationGroupsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useRecommendationGroupsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    RecommendationGroupsQuery,
+    RecommendationGroupsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<RecommendationGroupsQuery, RecommendationGroupsQueryVariables>(
+    RecommendationGroupsDocument,
+    options
+  )
+}
+export function useRecommendationGroupsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    RecommendationGroupsQuery,
+    RecommendationGroupsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<RecommendationGroupsQuery, RecommendationGroupsQueryVariables>(
+    RecommendationGroupsDocument,
+    options
+  )
+}
+export type RecommendationGroupsQueryHookResult = ReturnType<typeof useRecommendationGroupsQuery>
+export type RecommendationGroupsLazyQueryHookResult = ReturnType<
+  typeof useRecommendationGroupsLazyQuery
+>
+export type RecommendationGroupsQueryResult = Apollo.QueryResult<
+  RecommendationGroupsQuery,
+  RecommendationGroupsQueryVariables
+>
 export const UserByNicknameDocument = gql`
   query UserByNickname($nickname: NonEmptyString!) {
     userByNickname(nickname: $nickname) {
@@ -1669,6 +1944,15 @@ export type PostFieldPolicy = {
   title?: FieldPolicy<any> | FieldReadFunction<any>
   user?: FieldPolicy<any> | FieldReadFunction<any>
 }
+export type PostsByGroupResultKeySpecifier = (
+  | 'isJoined'
+  | 'posts'
+  | PostsByGroupResultKeySpecifier
+)[]
+export type PostsByGroupResultFieldPolicy = {
+  isJoined?: FieldPolicy<any> | FieldReadFunction<any>
+  posts?: FieldPolicy<any> | FieldReadFunction<any>
+}
 export type QueryKeySpecifier = (
   | 'commentsByPost'
   | 'famousPosts'
@@ -1765,6 +2049,13 @@ export type StrictTypedTypePolicies = {
   Post?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?: false | PostKeySpecifier | (() => undefined | PostKeySpecifier)
     fields?: PostFieldPolicy
+  }
+  PostsByGroupResult?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | PostsByGroupResultKeySpecifier
+      | (() => undefined | PostsByGroupResultKeySpecifier)
+    fields?: PostsByGroupResultFieldPolicy
   }
   Query?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier)

@@ -22,7 +22,6 @@ import {
   AbsoluteH3,
   FileInput,
   FileInputLabel,
-  FixedHeader,
   GreyH3,
   GridContainer,
   ImageInfo,
@@ -30,6 +29,7 @@ import {
   PreviewSlide,
   Slide,
   Slider,
+  StickyHeader,
   Textarea,
   TransparentButton,
 } from '../create'
@@ -200,7 +200,7 @@ export default function PostUpdatePage() {
   return (
     <PageHead title="글 수정하기 - 알파카살롱" description={description}>
       <form onSubmit={handleSubmit(updatePost)}>
-        <FixedHeader>
+        <StickyHeader>
           <XIcon onClick={goBack} />
           <AbsoluteH3>수정하기</AbsoluteH3>
           <TransparentButton
@@ -209,7 +209,7 @@ export default function PostUpdatePage() {
           >
             완료
           </TransparentButton>
-        </FixedHeader>
+        </StickyHeader>
 
         <GridContainer>
           <Input

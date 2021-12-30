@@ -8,6 +8,7 @@ import PageHead from 'src/components/PageHead'
 import {
   CreatePostMutationVariables,
   useCreatePostMutation,
+  useMyGroupsInfoQuery,
 } from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import {
@@ -27,7 +28,6 @@ import { Frame16to11 } from './[id]'
 type PostCreationInput = {
   title: string
   contents: string
-  groupId: string
 }
 
 export type ImageInfo = {
@@ -44,8 +44,8 @@ export const AbsoluteH3 = styled.h3`
   font-size: 1.1rem;
 `
 
-export const FixedHeader = styled.header`
-  position: fixed;
+export const StickyHeader = styled.header`
+  position: sticky;
   top: 0;
   z-index: 1;
   width: 100%;
@@ -92,7 +92,7 @@ export const GridContainer = styled.div`
   display: grid;
   gap: 1.5rem;
 
-  padding: 4.4rem 0.5rem 2rem;
+  padding: 2rem 0.5rem;
 `
 
 export const Textarea = styled.textarea<{ height: number }>`
@@ -167,6 +167,7 @@ const description = '알파카살롱에 글을 작성해보세요'
 export default function PostCreationPage() {
   const [imageInfos, setImageInfos] = useState<ImageInfo[]>([])
   const [postCreationLoading, setPostCreationLoading] = useState(false)
+  const [selectedGroupId, setSelectedGroupId] = useState('')
   const formData = useRef(globalThis.FormData ? new FormData() : null)
   const imageId = useRef(0)
   const router = useRouter()
@@ -180,7 +181,6 @@ export default function PostCreationPage() {
     defaultValues: {
       title: '',
       contents: '',
-      groupId: '',
     },
     reValidateMode: 'onBlur',
   })
@@ -200,6 +200,12 @@ export default function PostCreationPage() {
     },
     refetchQueries: ['Posts'],
   })
+
+  const { data } = useMyGroupsInfoQuery({
+    onError: toastApolloError,
+  })
+
+  const myGroups = data?.myGroups
 
   function goBack() {
     router.back()
@@ -231,7 +237,12 @@ export default function PostCreationPage() {
 
   async function createPost(input: PostCreationInput) {
     setPostCreationLoading(true)
-    const variables: CreatePostMutationVariables = { input: { ...input } }
+    const variables: CreatePostMutationVariables = {
+      input: {
+        ...input,
+        groupId: selectedGroupId,
+      },
+    }
 
     if (formData.current) {
       const files = [...formData.current.values()]
@@ -262,13 +273,39 @@ export default function PostCreationPage() {
   return (
     <PageHead title="글쓰기 - 알파카살롱" description={description}>
       <form onSubmit={handleSubmit(createPost)}>
-        <FixedHeader>
+        <StickyHeader>
           <XIcon onClick={goBack} />
           <AbsoluteH3>글쓰기</AbsoluteH3>
           <TransparentButton disabled={!isEmpty(errors) || postCreationLoading} type="submit">
             완료
           </TransparentButton>
-        </FixedHeader>
+        </StickyHeader>
+
+        <button
+          onClick={(e) => {
+            e.preventDefault()
+            setSelectedGroupId('')
+          }}
+        >
+          {!selectedGroupId && 'O '}
+          전체 공개
+        </button>
+        {myGroups?.map((myGroup) => (
+          <button
+            key={myGroup.id}
+            onClick={(e) => {
+              e.preventDefault()
+              if (selectedGroupId === myGroup.id) {
+                setSelectedGroupId('')
+              } else {
+                setSelectedGroupId(myGroup.id)
+              }
+            }}
+          >
+            {selectedGroupId === myGroup.id && 'O '}
+            {myGroup.name}
+          </button>
+        ))}
 
         <GridContainer>
           <Input

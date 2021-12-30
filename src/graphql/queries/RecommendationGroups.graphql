@@ -1,0 +1,9 @@
+query RecommendationGroups {
+  recommendationGroups {
+    id
+    name
+    description
+    imageUrl
+    memberCount
+  }
+}

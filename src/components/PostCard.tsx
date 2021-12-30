@@ -28,6 +28,7 @@ const Width = styled.div`
   width: 2.25rem;
   height: 2.25rem;
   position: relative;
+  cursor: pointer;
 `
 
 const H5 = styled.h5<{ disabled?: boolean }>`
@@ -36,8 +37,17 @@ const H5 = styled.h5<{ disabled?: boolean }>`
   display: inline;
 `
 
+const InlineH5 = styled.h5`
+  display: inline;
+`
+
 const H4 = styled.h4`
   margin: 0.75rem 0 0.5rem;
+`
+
+const Span = styled.span`
+  cursor: pointer;
+  color: ${ALPACA_SALON_COLOR};
 `
 
 const OneLineP = styled.p`
@@ -94,6 +104,13 @@ function PostCard({ post }: Props) {
     router.push(`/post/${post.id}`)
   }
 
+  function goToUserPage(e: any) {
+    if (author) {
+      e.stopPropagation()
+      router.push(`/@${author.nickname}`)
+    }
+  }
+
   return (
     <Li onClick={goToPostDetailPage}>
       <FlexCenter>
@@ -104,6 +121,7 @@ function PostCard({ post }: Props) {
               alt="profile image"
               layout="fill"
               objectFit="cover"
+              onClick={goToUserPage}
             />
           </Width>
         )}
@@ -124,7 +142,7 @@ function PostCard({ post }: Props) {
               <span>&nbsp;-&nbsp;</span>
               <Link href={`/group/${post.group.id}`} passHref>
                 <a onClick={stopPropagation} role="link" tabIndex={0}>
-                  {post.group.name}
+                  <InlineH5>{post.group.name}</InlineH5>
                 </a>
               </Link>
             </>
@@ -135,14 +153,7 @@ function PostCard({ post }: Props) {
       <H4>{post.title}</H4>
 
       <OneLineP>
-        {contents[0]}{' '}
-        {contents.length > 1 && (
-          <Link href={`/post/${post.id}`} passHref>
-            <a onClick={stopPropagation} role="link" tabIndex={0}>
-              <h5>...</h5>
-            </a>
-          </Link>
-        )}
+        {contents[0]} {contents.length > 1 && <Span>...</Span>}
       </OneLineP>
       <HorizontalBorder />
       <FlexContainerBetween>

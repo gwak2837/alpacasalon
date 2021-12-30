@@ -477,7 +477,7 @@ export default function PostDetailPage() {
                   <H5>{author?.nickname ?? '탈퇴한 사용자'}</H5>
                 </A>
               </Link>
-              <GreyH5>{new Date(post.creationTime).toLocaleTimeString()}</GreyH5>
+              <GreyH5>{new Date(post.creationTime).toLocaleString()}</GreyH5>
             </GridGap>
           </GridContainer>
         ) : (
