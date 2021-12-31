@@ -195,10 +195,9 @@ export default function PostCreationPage() {
       }
     },
     onError: toastApolloError,
-    onQueryUpdated: (observableQuery) => {
-      observableQuery.refetch()
+    update: (cache) => {
+      cache.evict({ id: 'ROOT_QUERY', fieldName: 'posts' })
     },
-    refetchQueries: ['Posts'],
   })
 
   const { data } = useMyGroupsInfoQuery({

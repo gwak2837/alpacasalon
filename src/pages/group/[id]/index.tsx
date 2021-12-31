@@ -22,10 +22,10 @@ export default function GroupDetailPage() {
 
   const [joinGroupMutataion, { loading }] = useJoinGroupMutation({
     onError: toastApolloError,
-    onQueryUpdated: (observableQuery) => {
-      observableQuery.refetch()
+    refetchQueries: ['PostsByGroup'],
+    update: (cache) => {
+      cache.evict({ id: 'ROOT_QUERY', fieldName: 'myGroups' })
     },
-    refetchQueries: ['MyGroupsInfo', 'PostsByGroup'],
   })
 
   const posts = data?.postsByGroup?.posts
