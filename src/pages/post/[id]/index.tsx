@@ -118,10 +118,6 @@ const GridGap2 = styled.div`
   padding: 1rem 0.6rem;
 `
 
-const H3 = styled.h3`
-  font-size: 1.1rem;
-`
-
 const P = styled.p`
   line-height: 1.6rem;
   margin: 1rem 0;
@@ -497,7 +493,7 @@ export default function PostDetailPage() {
           </GridGap2>
         ) : post ? (
           <GridGap2>
-            <H3>{post.title}</H3>
+            <h3>{post.title}</h3>
             <P>
               {(post.contents as string).split(/\n/).map((content, i) => (
                 <Fragment key={i}>

@@ -40,8 +40,6 @@ export const AbsoluteH3 = styled.h3`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
-  font-size: 1.1rem;
 `
 
 export const StickyHeader = styled.header`
@@ -125,7 +123,6 @@ export const FileInputLabel = styled.label<{ disabled?: boolean }>`
 `
 
 export const GreyH3 = styled.h3`
-  font-size: 1.1rem;
   color: ${ALPACA_SALON_GREY_COLOR};
   text-align: center;
 `
@@ -239,8 +236,11 @@ export default function PostCreationPage() {
     const variables: CreatePostMutationVariables = {
       input: {
         ...input,
-        groupId: selectedGroupId,
       },
+    }
+
+    if (selectedGroupId) {
+      variables.input.groupId = selectedGroupId
     }
 
     if (formData.current) {

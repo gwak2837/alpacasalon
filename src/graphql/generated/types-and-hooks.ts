@@ -256,7 +256,7 @@ export type Post = {
 
 export type PostCreationInput = {
   contents: Scalars['NonEmptyString']
-  groupId: Scalars['ID']
+  groupId?: InputMaybe<Scalars['ID']>
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
   title: Scalars['NonEmptyString']
 }
