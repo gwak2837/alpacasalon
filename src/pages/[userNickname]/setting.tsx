@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue, useResetRecoilState } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
@@ -95,6 +95,7 @@ export const FlexContainerColumnEnd = styled.div`
 const description = '알파카의 정보를 알아보세요'
 
 export default function UserPage() {
+  const [isProfileImageUpdating, setIsProfileImageUpdating] = useState(false)
   const router = useRouter()
   const userNickname = getUserNickname(router)
   const { nickname } = useRecoilValue(currentUser)
@@ -157,13 +158,14 @@ export default function UserPage() {
   }
 
   async function updateProfileImage(e: ChangeEvent<HTMLInputElement>) {
+    setIsProfileImageUpdating(true)
     const file = e.target.files?.[0]
 
     if (file) {
       const newFormData = new FormData()
       newFormData.append('images', file)
       const { imageUrls } = await uploadImageFiles(newFormData)
-      updateProfileImageMutation({
+      await updateProfileImageMutation({
         variables: {
           input: {
             imageUrl: imageUrls[0],
@@ -171,6 +173,8 @@ export default function UserPage() {
         },
       })
     }
+
+    setIsProfileImageUpdating(false)
   }
 
   useNeedToLogin()
@@ -203,6 +207,7 @@ export default function UserPage() {
             </FileInputLabel>
           </GridContainerTemplate>
         </div>
+        {isProfileImageUpdating && <div>프로필 이미지 변경 중...</div>}
 
         {nickname === userNickname && (
           <FlexContainerColumnEnd>
