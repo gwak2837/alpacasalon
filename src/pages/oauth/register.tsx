@@ -149,7 +149,7 @@ export default function OAuthRegisterPage() {
       if (updateUser) {
         toast.success('정보 등록에 성공했어요')
 
-        setCurrentUser({ nickname: updateUser.nickname })
+        setCurrentUser({ nickname: updateUser.nickname, hasNewNotifications: false })
 
         const redirectionUrlAfterLogin = sessionStorage.getItem('redirectionUrlAfterLogin') ?? '/'
 

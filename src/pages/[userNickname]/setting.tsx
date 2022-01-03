@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
-import { useRecoilState } from 'recoil'
+import { useRecoilValue, useResetRecoilState } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
 import { PrimaryButton, RedButton } from 'src/components/atoms/Button'
 import PageHead from 'src/components/PageHead'
@@ -70,7 +70,8 @@ const description = '알파카의 정보를 알아보세요'
 export default function UserPage() {
   const router = useRouter()
   const userNickname = getUserNickname(router)
-  const [{ nickname }, setCurrentUser] = useRecoilState(currentUser)
+  const { nickname } = useRecoilValue(currentUser)
+  const resetCurrentUser = useResetRecoilState(currentUser)
 
   const { data } = useUserByNicknameQuery({
     onError: toastApolloError,
@@ -86,7 +87,7 @@ export default function UserPage() {
         toast.success('로그아웃에 성공했어요')
         sessionStorage.removeItem('jwt')
         localStorage.removeItem('jwt')
-        setCurrentUser({ nickname: '' })
+        resetCurrentUser()
         router.replace('/')
       }
     },
@@ -99,7 +100,7 @@ export default function UserPage() {
         toast.success('회원탈퇴에 성공했어요')
         sessionStorage.removeItem('jwt')
         localStorage.removeItem('jwt')
-        setCurrentUser({ nickname: '' })
+        resetCurrentUser()
         router.replace('/')
       }
     },

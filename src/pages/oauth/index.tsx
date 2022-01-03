@@ -1,19 +1,16 @@
 import { useRouter } from 'next/router'
 import React, { useEffect, useRef } from 'react'
 import { toast } from 'react-toastify'
-import { useSetRecoilState } from 'recoil'
 import PageHead from 'src/components/PageHead'
-import { currentUser } from 'src/models/recoil'
 
 const description = ''
 
 export default function EventDetailPage() {
   const url = useRef('')
   const router = useRouter()
-  const setCurrentUser = useSetRecoilState(currentUser)
 
   useEffect(() => {
-    const queryString = new URLSearchParams(window.location.search.substr(1))
+    const queryString = new URLSearchParams(window.location.search.substring(1))
     const jwt = queryString.get('jwt')
     const nickname = queryString.get('nickname')
 
@@ -27,8 +24,6 @@ export default function EventDetailPage() {
         sessionStorage.setItem('jwt', jwt)
       }
 
-      setCurrentUser({ nickname })
-
       const redirectionUrlAfterLogin = sessionStorage.getItem('redirectionUrlAfterLogin') ?? '/'
 
       if (redirectionUrlAfterLogin.startsWith('/@')) {
@@ -39,7 +34,7 @@ export default function EventDetailPage() {
 
       sessionStorage.removeItem('redirectionUrlAfterLogin')
     }
-  }, [setCurrentUser])
+  }, [])
 
   useEffect(() => {
     router.replace(url.current)
