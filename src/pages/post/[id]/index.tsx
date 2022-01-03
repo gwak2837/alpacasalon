@@ -142,7 +142,6 @@ const HorizontalBorder = styled.div`
 
 const GreyButton = styled.button`
   background: #fff;
-  border: none;
   color: #888;
   padding: 1.3rem 0.8rem;
   text-align: left;
@@ -331,7 +330,7 @@ type ParentComment = {
 
 const description = ''
 
-export default function PostDetailPage() {
+export default function PostPage() {
   const [parentComment, setParentComment] = useState<ParentComment>()
   const [isImageDetailOpen, setIsImageDetailOpen] = useState(false)
   const commentTextareaRef = useRef<HTMLTextAreaElement>()

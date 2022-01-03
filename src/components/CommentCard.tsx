@@ -49,8 +49,6 @@ const AbsoluteButton = styled.button`
   top: 0;
   right: 0;
 
-  background: none;
-  border: none;
   color: ${ALPACA_SALON_GREY_COLOR};
   font-size: 0.9rem;
   font-weight: 600;

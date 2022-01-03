@@ -44,7 +44,6 @@ const PrimaryButton = styled.button`
 
   background: ${ALPACA_SALON_COLOR};
   box-shadow: 0px 4px 20px rgba(16, 16, 16, 0.25);
-  border: none;
   border-radius: 10px;
   color: #fff;
 

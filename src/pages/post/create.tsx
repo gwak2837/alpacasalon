@@ -64,7 +64,6 @@ export const StickyHeader = styled.header`
 `
 
 export const TransparentButton = styled.button<{ disabled?: boolean }>`
-  border: none;
   background: none;
   font-size: 1.1rem;
   font-weight: 600;
@@ -193,7 +192,7 @@ export default function PostCreationPage() {
     },
     onError: toastApolloError,
     update: (cache) => {
-      cache.evict({ id: 'ROOT_QUERY', fieldName: 'posts' })
+      cache.evict({ fieldName: 'posts' })
     },
   })
 
@@ -311,7 +310,10 @@ export default function PostCreationPage() {
             disabled={postCreationLoading}
             erred={Boolean(errors.title)}
             placeholder="안녕하세요 우아한 알파카님. 평소에 궁금했던 것을 물어보세요."
-            {...register('title', { required: '글 제목을 작성한 후 완료를 눌러주세요' })}
+            {...register('title', {
+              required: '글 제목을 작성한 후 완료를 눌러주세요',
+              maxLength: { value: 100, message: '제목은 100자 이내로 입력해주세요' },
+            })}
           />
           <Textarea
             disabled={postCreationLoading}

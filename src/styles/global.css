@@ -88,8 +88,3 @@ textarea {
   border: none;
   line-height: 1.6rem;
 }
-
-@font-face {
-  font-family: 'tvN EnjoystoriesOTF';
-  src: url('/tvN-EnjoystoriesOTF.otf') format('opentype');
-}

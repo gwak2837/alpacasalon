@@ -1,0 +1,8 @@
+query Group($id: ID!) {
+  group(id: $id) {
+    id
+    name
+    description
+    imageUrl
+  }
+}

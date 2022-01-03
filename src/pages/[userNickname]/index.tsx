@@ -151,8 +151,14 @@ export default function UserPage() {
         <PrimaryColorText>{user?.likedCount ?? '-'}</PrimaryColorText>
       </FlexContainer>
 
+      <h3>내 ZOOM 대화</h3>
+
+      <h3>알림</h3>
+
       {notifications?.map((notification) => (
-        <pre key={notification.id}>{JSON.stringify(notification, null, 2)}</pre>
+        <pre key={notification.id} style={{ overflow: 'scroll' }}>
+          {JSON.stringify(notification, null, 2)}
+        </pre>
       ))}
     </PageHead>
   )

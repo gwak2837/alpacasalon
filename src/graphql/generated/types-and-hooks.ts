@@ -280,6 +280,7 @@ export type Query = {
   commentsByPost?: Maybe<Array<Comment>>
   /** 이번 달 핫한 이야기 */
   famousPosts?: Maybe<Array<Post>>
+  group?: Maybe<Group>
   /** 사용자 닉네임 중복 여부 검사 */
   isNicknameUnique: Scalars['Boolean']
   /** 좋아요 누른 댓글 */
@@ -289,6 +290,7 @@ export type Query = {
   /** 내가 쓴 댓글 */
   myComments?: Maybe<Array<Comment>>
   myGroups?: Maybe<Array<Group>>
+  myPosts?: Maybe<Array<Post>>
   notifications?: Maybe<Array<Notification>>
   participatingPolls?: Maybe<Array<Poll>>
   /** 글 상세 */
@@ -305,6 +307,10 @@ export type Query = {
 
 export type QueryCommentsByPostArgs = {
   postId: Scalars['ID']
+}
+
+export type QueryGroupArgs = {
+  id: Scalars['ID']
 }
 
 export type QueryIsNicknameUniqueArgs = {
@@ -345,6 +351,7 @@ export type User = {
   creationTime: Scalars['DateTime']
   email: Scalars['EmailAddress']
   gender: Gender
+  hasNewNotifications: Scalars['Boolean']
   id: Scalars['UUID']
   imageUrl?: Maybe<Scalars['URL']>
   likedCount: Scalars['NonNegativeInt']
@@ -532,6 +539,24 @@ export type FamousPostsQuery = {
     | undefined
 }
 
+export type GroupQueryVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type GroupQuery = {
+  __typename?: 'Query'
+  group?:
+    | {
+        __typename?: 'Group'
+        id: string
+        name: any
+        description?: any | null | undefined
+        imageUrl?: any | null | undefined
+      }
+    | null
+    | undefined
+}
+
 export type IsNicknameUniqueQueryVariables = Exact<{
   nickname: Scalars['NonEmptyString']
 }>
@@ -542,7 +567,15 @@ export type MeQueryVariables = Exact<{ [key: string]: never }>
 
 export type MeQuery = {
   __typename?: 'Query'
-  me?: { __typename?: 'User'; id: any; nickname?: any | null | undefined } | null | undefined
+  me?:
+    | {
+        __typename?: 'User'
+        id: any
+        nickname?: any | null | undefined
+        hasNewNotifications: boolean
+      }
+    | null
+    | undefined
 }
 
 export type MyGroupsQueryVariables = Exact<{ [key: string]: never }>
@@ -1267,6 +1300,48 @@ export function useFamousPostsLazyQuery(
 export type FamousPostsQueryHookResult = ReturnType<typeof useFamousPostsQuery>
 export type FamousPostsLazyQueryHookResult = ReturnType<typeof useFamousPostsLazyQuery>
 export type FamousPostsQueryResult = Apollo.QueryResult<FamousPostsQuery, FamousPostsQueryVariables>
+export const GroupDocument = gql`
+  query Group($id: ID!) {
+    group(id: $id) {
+      id
+      name
+      description
+      imageUrl
+    }
+  }
+`
+
+/**
+ * __useGroupQuery__
+ *
+ * To run a query within a React component, call `useGroupQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGroupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGroupQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGroupQuery(
+  baseOptions: Apollo.QueryHookOptions<GroupQuery, GroupQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GroupQuery, GroupQueryVariables>(GroupDocument, options)
+}
+export function useGroupLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GroupQuery, GroupQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GroupQuery, GroupQueryVariables>(GroupDocument, options)
+}
+export type GroupQueryHookResult = ReturnType<typeof useGroupQuery>
+export type GroupLazyQueryHookResult = ReturnType<typeof useGroupLazyQuery>
+export type GroupQueryResult = Apollo.QueryResult<GroupQuery, GroupQueryVariables>
 export const IsNicknameUniqueDocument = gql`
   query IsNicknameUnique($nickname: NonEmptyString!) {
     isNicknameUnique(nickname: $nickname)
@@ -1318,6 +1393,7 @@ export const MeDocument = gql`
     me {
       id
       nickname
+      hasNewNotifications
     }
   }
 `
@@ -1956,11 +2032,13 @@ export type PostsByGroupResultFieldPolicy = {
 export type QueryKeySpecifier = (
   | 'commentsByPost'
   | 'famousPosts'
+  | 'group'
   | 'isNicknameUnique'
   | 'likedComments'
   | 'me'
   | 'myComments'
   | 'myGroups'
+  | 'myPosts'
   | 'notifications'
   | 'participatingPolls'
   | 'post'
@@ -1974,11 +2052,13 @@ export type QueryKeySpecifier = (
 export type QueryFieldPolicy = {
   commentsByPost?: FieldPolicy<any> | FieldReadFunction<any>
   famousPosts?: FieldPolicy<any> | FieldReadFunction<any>
+  group?: FieldPolicy<any> | FieldReadFunction<any>
   isNicknameUnique?: FieldPolicy<any> | FieldReadFunction<any>
   likedComments?: FieldPolicy<any> | FieldReadFunction<any>
   me?: FieldPolicy<any> | FieldReadFunction<any>
   myComments?: FieldPolicy<any> | FieldReadFunction<any>
   myGroups?: FieldPolicy<any> | FieldReadFunction<any>
+  myPosts?: FieldPolicy<any> | FieldReadFunction<any>
   notifications?: FieldPolicy<any> | FieldReadFunction<any>
   participatingPolls?: FieldPolicy<any> | FieldReadFunction<any>
   post?: FieldPolicy<any> | FieldReadFunction<any>
@@ -1995,6 +2075,7 @@ export type UserKeySpecifier = (
   | 'creationTime'
   | 'email'
   | 'gender'
+  | 'hasNewNotifications'
   | 'id'
   | 'imageUrl'
   | 'likedCount'
@@ -2010,6 +2091,7 @@ export type UserFieldPolicy = {
   creationTime?: FieldPolicy<any> | FieldReadFunction<any>
   email?: FieldPolicy<any> | FieldReadFunction<any>
   gender?: FieldPolicy<any> | FieldReadFunction<any>
+  hasNewNotifications?: FieldPolicy<any> | FieldReadFunction<any>
   id?: FieldPolicy<any> | FieldReadFunction<any>
   imageUrl?: FieldPolicy<any> | FieldReadFunction<any>
   likedCount?: FieldPolicy<any> | FieldReadFunction<any>
