@@ -44,7 +44,6 @@ export default function GroupDetailPage() {
       <pre>{JSON.stringify(group, null, 2)}</pre>
 
       <h3>게시글</h3>
-
       {posts?.map((post) => (
         <PostCard key={post.id} post={post as Post} />
       ))}

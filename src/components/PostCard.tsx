@@ -29,6 +29,10 @@ const Width = styled.div`
   height: 2.25rem;
   position: relative;
   cursor: pointer;
+
+  > span {
+    border-radius: 50%;
+  }
 `
 
 const H5 = styled.h5<{ disabled?: boolean }>`
@@ -117,7 +121,7 @@ function PostCard({ post }: Props) {
         {author && (
           <Width>
             <Image
-              src={author.imageUrl ?? '/images/default-profile-image.webp'}
+              src={author?.imageUrl ?? '/images/default-profile-image.webp'}
               alt="profile image"
               layout="fill"
               objectFit="cover"

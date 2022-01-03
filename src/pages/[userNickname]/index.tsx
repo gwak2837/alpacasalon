@@ -30,6 +30,7 @@ const GridContainerTemplate = styled.div`
     grid-column: 2 / 3;
     grid-row: 2 / 3;
     width: 100%; // for safari
+    border-radius: 50%;
   }
 `
 
@@ -140,6 +141,7 @@ export default function UserPage() {
           alt="profile-image"
           width="200"
           height="200"
+          objectFit="cover"
         />
       </GridContainerTemplate>
 

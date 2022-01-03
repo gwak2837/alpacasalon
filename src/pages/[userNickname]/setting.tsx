@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { ChangeEvent } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue, useResetRecoilState } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
@@ -8,13 +9,17 @@ import PageHead from 'src/components/PageHead'
 import {
   useLogoutMutation,
   useUnregisterMutation,
+  useUpdateProfileImageMutation,
   useUserByNicknameQuery,
 } from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import { currentUser } from 'src/models/recoil'
+import PlusIcon from 'src/svgs/+.svg'
 import BackIcon from 'src/svgs/back-icon.svg'
-import { getUserNickname } from 'src/utils'
+import { getUserNickname, uploadImageFiles } from 'src/utils'
 import styled from 'styled-components'
+
+import { FileInput } from '../post/create'
 
 const FlexContainerHeight100 = styled.div`
   display: flex;
@@ -44,10 +49,9 @@ const GridContainerTemplate = styled.div`
   grid-template-columns: 1fr 1.1fr 1fr;
   grid-template-rows: 0.5fr 1fr;
 
-  > span {
+  > label {
     grid-column: 2 / 3;
-    grid-row: 2 / 3;
-    width: 100%; // for safari
+    grid-row: 2 / 4;
     cursor: pointer;
   }
 `
@@ -57,6 +61,29 @@ const GridContainerButtons = styled.div`
   gap: 1rem;
 
   padding: 2rem 0.5rem;
+`
+
+const FileInputLabel = styled.label<{ disabled?: boolean }>`
+  position: relative;
+  cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+
+  > span {
+    border-radius: 50%;
+  }
+
+  > svg {
+    width: max(7vw, 1.9rem);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
 `
 
 export const FlexContainerColumnEnd = styled.div`
@@ -107,6 +134,16 @@ export default function UserPage() {
     onError: toastApolloError,
   })
 
+  const [updateProfileImageMutation, { loading: updateProfileImageLoading }] =
+    useUpdateProfileImageMutation({
+      onCompleted: ({ updateUser }) => {
+        if (updateUser) {
+          toast.success('프로필 이미지 변경에 성공했어요')
+        }
+      },
+      onError: toastApolloError,
+    })
+
   function goBack() {
     router.back()
   }
@@ -117,6 +154,23 @@ export default function UserPage() {
 
   function unregister() {
     unregisterMutation()
+  }
+
+  async function updateProfileImage(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+
+    if (file) {
+      const newFormData = new FormData()
+      newFormData.append('images', file)
+      const { imageUrls } = await uploadImageFiles(newFormData)
+      updateProfileImageMutation({
+        variables: {
+          input: {
+            imageUrl: imageUrls[0],
+          },
+        },
+      })
+    }
   }
 
   useNeedToLogin()
@@ -130,12 +184,23 @@ export default function UserPage() {
           </TitleIconWrapper>
 
           <GridContainerTemplate>
-            <Image
-              src={user?.imageUrl ?? '/images/default-profile-image.webp'}
-              alt="profile-image"
-              width="200"
-              height="200"
-            />
+            <FileInputLabel disabled={updateProfileImageLoading} htmlFor="profile-image">
+              <Image
+                src={user?.imageUrl ?? '/images/default-profile-image.webp'}
+                alt="profile-image"
+                width="200"
+                height="200"
+                objectFit="cover"
+              />
+              <PlusIcon />
+              <FileInput
+                accept="image/*"
+                disabled={updateProfileImageLoading}
+                id="profile-image"
+                onChange={updateProfileImage}
+                type="file"
+              />
+            </FileInputLabel>
           </GridContainerTemplate>
         </div>
 

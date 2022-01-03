@@ -8,6 +8,7 @@ query Posts($pagination: Pagination!) {
     user {
       id
       nickname
+      imageUrl
     }
     group {
       id

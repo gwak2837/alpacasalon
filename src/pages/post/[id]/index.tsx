@@ -94,6 +94,7 @@ const GridContainer = styled.div`
   padding: 0.6rem;
 
   > span {
+    border-radius: 50%;
     cursor: pointer;
   }
 `
@@ -460,10 +461,11 @@ export default function PostPage() {
         ) : post ? (
           <GridContainer>
             <Image
-              src={/* author.imageUrl ??  */ '/images/default-profile-image.webp'}
+              src={author?.imageUrl ?? '/images/default-profile-image.webp'}
               alt="profile"
               width="40"
               height="40"
+              objectFit="cover"
               onClick={goToUserDetailPage}
             />
             <GridGap>

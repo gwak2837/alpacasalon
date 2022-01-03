@@ -77,6 +77,7 @@ export type Group = {
   memberCount: Scalars['NonNegativeInt']
   modificationTime: Scalars['DateTime']
   name: Scalars['NonEmptyString']
+  newMember?: Maybe<User>
 }
 
 export type GroupCreationInput = {
@@ -456,6 +457,18 @@ export type UpdatePostMutation = {
     | undefined
 }
 
+export type UpdateProfileImageMutationVariables = Exact<{
+  input: UserModificationInput
+}>
+
+export type UpdateProfileImageMutation = {
+  __typename?: 'Mutation'
+  updateUser?:
+    | { __typename?: 'User'; id: any; imageUrl?: any | null | undefined }
+    | null
+    | undefined
+}
+
 export type UpdateUserMutationVariables = Exact<{
   input: UserModificationInput
 }>
@@ -667,7 +680,12 @@ export type PostsQuery = {
         contents: any
         commentCount: any
         user?:
-          | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
+          | {
+              __typename?: 'User'
+              id: any
+              nickname?: any | null | undefined
+              imageUrl?: any | null | undefined
+            }
           | null
           | undefined
         group?: { __typename?: 'Group'; id: string; name: any } | null | undefined
@@ -1134,6 +1152,54 @@ export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>
 export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<
   UpdatePostMutation,
   UpdatePostMutationVariables
+>
+export const UpdateProfileImageDocument = gql`
+  mutation UpdateProfileImage($input: UserModificationInput!) {
+    updateUser(input: $input) {
+      id
+      imageUrl
+    }
+  }
+`
+export type UpdateProfileImageMutationFn = Apollo.MutationFunction<
+  UpdateProfileImageMutation,
+  UpdateProfileImageMutationVariables
+>
+
+/**
+ * __useUpdateProfileImageMutation__
+ *
+ * To run a mutation, you first call `useUpdateProfileImageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProfileImageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProfileImageMutation, { data, loading, error }] = useUpdateProfileImageMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateProfileImageMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateProfileImageMutation,
+    UpdateProfileImageMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<UpdateProfileImageMutation, UpdateProfileImageMutationVariables>(
+    UpdateProfileImageDocument,
+    options
+  )
+}
+export type UpdateProfileImageMutationHookResult = ReturnType<typeof useUpdateProfileImageMutation>
+export type UpdateProfileImageMutationResult = Apollo.MutationResult<UpdateProfileImageMutation>
+export type UpdateProfileImageMutationOptions = Apollo.BaseMutationOptions<
+  UpdateProfileImageMutation,
+  UpdateProfileImageMutationVariables
 >
 export const UpdateUserDocument = gql`
   mutation UpdateUser($input: UserModificationInput!) {
@@ -1629,6 +1695,7 @@ export const PostsDocument = gql`
       user {
         id
         nickname
+        imageUrl
       }
       group {
         id
@@ -1875,6 +1942,7 @@ export type GroupKeySpecifier = (
   | 'memberCount'
   | 'modificationTime'
   | 'name'
+  | 'newMember'
   | GroupKeySpecifier
 )[]
 export type GroupFieldPolicy = {
@@ -1885,6 +1953,7 @@ export type GroupFieldPolicy = {
   memberCount?: FieldPolicy<any> | FieldReadFunction<any>
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
   name?: FieldPolicy<any> | FieldReadFunction<any>
+  newMember?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type MutationKeySpecifier = (
   | 'createComment'
