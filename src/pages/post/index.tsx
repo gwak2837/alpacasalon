@@ -8,7 +8,12 @@ import { Post, usePostsQuery } from 'src/graphql/generated/types-and-hooks'
 import useInfiniteScroll from 'src/hooks/useInfiniteScroll'
 import Navigation from 'src/layouts/Navigation'
 import PostTab from 'src/layouts/PostTab'
-import { ALPACA_SALON_COLOR, NAVIGATION_HEIGHT, TABLET_MIN_WIDTH } from 'src/models/constants'
+import {
+  ALPACA_SALON_COLOR,
+  ALPACA_SALON_GREY_COLOR,
+  NAVIGATION_HEIGHT,
+  TABLET_MIN_WIDTH,
+} from 'src/models/constants'
 import WriteIcon from 'src/svgs/write-icon.svg'
 import styled from 'styled-components'
 
@@ -25,7 +30,7 @@ const GridContainerPost = styled.ul`
   padding: 0.6rem;
 `
 
-const FixedPosition = styled.div`
+export const FixedPosition = styled.div`
   position: fixed;
   bottom: ${NAVIGATION_HEIGHT};
   z-index: 1;
@@ -37,15 +42,16 @@ const FixedPosition = styled.div`
   justify-content: flex-end;
 `
 
-const PrimaryButton = styled.button`
+export const PrimaryButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.5rem;
 
-  background: ${ALPACA_SALON_COLOR};
+  background: ${(p) => (p.disabled ? ALPACA_SALON_GREY_COLOR : ALPACA_SALON_COLOR)};
   box-shadow: 0px 4px 20px rgba(16, 16, 16, 0.25);
   border-radius: 10px;
   color: #fff;
+  cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
 
   margin: 1.25rem;
   padding: 0.7rem 1rem;

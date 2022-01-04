@@ -158,12 +158,18 @@ export const PreviewSlide = styled(Slide)`
   }
 `
 
+function getGroupIdFromQueryString() {
+  return globalThis.location
+    ? new URLSearchParams(globalThis.location.search).get('groupId') ?? ''
+    : ''
+}
+
 const description = '알파카살롱에 글을 작성해보세요'
 
 export default function PostCreationPage() {
   const [imageInfos, setImageInfos] = useState<ImageInfo[]>([])
   const [postCreationLoading, setPostCreationLoading] = useState(false)
-  const [selectedGroupId, setSelectedGroupId] = useState('')
+  const [selectedGroupId, setSelectedGroupId] = useState(getGroupIdFromQueryString())
   const formData = useRef(globalThis.FormData ? new FormData() : null)
   const imageId = useRef(0)
   const router = useRouter()
@@ -181,7 +187,7 @@ export default function PostCreationPage() {
     reValidateMode: 'onBlur',
   })
 
-  const contentsLines = watch('contents').split('\n').length * 1.6
+  const contentsHeight = watch('contents').split('\n').length * 1.6
 
   const [createPostMutation] = useCreatePostMutation({
     onCompleted: ({ createPost }) => {
@@ -232,11 +238,7 @@ export default function PostCreationPage() {
 
   async function createPost(input: PostCreationInput) {
     setPostCreationLoading(true)
-    const variables: CreatePostMutationVariables = {
-      input: {
-        ...input,
-      },
-    }
+    const variables: CreatePostMutationVariables = { input }
 
     if (selectedGroupId) {
       variables.input.groupId = selectedGroupId
@@ -317,7 +319,7 @@ export default function PostCreationPage() {
           />
           <Textarea
             disabled={postCreationLoading}
-            height={contentsLines}
+            height={contentsHeight}
             onKeyDown={submitWhenShiftEnter}
             placeholder="Shift+Enter키로 글을 작성할 수 있어요"
             {...register('contents', { required: '글 내용을 작성한 후 완료를 눌러주세요' })}

@@ -292,6 +292,7 @@ export type Query = {
   myComments?: Maybe<Array<Comment>>
   myGroups?: Maybe<Array<Group>>
   myPosts?: Maybe<Array<Post>>
+  myZooms?: Maybe<Array<Zoom>>
   notifications?: Maybe<Array<Notification>>
   participatingPolls?: Maybe<Array<Poll>>
   /** 글 상세 */
@@ -302,8 +303,14 @@ export type Query = {
   recommendationGroups?: Maybe<Array<Group>>
   /** 글 검색 */
   searchPosts?: Maybe<Array<Post>>
+  /** 글 검색 */
+  searchZooms?: Maybe<Array<Zoom>>
   /** 닉네임으로 사용자 검색 */
   userByNickname?: Maybe<User>
+  /** 글 상세 */
+  zoom?: Maybe<Zoom>
+  /** 글 목록 */
+  zooms?: Maybe<Array<Zoom>>
 }
 
 export type QueryCommentsByPostArgs = {
@@ -334,8 +341,20 @@ export type QuerySearchPostsArgs = {
   keywords: Array<Scalars['NonEmptyString']>
 }
 
+export type QuerySearchZoomsArgs = {
+  keywords: Array<Scalars['NonEmptyString']>
+}
+
 export type QueryUserByNicknameArgs = {
   nickname: Scalars['NonEmptyString']
+}
+
+export type QueryZoomArgs = {
+  id: Scalars['ID']
+}
+
+export type QueryZoomsArgs = {
+  pagination: Pagination
 }
 
 export enum Status {
@@ -372,6 +391,13 @@ export type UserModificationInput = {
   phoneNumber?: InputMaybe<Scalars['NonEmptyString']>
 }
 
+export type Zoom = {
+  __typename?: 'Zoom'
+  creationTime: Scalars['DateTime']
+  id: Scalars['ID']
+  modificationTime: Scalars['DateTime']
+}
+
 export type CreateCommentMutationVariables = Exact<{
   postId: Scalars['ID']
   contents: Scalars['NonEmptyString']
@@ -381,6 +407,15 @@ export type CreateCommentMutationVariables = Exact<{
 export type CreateCommentMutation = {
   __typename?: 'Mutation'
   createComment?: { __typename?: 'Comment'; id: string } | null | undefined
+}
+
+export type CreateGroupMutationVariables = Exact<{
+  input: GroupCreationInput
+}>
+
+export type CreateGroupMutation = {
+  __typename?: 'Mutation'
+  createGroup?: { __typename?: 'Group'; id: string } | null | undefined
 }
 
 export type CreatePostMutationVariables = Exact<{
@@ -801,6 +836,50 @@ export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMut
 export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<
   CreateCommentMutation,
   CreateCommentMutationVariables
+>
+export const CreateGroupDocument = gql`
+  mutation CreateGroup($input: GroupCreationInput!) {
+    createGroup(input: $input) {
+      id
+    }
+  }
+`
+export type CreateGroupMutationFn = Apollo.MutationFunction<
+  CreateGroupMutation,
+  CreateGroupMutationVariables
+>
+
+/**
+ * __useCreateGroupMutation__
+ *
+ * To run a mutation, you first call `useCreateGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createGroupMutation, { data, loading, error }] = useCreateGroupMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateGroupMutation(
+  baseOptions?: Apollo.MutationHookOptions<CreateGroupMutation, CreateGroupMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateGroupMutation, CreateGroupMutationVariables>(
+    CreateGroupDocument,
+    options
+  )
+}
+export type CreateGroupMutationHookResult = ReturnType<typeof useCreateGroupMutation>
+export type CreateGroupMutationResult = Apollo.MutationResult<CreateGroupMutation>
+export type CreateGroupMutationOptions = Apollo.BaseMutationOptions<
+  CreateGroupMutation,
+  CreateGroupMutationVariables
 >
 export const CreatePostDocument = gql`
   mutation CreatePost($input: PostCreationInput!) {
@@ -2108,6 +2187,7 @@ export type QueryKeySpecifier = (
   | 'myComments'
   | 'myGroups'
   | 'myPosts'
+  | 'myZooms'
   | 'notifications'
   | 'participatingPolls'
   | 'post'
@@ -2115,7 +2195,10 @@ export type QueryKeySpecifier = (
   | 'postsByGroup'
   | 'recommendationGroups'
   | 'searchPosts'
+  | 'searchZooms'
   | 'userByNickname'
+  | 'zoom'
+  | 'zooms'
   | QueryKeySpecifier
 )[]
 export type QueryFieldPolicy = {
@@ -2128,6 +2211,7 @@ export type QueryFieldPolicy = {
   myComments?: FieldPolicy<any> | FieldReadFunction<any>
   myGroups?: FieldPolicy<any> | FieldReadFunction<any>
   myPosts?: FieldPolicy<any> | FieldReadFunction<any>
+  myZooms?: FieldPolicy<any> | FieldReadFunction<any>
   notifications?: FieldPolicy<any> | FieldReadFunction<any>
   participatingPolls?: FieldPolicy<any> | FieldReadFunction<any>
   post?: FieldPolicy<any> | FieldReadFunction<any>
@@ -2135,7 +2219,10 @@ export type QueryFieldPolicy = {
   postsByGroup?: FieldPolicy<any> | FieldReadFunction<any>
   recommendationGroups?: FieldPolicy<any> | FieldReadFunction<any>
   searchPosts?: FieldPolicy<any> | FieldReadFunction<any>
+  searchZooms?: FieldPolicy<any> | FieldReadFunction<any>
   userByNickname?: FieldPolicy<any> | FieldReadFunction<any>
+  zoom?: FieldPolicy<any> | FieldReadFunction<any>
+  zooms?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type UserKeySpecifier = (
   | 'bio'
@@ -2167,6 +2254,12 @@ export type UserFieldPolicy = {
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
   nickname?: FieldPolicy<any> | FieldReadFunction<any>
   phoneNumber?: FieldPolicy<any> | FieldReadFunction<any>
+}
+export type ZoomKeySpecifier = ('creationTime' | 'id' | 'modificationTime' | ZoomKeySpecifier)[]
+export type ZoomFieldPolicy = {
+  creationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  id?: FieldPolicy<any> | FieldReadFunction<any>
+  modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type StrictTypedTypePolicies = {
   Comment?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
@@ -2215,6 +2308,10 @@ export type StrictTypedTypePolicies = {
   User?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?: false | UserKeySpecifier | (() => undefined | UserKeySpecifier)
     fields?: UserFieldPolicy
+  }
+  Zoom?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?: false | ZoomKeySpecifier | (() => undefined | ZoomKeySpecifier)
+    fields?: ZoomFieldPolicy
   }
 }
 export type TypedTypePolicies = StrictTypedTypePolicies & TypePolicies
