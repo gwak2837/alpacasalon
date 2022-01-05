@@ -33,7 +33,6 @@ export default function GroupDetailPage() {
 
   const [joinGroupMutataion, { loading }] = useJoinGroupMutation({
     onError: toastApolloError,
-    refetchQueries: ['PostsByGroup'],
     update: (cache) => {
       cache.evict({ fieldName: 'myGroups' })
     },
@@ -56,7 +55,7 @@ export default function GroupDetailPage() {
 
   return (
     <PageHead title=" - 알파카살롱" description={description}>
-      <pre>{JSON.stringify(group, null, 2)}</pre>
+      <pre style={{ overflow: 'scroll' }}>{JSON.stringify(group, null, 2)}</pre>
 
       <h3>게시글</h3>
       {posts?.map((post) => (

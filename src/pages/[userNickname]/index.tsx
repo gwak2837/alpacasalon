@@ -6,6 +6,7 @@ import { useRecoilValue } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
 import {
+  useMyZoomsQuery,
   useNotificationsQuery,
   useReadNotificationsMutation,
   useUserByNicknameQuery,
@@ -98,6 +99,13 @@ export default function UserPage() {
 
   const user = data?.userByNickname
 
+  const { data: data3 } = useMyZoomsQuery({
+    onError: toastApolloError,
+    skip: !userNickname || nickname !== userNickname,
+  })
+
+  const myZooms = data3?.myZooms
+
   const { data: data2 } = useNotificationsQuery({
     fetchPolicy: 'cache-and-network',
     onError: toastApolloError,
@@ -153,10 +161,14 @@ export default function UserPage() {
         <PrimaryColorText>{user?.likedCount ?? '-'}</PrimaryColorText>
       </FlexContainer>
 
-      <h3>내 ZOOM 대화</h3>
+      <h3>내 ZOOM 대화방</h3>
+      {myZooms?.map((myZoom) => (
+        <pre key={myZoom.id} style={{ overflow: 'scroll' }}>
+          {JSON.stringify(myZoom, null, 2)}
+        </pre>
+      ))}
 
       <h3>알림</h3>
-
       {notifications?.map((notification) => (
         <pre key={notification.id} style={{ overflow: 'scroll' }}>
           {JSON.stringify(notification, null, 2)}

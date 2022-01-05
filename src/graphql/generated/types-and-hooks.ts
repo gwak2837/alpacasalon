@@ -105,7 +105,7 @@ export type Mutation = {
   deleteGroup?: Maybe<Group>
   deletePost?: Maybe<Post>
   deleteZoom?: Maybe<Zoom>
-  joinGroup?: Maybe<Scalars['Boolean']>
+  joinGroup?: Maybe<Group>
   joinZoom?: Maybe<Zoom>
   /** 로그아웃 성공 여부 반환 */
   logout: Scalars['Boolean']
@@ -485,7 +485,19 @@ export type JoinGroupMutationVariables = Exact<{
   id?: InputMaybe<Scalars['ID']>
 }>
 
-export type JoinGroupMutation = { __typename?: 'Mutation'; joinGroup?: boolean | null | undefined }
+export type JoinGroupMutation = {
+  __typename?: 'Mutation'
+  joinGroup?: { __typename?: 'Group'; id: string; isJoined: boolean } | null | undefined
+}
+
+export type JoinZoomMutationVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type JoinZoomMutation = {
+  __typename?: 'Mutation'
+  joinZoom?: { __typename?: 'Zoom'; id: string; isJoined: boolean } | null | undefined
+}
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>
 
@@ -696,6 +708,16 @@ export type MyGroupsInfoQuery = {
   myGroups?: Array<{ __typename?: 'Group'; id: string; name: any }> | null | undefined
 }
 
+export type MyZoomsQueryVariables = Exact<{ [key: string]: never }>
+
+export type MyZoomsQuery = {
+  __typename?: 'Query'
+  myZooms?:
+    | Array<{ __typename?: 'Zoom'; id: string; title: any; imageUrl?: any | null | undefined }>
+    | null
+    | undefined
+}
+
 export type NotificationsQueryVariables = Exact<{ [key: string]: never }>
 
 export type NotificationsQuery = {
@@ -760,6 +782,7 @@ export type PostsQuery = {
         title: any
         contents: any
         commentCount: any
+        imageUrls?: Array<any> | null | undefined
         user?:
           | {
               __typename?: 'User'
@@ -1053,7 +1076,10 @@ export type DeleteCommentMutationOptions = Apollo.BaseMutationOptions<
 >
 export const JoinGroupDocument = gql`
   mutation JoinGroup($id: ID) {
-    joinGroup(id: $id)
+    joinGroup(id: $id) {
+      id
+      isJoined
+    }
   }
 `
 export type JoinGroupMutationFn = Apollo.MutationFunction<
@@ -1092,6 +1118,48 @@ export type JoinGroupMutationResult = Apollo.MutationResult<JoinGroupMutation>
 export type JoinGroupMutationOptions = Apollo.BaseMutationOptions<
   JoinGroupMutation,
   JoinGroupMutationVariables
+>
+export const JoinZoomDocument = gql`
+  mutation JoinZoom($id: ID!) {
+    joinZoom(id: $id) {
+      id
+      isJoined
+    }
+  }
+`
+export type JoinZoomMutationFn = Apollo.MutationFunction<
+  JoinZoomMutation,
+  JoinZoomMutationVariables
+>
+
+/**
+ * __useJoinZoomMutation__
+ *
+ * To run a mutation, you first call `useJoinZoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinZoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinZoomMutation, { data, loading, error }] = useJoinZoomMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useJoinZoomMutation(
+  baseOptions?: Apollo.MutationHookOptions<JoinZoomMutation, JoinZoomMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<JoinZoomMutation, JoinZoomMutationVariables>(JoinZoomDocument, options)
+}
+export type JoinZoomMutationHookResult = ReturnType<typeof useJoinZoomMutation>
+export type JoinZoomMutationResult = Apollo.MutationResult<JoinZoomMutation>
+export type JoinZoomMutationOptions = Apollo.BaseMutationOptions<
+  JoinZoomMutation,
+  JoinZoomMutationVariables
 >
 export const LogoutDocument = gql`
   mutation Logout {
@@ -1744,6 +1812,46 @@ export type MyGroupsInfoQueryResult = Apollo.QueryResult<
   MyGroupsInfoQuery,
   MyGroupsInfoQueryVariables
 >
+export const MyZoomsDocument = gql`
+  query MyZooms {
+    myZooms {
+      id
+      title
+      imageUrl
+    }
+  }
+`
+
+/**
+ * __useMyZoomsQuery__
+ *
+ * To run a query within a React component, call `useMyZoomsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyZoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyZoomsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyZoomsQuery(
+  baseOptions?: Apollo.QueryHookOptions<MyZoomsQuery, MyZoomsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<MyZoomsQuery, MyZoomsQueryVariables>(MyZoomsDocument, options)
+}
+export function useMyZoomsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<MyZoomsQuery, MyZoomsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<MyZoomsQuery, MyZoomsQueryVariables>(MyZoomsDocument, options)
+}
+export type MyZoomsQueryHookResult = ReturnType<typeof useMyZoomsQuery>
+export type MyZoomsLazyQueryHookResult = ReturnType<typeof useMyZoomsLazyQuery>
+export type MyZoomsQueryResult = Apollo.QueryResult<MyZoomsQuery, MyZoomsQueryVariables>
 export const NotificationsDocument = gql`
   query Notifications {
     notifications {
@@ -1854,6 +1962,7 @@ export const PostsDocument = gql`
       title
       contents
       commentCount
+      imageUrls
       user {
         id
         nickname

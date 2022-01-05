@@ -1,0 +1,7 @@
+query MyZooms {
+  myZooms {
+    id
+    title
+    imageUrl
+  }
+}

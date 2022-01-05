@@ -55,6 +55,7 @@ export const PrimaryButton = styled.button`
 `
 
 const limit = 5
+const description = ''
 
 export default function PostsPage() {
   const [hasMoreData, setHasMoreData] = useState(true)
@@ -106,7 +107,7 @@ export default function PostsPage() {
   }
 
   return (
-    <PageHead>
+    <PageHead title="게시판 - 알파카살롱" description={description}>
       <GridContainerPost>
         {posts
           ? posts.map((post, i) => <PostCard key={i} post={post as Post} />)

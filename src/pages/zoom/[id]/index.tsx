@@ -2,8 +2,13 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
-import { useZoomQuery } from 'src/graphql/generated/types-and-hooks'
-import { ALPACA_SALON_COLOR } from 'src/models/constants'
+import { useJoinZoomMutation, useZoomQuery } from 'src/graphql/generated/types-and-hooks'
+import useNeedToLogin from 'src/hooks/useNeedToLogin'
+import {
+  ALPACA_SALON_COLOR,
+  ALPACA_SALON_DARK_GREY_COLOR,
+  ALPACA_SALON_GREY_COLOR,
+} from 'src/models/constants'
 import CalenderIcon from 'src/svgs/calender.svg'
 import ClockIcon from 'src/svgs/clock.svg'
 import styled from 'styled-components'
@@ -34,9 +39,10 @@ const GreyText = styled.div`
 `
 
 const PrimaryButton = styled.button`
-  background: ${ALPACA_SALON_COLOR};
+  background: ${(p) => (p.disabled ? ALPACA_SALON_DARK_GREY_COLOR : ALPACA_SALON_COLOR)};
   border-radius: 10px;
   color: #fff;
+  cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
 
   padding: 1rem;
   width: 100%;
@@ -62,6 +68,19 @@ export default function ZoomPage() {
 
   const zoom = data?.zoom
   const whenWhats = data?.zoom?.whenWhat as string[] | undefined
+
+  const [joinZoomMutation] = useJoinZoomMutation({
+    onError: toastApolloError,
+    update: (cache) => {
+      cache.evict({ fieldName: 'myZooms' })
+    },
+  })
+
+  function joinZoom() {
+    joinZoomMutation({ variables: { id: zoomId } })
+  }
+
+  useNeedToLogin()
 
   return (
     <PageHead title="줌 - 알파카살롱" description={description}>
@@ -104,8 +123,14 @@ export default function ZoomPage() {
         <GreyText>
           현재 <span>1</span>명이 보고 있어요
         </GreyText>
-        <PrimaryButton>
-          <span>신청하기</span> (무료)
+        <PrimaryButton disabled={zoom?.isJoined || !zoomId} onClick={joinZoom}>
+          {zoom?.isJoined ? (
+            <span>신청 완료했어요</span>
+          ) : (
+            <>
+              <span>신청하기</span> (무료)
+            </>
+          )}
         </PrimaryButton>
       </Sticky>
     </PageHead>

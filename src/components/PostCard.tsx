@@ -5,6 +5,7 @@ import React, { memo } from 'react'
 import { Post } from 'src/graphql/generated/types-and-hooks'
 import { ALPACA_SALON_COLOR, ALPACA_SALON_GREY_COLOR, TABLET_MIN_WIDTH } from 'src/models/constants'
 import { FlexContainerBetween, Skeleton } from 'src/styles'
+import ImageIcon from 'src/svgs/image.svg'
 import { stopPropagation } from 'src/utils'
 import styled from 'styled-components'
 
@@ -47,6 +48,11 @@ const InlineH5 = styled.h5`
 
 const H4 = styled.h4`
   margin: 0.75rem 0 0.5rem;
+  > svg {
+    width: 1rem;
+    display: inline;
+    vertical-align: middle;
+  }
 `
 
 const Span = styled.span`
@@ -154,7 +160,9 @@ function PostCard({ post }: Props) {
         </div>
       </FlexCenter>
 
-      <H4>{post.title}</H4>
+      <H4>
+        {post.imageUrls && <ImageIcon />} {post.title}
+      </H4>
 
       <OneLineP>
         {contents[0]} {contents.length > 1 && <Span>...</Span>}
