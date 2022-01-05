@@ -74,10 +74,11 @@ export type Group = {
   description?: Maybe<Scalars['NonEmptyString']>
   id: Scalars['ID']
   imageUrl?: Maybe<Scalars['URL']>
+  isJoined: Scalars['Boolean']
   memberCount: Scalars['NonNegativeInt']
   modificationTime: Scalars['DateTime']
   name: Scalars['NonEmptyString']
-  newMember?: Maybe<User>
+  newMembers?: Maybe<Array<User>>
 }
 
 export type GroupCreationInput = {
@@ -99,10 +100,13 @@ export type Mutation = {
   createGroup?: Maybe<Group>
   createPoll?: Maybe<Poll>
   createPost?: Maybe<Post>
+  createZoom?: Maybe<Zoom>
   deleteComment?: Maybe<Comment>
   deleteGroup?: Maybe<Group>
   deletePost?: Maybe<Post>
+  deleteZoom?: Maybe<Zoom>
   joinGroup?: Maybe<Scalars['Boolean']>
+  joinZoom?: Maybe<Zoom>
   /** 로그아웃 성공 여부 반환 */
   logout: Scalars['Boolean']
   readNotifications?: Maybe<Scalars['NonNegativeInt']>
@@ -114,6 +118,7 @@ export type Mutation = {
   updatePost?: Maybe<Post>
   /** 사용자 정보를 수정합니다 */
   updateUser?: Maybe<User>
+  updateZoom?: Maybe<Zoom>
 }
 
 export type MutationCreateCommentArgs = {
@@ -134,6 +139,10 @@ export type MutationCreatePostArgs = {
   input: PostCreationInput
 }
 
+export type MutationCreateZoomArgs = {
+  input: ZoomCreationInput
+}
+
 export type MutationDeleteCommentArgs = {
   id: Scalars['ID']
 }
@@ -146,8 +155,16 @@ export type MutationDeletePostArgs = {
   id: Scalars['ID']
 }
 
+export type MutationDeleteZoomArgs = {
+  id: Scalars['ID']
+}
+
 export type MutationJoinGroupArgs = {
   id?: InputMaybe<Scalars['ID']>
+}
+
+export type MutationJoinZoomArgs = {
+  id: Scalars['ID']
 }
 
 export type MutationReadNotificationsArgs = {
@@ -173,6 +190,10 @@ export type MutationUpdatePostArgs = {
 
 export type MutationUpdateUserArgs = {
   input: UserModificationInput
+}
+
+export type MutationUpdateZoomArgs = {
+  input: ZoomModificationInput
 }
 
 export type Notification = {
@@ -263,16 +284,10 @@ export type PostCreationInput = {
 }
 
 export type PostModificationInput = {
-  contents?: InputMaybe<Scalars['String']>
+  contents?: InputMaybe<Scalars['NonEmptyString']>
   id: Scalars['ID']
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
-  title?: InputMaybe<Scalars['String']>
-}
-
-export type PostsByGroupResult = {
-  __typename?: 'PostsByGroupResult'
-  isJoined: Scalars['Boolean']
-  posts: Array<Post>
+  title?: InputMaybe<Scalars['NonEmptyString']>
 }
 
 export type Query = {
@@ -299,7 +314,7 @@ export type Query = {
   post?: Maybe<Post>
   /** 글 목록 */
   posts?: Maybe<Array<Post>>
-  postsByGroup?: Maybe<PostsByGroupResult>
+  postsByGroup?: Maybe<Array<Post>>
   recommendationGroups?: Maybe<Array<Group>>
   /** 글 검색 */
   searchPosts?: Maybe<Array<Post>>
@@ -357,6 +372,16 @@ export type QueryZoomsArgs = {
   pagination: Pagination
 }
 
+export type Review = {
+  __typename?: 'Review'
+  contents?: Maybe<Scalars['NonEmptyString']>
+  creationTime: Scalars['DateTime']
+  id: Scalars['ID']
+  modificationTime: Scalars['DateTime']
+  title?: Maybe<Scalars['NonEmptyString']>
+  writer?: Maybe<User>
+}
+
 export enum Status {
   Closed = 'CLOSED',
   Ongoing = 'ONGOING',
@@ -394,8 +419,28 @@ export type UserModificationInput = {
 export type Zoom = {
   __typename?: 'Zoom'
   creationTime: Scalars['DateTime']
+  description: Scalars['NonEmptyString']
   id: Scalars['ID']
+  imageUrl?: Maybe<Scalars['URL']>
+  isJoined: Scalars['Boolean']
   modificationTime: Scalars['DateTime']
+  tags?: Maybe<Array<Scalars['NonEmptyString']>>
+  title: Scalars['NonEmptyString']
+  whenWhat: Array<Scalars['NonEmptyString']>
+  whenWhere: Scalars['NonEmptyString']
+}
+
+export type ZoomCreationInput = {
+  description: Scalars['NonEmptyString']
+  imageUrl?: InputMaybe<Scalars['URL']>
+  title: Scalars['NonEmptyString']
+}
+
+export type ZoomModificationInput = {
+  contents?: InputMaybe<Scalars['NonEmptyString']>
+  id: Scalars['ID']
+  imageUrl?: InputMaybe<Scalars['URL']>
+  title?: InputMaybe<Scalars['NonEmptyString']>
 }
 
 export type CreateCommentMutationVariables = Exact<{
@@ -600,6 +645,7 @@ export type GroupQuery = {
         name: any
         description?: any | null | undefined
         imageUrl?: any | null | undefined
+        isJoined: boolean
       }
     | null
     | undefined
@@ -736,22 +782,18 @@ export type PostsByGroupQueryVariables = Exact<{
 export type PostsByGroupQuery = {
   __typename?: 'Query'
   postsByGroup?:
-    | {
-        __typename?: 'PostsByGroupResult'
-        isJoined: boolean
-        posts: Array<{
-          __typename?: 'Post'
-          id: string
-          creationTime: any
-          title: any
-          contents: any
-          commentCount: any
-          user?:
-            | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
-            | null
-            | undefined
-        }>
-      }
+    | Array<{
+        __typename?: 'Post'
+        id: string
+        creationTime: any
+        title: any
+        contents: any
+        commentCount: any
+        user?:
+          | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
+          | null
+          | undefined
+      }>
     | null
     | undefined
 }
@@ -787,6 +829,46 @@ export type UserByNicknameQuery = {
         imageUrl?: any | null | undefined
         likedCount: any
       }
+    | null
+    | undefined
+}
+
+export type ZoomQueryVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type ZoomQuery = {
+  __typename?: 'Query'
+  zoom?:
+    | {
+        __typename?: 'Zoom'
+        id: string
+        title: any
+        description: any
+        imageUrl?: any | null | undefined
+        whenWhere: any
+        whenWhat: Array<any>
+        isJoined: boolean
+      }
+    | null
+    | undefined
+}
+
+export type ZoomsQueryVariables = Exact<{
+  pagination: Pagination
+}>
+
+export type ZoomsQuery = {
+  __typename?: 'Query'
+  zooms?:
+    | Array<{
+        __typename?: 'Zoom'
+        id: string
+        title: any
+        description: any
+        imageUrl?: any | null | undefined
+        whenWhere: any
+      }>
     | null
     | undefined
 }
@@ -1452,6 +1534,7 @@ export const GroupDocument = gql`
       name
       description
       imageUrl
+      isJoined
     }
   }
 `
@@ -1818,17 +1901,14 @@ export type PostsQueryResult = Apollo.QueryResult<PostsQuery, PostsQueryVariable
 export const PostsByGroupDocument = gql`
   query PostsByGroup($groupId: ID!) {
     postsByGroup(groupId: $groupId) {
-      isJoined
-      posts {
+      id
+      creationTime
+      title
+      contents
+      commentCount
+      user {
         id
-        creationTime
-        title
-        contents
-        commentCount
-        user {
-          id
-          nickname
-        }
+        nickname
       }
     }
   }
@@ -1984,6 +2064,92 @@ export type UserByNicknameQueryResult = Apollo.QueryResult<
   UserByNicknameQuery,
   UserByNicknameQueryVariables
 >
+export const ZoomDocument = gql`
+  query Zoom($id: ID!) {
+    zoom(id: $id) {
+      id
+      title
+      description
+      imageUrl
+      whenWhere
+      whenWhat
+      isJoined
+    }
+  }
+`
+
+/**
+ * __useZoomQuery__
+ *
+ * To run a query within a React component, call `useZoomQuery` and pass it any options that fit your needs.
+ * When your component renders, `useZoomQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useZoomQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useZoomQuery(baseOptions: Apollo.QueryHookOptions<ZoomQuery, ZoomQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ZoomQuery, ZoomQueryVariables>(ZoomDocument, options)
+}
+export function useZoomLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ZoomQuery, ZoomQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ZoomQuery, ZoomQueryVariables>(ZoomDocument, options)
+}
+export type ZoomQueryHookResult = ReturnType<typeof useZoomQuery>
+export type ZoomLazyQueryHookResult = ReturnType<typeof useZoomLazyQuery>
+export type ZoomQueryResult = Apollo.QueryResult<ZoomQuery, ZoomQueryVariables>
+export const ZoomsDocument = gql`
+  query Zooms($pagination: Pagination!) {
+    zooms(pagination: $pagination) {
+      id
+      title
+      description
+      imageUrl
+      whenWhere
+    }
+  }
+`
+
+/**
+ * __useZoomsQuery__
+ *
+ * To run a query within a React component, call `useZoomsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useZoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useZoomsQuery({
+ *   variables: {
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useZoomsQuery(
+  baseOptions: Apollo.QueryHookOptions<ZoomsQuery, ZoomsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ZoomsQuery, ZoomsQueryVariables>(ZoomsDocument, options)
+}
+export function useZoomsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ZoomsQuery, ZoomsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ZoomsQuery, ZoomsQueryVariables>(ZoomsDocument, options)
+}
+export type ZoomsQueryHookResult = ReturnType<typeof useZoomsQuery>
+export type ZoomsLazyQueryHookResult = ReturnType<typeof useZoomsLazyQuery>
+export type ZoomsQueryResult = Apollo.QueryResult<ZoomsQuery, ZoomsQueryVariables>
 export type CommentKeySpecifier = (
   | 'contents'
   | 'creationTime'
@@ -2018,10 +2184,11 @@ export type GroupKeySpecifier = (
   | 'description'
   | 'id'
   | 'imageUrl'
+  | 'isJoined'
   | 'memberCount'
   | 'modificationTime'
   | 'name'
-  | 'newMember'
+  | 'newMembers'
   | GroupKeySpecifier
 )[]
 export type GroupFieldPolicy = {
@@ -2029,20 +2196,24 @@ export type GroupFieldPolicy = {
   description?: FieldPolicy<any> | FieldReadFunction<any>
   id?: FieldPolicy<any> | FieldReadFunction<any>
   imageUrl?: FieldPolicy<any> | FieldReadFunction<any>
+  isJoined?: FieldPolicy<any> | FieldReadFunction<any>
   memberCount?: FieldPolicy<any> | FieldReadFunction<any>
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
   name?: FieldPolicy<any> | FieldReadFunction<any>
-  newMember?: FieldPolicy<any> | FieldReadFunction<any>
+  newMembers?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type MutationKeySpecifier = (
   | 'createComment'
   | 'createGroup'
   | 'createPoll'
   | 'createPost'
+  | 'createZoom'
   | 'deleteComment'
   | 'deleteGroup'
   | 'deletePost'
+  | 'deleteZoom'
   | 'joinGroup'
+  | 'joinZoom'
   | 'logout'
   | 'readNotifications'
   | 'toggleLikingComment'
@@ -2051,6 +2222,7 @@ export type MutationKeySpecifier = (
   | 'updateGroup'
   | 'updatePost'
   | 'updateUser'
+  | 'updateZoom'
   | MutationKeySpecifier
 )[]
 export type MutationFieldPolicy = {
@@ -2058,10 +2230,13 @@ export type MutationFieldPolicy = {
   createGroup?: FieldPolicy<any> | FieldReadFunction<any>
   createPoll?: FieldPolicy<any> | FieldReadFunction<any>
   createPost?: FieldPolicy<any> | FieldReadFunction<any>
+  createZoom?: FieldPolicy<any> | FieldReadFunction<any>
   deleteComment?: FieldPolicy<any> | FieldReadFunction<any>
   deleteGroup?: FieldPolicy<any> | FieldReadFunction<any>
   deletePost?: FieldPolicy<any> | FieldReadFunction<any>
+  deleteZoom?: FieldPolicy<any> | FieldReadFunction<any>
   joinGroup?: FieldPolicy<any> | FieldReadFunction<any>
+  joinZoom?: FieldPolicy<any> | FieldReadFunction<any>
   logout?: FieldPolicy<any> | FieldReadFunction<any>
   readNotifications?: FieldPolicy<any> | FieldReadFunction<any>
   toggleLikingComment?: FieldPolicy<any> | FieldReadFunction<any>
@@ -2070,6 +2245,7 @@ export type MutationFieldPolicy = {
   updateGroup?: FieldPolicy<any> | FieldReadFunction<any>
   updatePost?: FieldPolicy<any> | FieldReadFunction<any>
   updateUser?: FieldPolicy<any> | FieldReadFunction<any>
+  updateZoom?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type NotificationKeySpecifier = (
   | 'contents'
@@ -2168,15 +2344,6 @@ export type PostFieldPolicy = {
   title?: FieldPolicy<any> | FieldReadFunction<any>
   user?: FieldPolicy<any> | FieldReadFunction<any>
 }
-export type PostsByGroupResultKeySpecifier = (
-  | 'isJoined'
-  | 'posts'
-  | PostsByGroupResultKeySpecifier
-)[]
-export type PostsByGroupResultFieldPolicy = {
-  isJoined?: FieldPolicy<any> | FieldReadFunction<any>
-  posts?: FieldPolicy<any> | FieldReadFunction<any>
-}
 export type QueryKeySpecifier = (
   | 'commentsByPost'
   | 'famousPosts'
@@ -2224,6 +2391,23 @@ export type QueryFieldPolicy = {
   zoom?: FieldPolicy<any> | FieldReadFunction<any>
   zooms?: FieldPolicy<any> | FieldReadFunction<any>
 }
+export type ReviewKeySpecifier = (
+  | 'contents'
+  | 'creationTime'
+  | 'id'
+  | 'modificationTime'
+  | 'title'
+  | 'writer'
+  | ReviewKeySpecifier
+)[]
+export type ReviewFieldPolicy = {
+  contents?: FieldPolicy<any> | FieldReadFunction<any>
+  creationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  id?: FieldPolicy<any> | FieldReadFunction<any>
+  modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  title?: FieldPolicy<any> | FieldReadFunction<any>
+  writer?: FieldPolicy<any> | FieldReadFunction<any>
+}
 export type UserKeySpecifier = (
   | 'bio'
   | 'birthday'
@@ -2255,11 +2439,30 @@ export type UserFieldPolicy = {
   nickname?: FieldPolicy<any> | FieldReadFunction<any>
   phoneNumber?: FieldPolicy<any> | FieldReadFunction<any>
 }
-export type ZoomKeySpecifier = ('creationTime' | 'id' | 'modificationTime' | ZoomKeySpecifier)[]
+export type ZoomKeySpecifier = (
+  | 'creationTime'
+  | 'description'
+  | 'id'
+  | 'imageUrl'
+  | 'isJoined'
+  | 'modificationTime'
+  | 'tags'
+  | 'title'
+  | 'whenWhat'
+  | 'whenWhere'
+  | ZoomKeySpecifier
+)[]
 export type ZoomFieldPolicy = {
   creationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  description?: FieldPolicy<any> | FieldReadFunction<any>
   id?: FieldPolicy<any> | FieldReadFunction<any>
+  imageUrl?: FieldPolicy<any> | FieldReadFunction<any>
+  isJoined?: FieldPolicy<any> | FieldReadFunction<any>
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  tags?: FieldPolicy<any> | FieldReadFunction<any>
+  title?: FieldPolicy<any> | FieldReadFunction<any>
+  whenWhat?: FieldPolicy<any> | FieldReadFunction<any>
+  whenWhere?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type StrictTypedTypePolicies = {
   Comment?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
@@ -2294,16 +2497,13 @@ export type StrictTypedTypePolicies = {
     keyFields?: false | PostKeySpecifier | (() => undefined | PostKeySpecifier)
     fields?: PostFieldPolicy
   }
-  PostsByGroupResult?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?:
-      | false
-      | PostsByGroupResultKeySpecifier
-      | (() => undefined | PostsByGroupResultKeySpecifier)
-    fields?: PostsByGroupResultFieldPolicy
-  }
   Query?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier)
     fields?: QueryFieldPolicy
+  }
+  Review?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?: false | ReviewKeySpecifier | (() => undefined | ReviewKeySpecifier)
+    fields?: ReviewFieldPolicy
   }
   User?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?: false | UserKeySpecifier | (() => undefined | UserKeySpecifier)

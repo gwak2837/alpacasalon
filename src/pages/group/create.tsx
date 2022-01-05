@@ -17,14 +17,7 @@ import { isEmpty, uploadImageFiles } from 'src/utils'
 import styled from 'styled-components'
 
 import { Frame16to11 } from '../post/[id]'
-import {
-  AbsoluteH3,
-  FileInput,
-  GreyH3,
-  PreviewSlide,
-  StickyHeader,
-  TransparentButton,
-} from '../post/create'
+import { AbsoluteH3, FileInput, GreyH3, StickyHeader, TransparentButton } from '../post/create'
 
 type GroupCreationInput = {
   name: string
@@ -73,7 +66,6 @@ export default function GroupCreationPage() {
     formState: { errors },
     handleSubmit,
     register,
-    watch,
   } = useForm<GroupCreationInput>({
     defaultValues: {
       name: '',
@@ -82,7 +74,7 @@ export default function GroupCreationPage() {
     reValidateMode: 'onBlur',
   })
 
-  const [createGroupMutation, { loading }] = useCreateGroupMutation({
+  const [createGroupMutation] = useCreateGroupMutation({
     onCompleted: ({ createGroup }) => {
       if (createGroup) {
         toast.success('그룹을 만들었어요')

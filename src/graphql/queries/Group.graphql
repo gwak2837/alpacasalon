@@ -4,5 +4,6 @@ query Group($id: ID!) {
     name
     description
     imageUrl
+    isJoined
   }
 }

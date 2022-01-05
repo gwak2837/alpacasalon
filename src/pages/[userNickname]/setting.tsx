@@ -79,7 +79,7 @@ const FileInputLabel = styled.label<{ disabled?: boolean }>`
   }
 
   > svg {
-    width: max(7vw, 1.9rem);
+    width: min(max(1.5rem, 9vw), 3rem);
     position: absolute;
     bottom: 0;
     right: 0;

@@ -1,16 +1,13 @@
 query PostsByGroup($groupId: ID!) {
   postsByGroup(groupId: $groupId) {
-    isJoined
-    posts {
+    id
+    creationTime
+    title
+    contents
+    commentCount
+    user {
       id
-      creationTime
-      title
-      contents
-      commentCount
-      user {
-        id
-        nickname
-      }
+      nickname
     }
   }
 }

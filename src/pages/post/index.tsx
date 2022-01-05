@@ -30,31 +30,28 @@ const GridContainerPost = styled.ul`
   padding: 0.6rem;
 `
 
-export const FixedPosition = styled.div`
+export const PrimaryButton = styled.button`
   position: fixed;
   bottom: ${NAVIGATION_HEIGHT};
-  z-index: 1;
+  right: 50%;
+  transform: translateX(50vw);
 
-  width: 100%;
-  max-width: ${TABLET_MIN_WIDTH};
+  @media (min-width: ${TABLET_MIN_WIDTH}) {
+    transform: translateX(230%);
+  }
 
-  display: flex;
-  justify-content: flex-end;
-`
-
-export const PrimaryButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.5rem;
 
   background: ${(p) => (p.disabled ? ALPACA_SALON_GREY_COLOR : ALPACA_SALON_COLOR)};
   box-shadow: 0px 4px 20px rgba(16, 16, 16, 0.25);
-  border-radius: 10px;
+  border-radius: 99px;
   color: #fff;
   cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
 
   margin: 1.25rem;
-  padding: 0.7rem 1rem;
+  padding: 0.7rem 1.2rem;
 `
 
 const limit = 5
@@ -124,12 +121,10 @@ export default function PostsPage() {
       {!loading && hasMoreData && <div ref={infiniteScrollRef}>무한 스크롤</div>}
       {!hasMoreData && <div>모든 게시글을 불러왔어요</div>}
 
-      <FixedPosition>
-        <PrimaryButton onClick={goToPostCreationPage}>
-          <WriteIcon />
-          글쓰기
-        </PrimaryButton>
-      </FixedPosition>
+      <PrimaryButton onClick={goToPostCreationPage}>
+        <WriteIcon />
+        글쓰기
+      </PrimaryButton>
     </PageHead>
   )
 }

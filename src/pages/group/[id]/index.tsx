@@ -9,7 +9,8 @@ import {
   useJoinGroupMutation,
   usePostsByGroupQuery,
 } from 'src/graphql/generated/types-and-hooks'
-import { FixedPosition, PrimaryButton } from 'src/pages/post'
+import useNeedToLogin from 'src/hooks/useNeedToLogin'
+import { PrimaryButton } from 'src/pages/post'
 import WriteIcon from 'src/svgs/write-icon.svg'
 
 const description = ''
@@ -39,8 +40,7 @@ export default function GroupDetailPage() {
   })
 
   const group = data2?.group
-  const posts = data?.postsByGroup?.posts
-  const isJoined = data?.postsByGroup?.isJoined
+  const posts = data?.postsByGroup
 
   function goToPostCreationPage() {
     if (window.sessionStorage.getItem('jwt') || window.localStorage.getItem('jwt')) {
@@ -52,6 +52,8 @@ export default function GroupDetailPage() {
     }
   }
 
+  useNeedToLogin()
+
   return (
     <PageHead title=" - 알파카살롱" description={description}>
       <pre>{JSON.stringify(group, null, 2)}</pre>
@@ -62,16 +64,14 @@ export default function GroupDetailPage() {
       ))}
 
       <button onClick={() => joinGroupMutataion({ variables: { id: groupId } })}>
-        {isJoined ? '탈퇴하기' : '+ 이 그룹 가입하기'}
+        {group?.isJoined ? '탈퇴하기' : '+ 이 그룹 가입하기'}
         {loading && '...'}
       </button>
 
-      <FixedPosition>
-        <PrimaryButton disabled={!groupId} onClick={goToPostCreationPage}>
-          <WriteIcon />
-          글쓰기
-        </PrimaryButton>
-      </FixedPosition>
+      <PrimaryButton disabled={!groupId} onClick={goToPostCreationPage}>
+        <WriteIcon />
+        글쓰기
+      </PrimaryButton>
     </PageHead>
   )
 }

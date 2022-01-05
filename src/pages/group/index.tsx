@@ -41,7 +41,11 @@ export default function GroupsPage() {
       <h4>추천 그룹</h4>
       {isRecommendedGroupLoading && <h5>추천 그룹 로딩</h5>}
       {recommendationGroups?.map((group) => (
-        <pre key={group.id} onClick={() => router.push(`/group/${group.id}`)}>
+        <pre
+          key={group.id}
+          onClick={() => router.push(`/group/${group.id}`)}
+          style={{ overflow: 'scroll' }}
+        >
           {JSON.stringify(group, null, 2)}
         </pre>
       ))}
@@ -51,7 +55,11 @@ export default function GroupsPage() {
           <h4>내 그룹</h4>
           {isMyGroupLoading && <h5>내 그룹 로딩</h5>}
           {myGroups?.map((group) => (
-            <pre key={group.id} onClick={() => router.push(`/group/${group.id}`)}>
+            <pre
+              key={group.id}
+              onClick={() => router.push(`/group/${group.id}`)}
+              style={{ overflow: 'scroll' }}
+            >
               {JSON.stringify(group, null, 2)}
             </pre>
           ))}
