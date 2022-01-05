@@ -347,6 +347,7 @@ export default function PostPage() {
     skip: !postId || !nickname,
     variables: { id: postId },
   })
+
   const post = data?.post
   const commentCount = post?.commentCount
   const author = data?.post?.user
@@ -361,6 +362,7 @@ export default function PostPage() {
     skip: !postId || !nickname,
     variables: { postId },
   })
+
   const comments = data2?.commentsByPost
 
   const [createCommentMutation, { loading }] = useCreateCommentMutation({
@@ -373,12 +375,16 @@ export default function PostPage() {
       }
     },
     onError: toastApolloError,
-    refetchQueries: ['CommentsByPost', 'Posts'],
+    refetchQueries: ['CommentsByPost'],
+    update: (cache) => {
+      cache.evict({ fieldName: 'posts' })
+    },
   })
 
   const { handleSubmit, register, reset, setFocus, watch } = useForm<CommentCreationForm>({
     defaultValues: { contents: '' },
   })
+
   const contentsLineCount = watch('contents').length
   const { ref, ...registerCommentCreationForm } = register('contents', {
     required: '댓글을 입력해주세요',

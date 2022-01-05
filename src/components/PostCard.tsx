@@ -161,7 +161,7 @@ function PostCard({ post }: Props) {
       </FlexCenter>
 
       <H4>
-        {post.imageUrls && <ImageIcon />} {post.title}
+        {post.imageUrls && post.imageUrls.length > 0 && <ImageIcon />} {post.title}
       </H4>
 
       <OneLineP>
