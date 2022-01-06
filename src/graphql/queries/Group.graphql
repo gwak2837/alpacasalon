@@ -5,5 +5,14 @@ query Group($id: ID!) {
     description
     imageUrl
     isJoined
+    leader {
+      id
+      nickname
+    }
+    newMembers {
+      id
+      nickname
+      imageUrl
+    }
   }
 }

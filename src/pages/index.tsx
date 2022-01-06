@@ -17,9 +17,26 @@ const Sticky = styled.div`
 
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
   > svg {
     width: 5rem;
+    height: 100%;
+  }
+`
+
+const SliderWithoutScollBar = styled(Slider)`
+  scrollbar-color: transparent transparent;
+  scrollbar-width: 0px;
+  ::-webkit-scrollbar {
+    height: 0;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: transparent;
+    border: none;
   }
 `
 
@@ -50,7 +67,7 @@ export default function HomePage() {
         {!nickname && <WhiteButton onClick={() => router.push('/login')}>로그인</WhiteButton>}
       </Sticky>
 
-      <Slider>
+      <SliderWithoutScollBar>
         <Frame16to10>
           <Image src="/images/banner.webp" alt="banner" layout="fill" objectFit="cover" />
         </Frame16to10>
@@ -63,7 +80,7 @@ export default function HomePage() {
         <Frame16to10>
           <Image src="/images/banner4.webp" alt="banner" layout="fill" objectFit="cover" />
         </Frame16to10>
-      </Slider>
+      </SliderWithoutScollBar>
 
       <h2>👀 추천 Zoom 대화방</h2>
 

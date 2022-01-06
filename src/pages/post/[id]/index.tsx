@@ -335,7 +335,6 @@ export default function PostPage() {
   const [parentComment, setParentComment] = useState<ParentComment>()
   const [isImageDetailOpen, setIsImageDetailOpen] = useState(false)
   const commentTextareaRef = useRef<HTMLTextAreaElement>()
-  const scrollTo = useRef<any>()
   const newCommentId = useRef('')
   const clickedImageNumber = useRef(-1)
   const { nickname } = useRecoilValue(currentUser)
@@ -353,11 +352,6 @@ export default function PostPage() {
   const author = data?.post?.user
 
   const { data: data2, loading: commentsLoading } = useCommentsByPostQuery({
-    onCompleted: () => {
-      if (scrollTo.current) {
-        scrollTo.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
-    },
     onError: toastApolloError,
     skip: !postId || !nickname,
     variables: { postId },
@@ -375,10 +369,7 @@ export default function PostPage() {
       }
     },
     onError: toastApolloError,
-    refetchQueries: ['CommentsByPost'],
-    update: (cache) => {
-      cache.evict({ fieldName: 'posts' })
-    },
+    refetchQueries: ['CommentsByPost', 'Post'],
   })
 
   const { handleSubmit, register, reset, setFocus, watch } = useForm<CommentCreationForm>({
@@ -555,7 +546,6 @@ export default function PostPage() {
                     comment={comment as Comment}
                     setParentComment={setParentComment}
                     commentInputRef={commentTextareaRef}
-                    scrollTo={scrollTo}
                     newCommentId={newCommentId}
                   />
                 ))

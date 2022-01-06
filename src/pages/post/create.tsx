@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { toastApolloError } from 'src/apollo/error'
@@ -92,9 +92,8 @@ export const GridContainer = styled.div`
   padding: 2rem 0.5rem;
 `
 
-export const Textarea = styled.textarea<{ height: number }>`
+export const Textarea = styled.textarea`
   width: 100%;
-  height: ${(p) => p.height}rem;
   min-height: 20vh;
   max-height: 50vh;
   padding: 0.5rem 0;
@@ -164,6 +163,12 @@ function getGroupIdFromQueryString() {
     : ''
 }
 
+export function resizeTextareaHeight(e: KeyboardEvent<HTMLTextAreaElement>) {
+  const eventTarget = e.target as HTMLTextAreaElement
+  eventTarget.style.height = 'auto'
+  eventTarget.style.height = `${eventTarget.scrollHeight}px`
+}
+
 const description = '알파카살롱에 글을 작성해보세요'
 
 export default function PostCreationPage() {
@@ -178,7 +183,6 @@ export default function PostCreationPage() {
     formState: { errors },
     handleSubmit,
     register,
-    watch,
   } = useForm<PostCreationInput>({
     defaultValues: {
       title: '',
@@ -186,8 +190,6 @@ export default function PostCreationPage() {
     },
     reValidateMode: 'onBlur',
   })
-
-  const contentsHeight = watch('contents').split('\n').length * 1.6
 
   const [createPostMutation] = useCreatePostMutation({
     onCompleted: ({ createPost }) => {
@@ -199,6 +201,9 @@ export default function PostCreationPage() {
     onError: toastApolloError,
     update: (cache) => {
       cache.evict({ fieldName: 'posts' })
+      if (selectedGroupId) {
+        cache.evict({ fieldName: 'postsByGroup' })
+      }
     },
   })
 
@@ -319,8 +324,8 @@ export default function PostCreationPage() {
           />
           <Textarea
             disabled={postCreationLoading}
-            height={contentsHeight}
             onKeyDown={submitWhenShiftEnter}
+            onInput={resizeTextareaHeight}
             placeholder="Shift+Enter키로 글을 작성할 수 있어요"
             {...register('contents', { required: '글 내용을 작성한 후 완료를 눌러주세요' })}
           />

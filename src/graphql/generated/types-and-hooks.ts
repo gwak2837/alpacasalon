@@ -75,6 +75,7 @@ export type Group = {
   id: Scalars['ID']
   imageUrl?: Maybe<Scalars['URL']>
   isJoined: Scalars['Boolean']
+  leader?: Maybe<User>
   memberCount: Scalars['NonNegativeInt']
   modificationTime: Scalars['DateTime']
   name: Scalars['NonEmptyString']
@@ -658,6 +659,19 @@ export type GroupQuery = {
         description?: any | null | undefined
         imageUrl?: any | null | undefined
         isJoined: boolean
+        leader?:
+          | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
+          | null
+          | undefined
+        newMembers?:
+          | Array<{
+              __typename?: 'User'
+              id: any
+              nickname?: any | null | undefined
+              imageUrl?: any | null | undefined
+            }>
+          | null
+          | undefined
       }
     | null
     | undefined
@@ -1603,6 +1617,15 @@ export const GroupDocument = gql`
       description
       imageUrl
       isJoined
+      leader {
+        id
+        nickname
+      }
+      newMembers {
+        id
+        nickname
+        imageUrl
+      }
     }
   }
 `
@@ -2294,6 +2317,7 @@ export type GroupKeySpecifier = (
   | 'id'
   | 'imageUrl'
   | 'isJoined'
+  | 'leader'
   | 'memberCount'
   | 'modificationTime'
   | 'name'
@@ -2306,6 +2330,7 @@ export type GroupFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>
   imageUrl?: FieldPolicy<any> | FieldReadFunction<any>
   isJoined?: FieldPolicy<any> | FieldReadFunction<any>
+  leader?: FieldPolicy<any> | FieldReadFunction<any>
   memberCount?: FieldPolicy<any> | FieldReadFunction<any>
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
   name?: FieldPolicy<any> | FieldReadFunction<any>

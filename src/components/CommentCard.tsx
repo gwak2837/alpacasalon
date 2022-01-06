@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, memo, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
 import {
@@ -233,11 +233,10 @@ export function CommentLoadingCard() {
 
 type Props2 = {
   subcomment: Comment
-  scrollTo: any
   newCommentId: any
 }
 
-function SubcommentCard({ subcomment, scrollTo, newCommentId }: Props2) {
+function SubcommentCard({ subcomment, newCommentId }: Props2) {
   const author = subcomment.user
   const contents = (subcomment.contents as string | null)?.split('\n')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -265,9 +264,9 @@ function SubcommentCard({ subcomment, scrollTo, newCommentId }: Props2) {
     toggleLikingCommentMutation()
   }
 
-  function registerNewComment(newComment: HTMLLIElement) {
-    if (newCommentId.current === subcomment.id) {
-      scrollTo.current = newComment
+  function registerNewComment(newComment: HTMLLIElement | null) {
+    if (newCommentId.current === subcomment.id && newComment) {
+      newComment.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }
 
@@ -342,17 +341,10 @@ type Props = {
   comment: Comment
   setParentComment: any
   commentInputRef: any
-  scrollTo: any
   newCommentId: any
 }
 
-function CommentCard({
-  comment,
-  setParentComment,
-  commentInputRef,
-  scrollTo,
-  newCommentId,
-}: Props) {
+function CommentCard({ comment, setParentComment, commentInputRef, newCommentId }: Props) {
   const author = comment.user
   const contents = (comment.contents as string | null)?.split('\n')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -391,9 +383,9 @@ function CommentCard({
     commentInputRef.current.focus()
   }
 
-  function registerNewComment(newComment: HTMLLIElement) {
-    if (newCommentId.current === comment.id) {
-      scrollTo.current = newComment
+  function registerNewComment(newComment: HTMLLIElement | null) {
+    if (newCommentId.current === comment.id && newComment) {
+      newComment.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }
 
@@ -466,16 +458,11 @@ function CommentCard({
 
       <GridContainerSubcomments>
         {comment.subcomments?.map((subcomment) => (
-          <SubcommentCard
-            key={subcomment.id}
-            subcomment={subcomment}
-            scrollTo={scrollTo}
-            newCommentId={newCommentId}
-          />
+          <SubcommentCard key={subcomment.id} subcomment={subcomment} newCommentId={newCommentId} />
         ))}
       </GridContainerSubcomments>
     </GridContainerComment>
   )
 }
 
-export default CommentCard
+export default memo(CommentCard)
