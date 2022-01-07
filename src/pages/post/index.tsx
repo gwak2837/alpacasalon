@@ -107,7 +107,7 @@ export default function PostsPage() {
   }
 
   return (
-    <PageHead title="게시판 - 알파카살롱" description={description}>
+    <PageHead title="피드 - 알파카살롱" description={description}>
       <GridContainerPost>
         {posts
           ? posts.map((post, i) => <PostCard key={i} post={post as Post} />)

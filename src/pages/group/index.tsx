@@ -59,8 +59,9 @@ const Slider = styled.ul`
   }
 `
 
+const description = ''
+
 export default function GroupsPage() {
-  const router = useRouter() //
   const { nickname } = useRecoilValue(currentUser)
 
   const { data, loading: isRecommendedGroupLoading } = useRecommendationGroupsQuery({
@@ -75,7 +76,7 @@ export default function GroupsPage() {
   const myGroups = data2?.myGroups
 
   return (
-    <PageHead>
+    <PageHead title="그룹 - 알파카살롱" description={description}>
       <Background>
         <Flex>
           <H2>추천 그룹</H2>

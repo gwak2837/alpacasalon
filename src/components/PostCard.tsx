@@ -83,7 +83,12 @@ export function PostLoadingCard() {
   return (
     <Li>
       <GridContainerGap>
-        <Skeleton width="3rem" />
+        <FlexCenter>
+          <Skeleton width="2.25rem" height="2.25rem" borderRadius="50%" inlineBlock />
+          <Skeleton width="3rem" inlineBlock />
+          -
+          <Skeleton width="3rem" inlineBlock />
+        </FlexCenter>
         <Skeleton />
         <Skeleton width="80%" />
       </GridContainerGap>
