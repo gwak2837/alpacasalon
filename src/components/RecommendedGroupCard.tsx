@@ -42,7 +42,7 @@ type Props = {
   group: any
 }
 
-export function RecommendedGroupCard({ group }: Props) {
+function RecommendedGroupCard({ group }: Props) {
   const router = useRouter()
 
   return (
@@ -70,12 +70,4 @@ export function RecommendedGroupCard({ group }: Props) {
   )
 }
 
-type Props2 = {
-  group: any
-}
-
-function MyGroupCard({ group }: Props2) {
-  return <></>
-}
-
-export default MyGroupCard
+export default RecommendedGroupCard

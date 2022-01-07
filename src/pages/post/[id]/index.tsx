@@ -9,6 +9,7 @@ import { toastApolloError } from 'src/apollo/error'
 import Modal from 'src/components/atoms/Modal'
 import CommentCard, { CommentLoadingCard } from 'src/components/CommentCard'
 import PageHead from 'src/components/PageHead'
+import { applyLineBreak } from 'src/components/ZoomCard'
 import {
   Comment,
   CreateCommentMutationVariables,
@@ -492,14 +493,7 @@ export default function PostPage() {
         ) : post ? (
           <GridGap2>
             <h3>{post.title}</h3>
-            <P>
-              {(post.contents as string).split(/\n/).map((content, i) => (
-                <Fragment key={i}>
-                  <>{content}</>
-                  <br />
-                </Fragment>
-              ))}
-            </P>
+            <P>{applyLineBreak(post.contents)}</P>
             {post.imageUrls?.map((imageUrl, i) => (
               <Frame16to11DefaultImage key={i}>
                 <Image

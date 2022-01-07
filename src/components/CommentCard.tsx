@@ -438,7 +438,7 @@ function CommentCard({ comment, setParentComment, commentInputRef, newCommentId 
         <GridItemComment>
           {contents?.map((content, i) => (
             <Fragment key={i}>
-              <>{content}</>
+              {content}
               <br />
             </Fragment>
           )) ?? <h6>삭제된 댓글입니다</h6>}

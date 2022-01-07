@@ -108,6 +108,11 @@ export default function GroupDetailPage() {
     setIsDrawerOpen(false)
   }
 
+  function toggleJoiningGroup() {
+    joinGroupMutataion({ variables: { id: groupId } })
+    setIsDrawerOpen(false)
+  }
+
   // useNeedToLogin()
 
   return (
@@ -125,75 +130,16 @@ export default function GroupDetailPage() {
           objectFit="cover"
         />
       </Frame16to7>
-      <pre style={{ overflow: 'scroll' }}>{JSON.stringify(group, null, 2)}</pre>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
-      <h3>게시글</h3>
 
+      <pre style={{ overflow: 'scroll' }}>{JSON.stringify(group, null, 2)}</pre>
+
+      <h3>게시글</h3>
       {posts?.map((post) => (
         <PostCard key={post.id} post={post as Post} />
       ))}
 
       <Drawer open={isDrawerOpen} setOpen={setIsDrawerOpen}>
-        <Li>
+        <Li onClick={toggleJoiningGroup}>
           <LeaveIcon /> 이 그룹 탈퇴하기
         </Li>
         <Li onClick={closeDrawer}>
@@ -201,10 +147,13 @@ export default function GroupDetailPage() {
         </Li>
       </Drawer>
 
-      <button onClick={() => joinGroupMutataion({ variables: { id: groupId } })}>
-        {group?.isJoined ? '탈퇴하기' : '+ 이 그룹 가입하기'}
-        {loading && '...'}
-      </button>
+      {!group?.isJoined && (
+        <button onClick={toggleJoiningGroup}>
+          + 이 그룹 가입하기
+          {loading && '...'}
+        </button>
+      )}
+
       <PrimaryButton disabled={!groupId || !group?.isJoined} onClick={goToPostCreationPage}>
         <WriteIcon />
         글쓰기

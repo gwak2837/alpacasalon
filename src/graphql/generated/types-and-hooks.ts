@@ -80,6 +80,7 @@ export type Group = {
   modificationTime: Scalars['DateTime']
   name: Scalars['NonEmptyString']
   newMembers?: Maybe<Array<User>>
+  newPostCount: Scalars['NonNegativeInt']
 }
 
 export type GroupCreationInput = {
@@ -425,6 +426,7 @@ export type Zoom = {
   imageUrl?: Maybe<Scalars['URL']>
   isJoined: Scalars['Boolean']
   modificationTime: Scalars['DateTime']
+  tag?: Maybe<Array<Scalars['NonEmptyString']>>
   tags?: Maybe<Array<Scalars['NonEmptyString']>>
   title: Scalars['NonEmptyString']
   whenWhat: Array<Scalars['NonEmptyString']>
@@ -710,6 +712,7 @@ export type MyGroupsQuery = {
         description?: any | null | undefined
         imageUrl?: any | null | undefined
         memberCount: any
+        newPostCount: any
       }>
     | null
     | undefined
@@ -1753,6 +1756,7 @@ export const MyGroupsDocument = gql`
       description
       imageUrl
       memberCount
+      newPostCount
     }
   }
 `
@@ -2322,6 +2326,7 @@ export type GroupKeySpecifier = (
   | 'modificationTime'
   | 'name'
   | 'newMembers'
+  | 'newPostCount'
   | GroupKeySpecifier
 )[]
 export type GroupFieldPolicy = {
@@ -2335,6 +2340,7 @@ export type GroupFieldPolicy = {
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
   name?: FieldPolicy<any> | FieldReadFunction<any>
   newMembers?: FieldPolicy<any> | FieldReadFunction<any>
+  newPostCount?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type MutationKeySpecifier = (
   | 'createComment'
@@ -2580,6 +2586,7 @@ export type ZoomKeySpecifier = (
   | 'imageUrl'
   | 'isJoined'
   | 'modificationTime'
+  | 'tag'
   | 'tags'
   | 'title'
   | 'whenWhat'
@@ -2593,6 +2600,7 @@ export type ZoomFieldPolicy = {
   imageUrl?: FieldPolicy<any> | FieldReadFunction<any>
   isJoined?: FieldPolicy<any> | FieldReadFunction<any>
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  tag?: FieldPolicy<any> | FieldReadFunction<any>
   tags?: FieldPolicy<any> | FieldReadFunction<any>
   title?: FieldPolicy<any> | FieldReadFunction<any>
   whenWhat?: FieldPolicy<any> | FieldReadFunction<any>

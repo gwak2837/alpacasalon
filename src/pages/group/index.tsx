@@ -3,8 +3,9 @@ import { useRouter } from 'next/router'
 import React, { ReactElement } from 'react'
 import { useRecoilValue } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
-import { RecommendedGroupCard } from 'src/components/GroupCard'
+import MyGroupCard from 'src/components/MyGroupCard'
 import PageHead from 'src/components/PageHead'
+import RecommendedGroupCard from 'src/components/RecommendedGroupCard'
 import {
   useMyGroupsQuery,
   useRecommendationGroupsQuery,
@@ -15,8 +16,9 @@ import { ALPACA_SALON_DARK_GREY_COLOR } from 'src/models/constants'
 import { currentUser } from 'src/models/recoil'
 import styled from 'styled-components'
 
-const Padding = styled.div`
+export const Background = styled.div`
   background: #fcfcfc;
+  min-height: 100vh;
 `
 
 const Flex = styled.div`
@@ -27,8 +29,14 @@ const Flex = styled.div`
   padding: 0.7rem 1rem;
 `
 
-const H3 = styled.h3`
+const H2 = styled.h2`
   font-size: 1.25rem;
+`
+
+const Padding = styled.div`
+  padding: 1.8rem 1rem;
+  display: grid;
+  gap: 0.8rem;
 `
 
 const A = styled.a`
@@ -68,9 +76,9 @@ export default function GroupsPage() {
 
   return (
     <PageHead>
-      <Padding>
+      <Background>
         <Flex>
-          <H3>추천 그룹</H3>
+          <H2>추천 그룹</H2>
           <Link href="/group/create" passHref>
             <A>새 그룹 만들기</A>
           </Link>
@@ -84,21 +92,21 @@ export default function GroupsPage() {
         </Slider>
 
         {nickname && (
-          <>
-            <h4>내 그룹</h4>
-            {isMyGroupLoading && <h5>내 그룹 로딩</h5>}
-            {myGroups?.map((group) => (
-              <pre
-                key={group.id}
-                onClick={() => router.push(`/group/${group.id}`)}
-                style={{ overflow: 'scroll' }}
-              >
-                {JSON.stringify(group, null, 2)}
-              </pre>
-            ))}
-          </>
+          <Padding>
+            {myGroups ? (
+              <>
+                <H2>내 그룹 {myGroups.length}개</H2>
+                {isMyGroupLoading && <h5>내 그룹 로딩</h5>}
+                {myGroups?.map((group) => (
+                  <MyGroupCard key={group.id} group={group} />
+                ))}
+              </>
+            ) : (
+              <h5>내 그룹이 없어요</h5>
+            )}
+          </Padding>
         )}
-      </Padding>
+      </Background>
     </PageHead>
   )
 }
