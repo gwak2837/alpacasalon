@@ -31,6 +31,7 @@ const Sticky = styled.div`
 const SliderWithoutScollBar = styled(Slider)`
   scrollbar-color: transparent transparent;
   scrollbar-width: 0px;
+
   ::-webkit-scrollbar {
     height: 0;
   }
@@ -41,6 +42,56 @@ const SliderWithoutScollBar = styled(Slider)`
     background: transparent;
     border: none;
   }
+
+  :hover > li > *,
+  :focus-within > li > * {
+    animation-name: none;
+  }
+
+  @keyframes toNext {
+    75% {
+      left: 0;
+    }
+    95% {
+      left: 100%;
+    }
+    98% {
+      left: 100%;
+    }
+    99% {
+      left: 0;
+    }
+  }
+
+  @keyframes toStart {
+    75% {
+      left: 0;
+    }
+    95% {
+      left: -300%;
+    }
+    98% {
+      left: -300%;
+    }
+    99% {
+      left: 0;
+    }
+  }
+
+  @keyframes snap {
+    96% {
+      scroll-snap-align: center;
+    }
+    97% {
+      scroll-snap-align: none;
+    }
+    99% {
+      scroll-snap-align: none;
+    }
+    100% {
+      scroll-snap-align: center;
+    }
+  }
 `
 
 const WhiteButton = styled.button`
@@ -50,9 +101,32 @@ const WhiteButton = styled.button`
   padding: 0.7rem;
 `
 
-const Frame16to10 = styled.li<{ background?: string }>`
+const Snap = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   scroll-snap-align: center;
 
+  animation-timing-function: ease;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-name: none;
+  }
+`
+
+const SnapNext = styled(Snap)`
+  animation-name: toNext, snap;
+`
+
+const SnapStart = styled(Snap)`
+  animation-name: toStart, snap;
+`
+
+const Frame16to10 = styled.li<{ background?: string }>`
   aspect-ratio: 16 / 10;
   background: ${(p) => p.background ?? '#fff'};
   flex: 0 0 100%;
@@ -72,15 +146,19 @@ export default function HomePage() {
 
       <SliderWithoutScollBar>
         <Frame16to10>
+          <SnapNext />
           <Image src="/images/banner.webp" alt="banner" layout="fill" objectFit="cover" />
         </Frame16to10>
         <Frame16to10>
+          <SnapNext />
           <Image src="/images/banner2.webp" alt="banner" layout="fill" objectFit="cover" />
         </Frame16to10>
         <Frame16to10 background="#E2D7EC">
+          <SnapNext />
           <Image src="/images/banner3.webp" alt="banner" layout="fill" objectFit="cover" />
         </Frame16to10>
         <Frame16to10>
+          <SnapStart />
           <Image src="/images/banner4.webp" alt="banner" layout="fill" objectFit="cover" />
         </Frame16to10>
       </SliderWithoutScollBar>
