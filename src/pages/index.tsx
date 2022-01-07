@@ -13,6 +13,8 @@ import { Slider } from './post/create'
 const Sticky = styled.div`
   position: sticky;
   top: 0;
+  z-index: 1;
+  background: #fff;
   padding: 0.6rem;
 
   display: flex;
@@ -20,8 +22,9 @@ const Sticky = styled.div`
   align-items: center;
 
   > svg {
-    width: 5rem;
+    width: 6rem;
     height: 100%;
+    padding: 0.5rem;
   }
 `
 

@@ -1,7 +1,9 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { toastApolloError } from 'src/apollo/error'
+import Drawer from 'src/components/atoms/Drawer'
 import PageHead from 'src/components/PageHead'
 import PostCard from 'src/components/PostCard'
 import {
@@ -13,12 +15,28 @@ import {
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import { PrimaryButton } from 'src/pages/post'
 import BackIcon from 'src/svgs/back-icon.svg'
+import DotDotDotIcon from 'src/svgs/dotdotdot.svg'
+import LeaveIcon from 'src/svgs/leave.svg'
 import WriteIcon from 'src/svgs/write-icon.svg'
+import XIcon from 'src/svgs/x2.svg'
 import styled from 'styled-components'
 
 const Frame16to7 = styled.div`
   aspect-ratio: 16 / 7;
   position: relative;
+`
+
+const Li = styled.li`
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  cursor: pointer;
+  padding: 1.2rem;
+
+  > svg {
+    width: 1.5rem;
+  }
 `
 
 const Absolute = styled.div`
@@ -42,6 +60,7 @@ const Absolute = styled.div`
 const description = ''
 
 export default function GroupDetailPage() {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const router = useRouter()
   const groupId = (router.query.id ?? '') as string
 
@@ -81,14 +100,24 @@ export default function GroupDetailPage() {
     router.back()
   }
 
-  useNeedToLogin()
+  function openDrawer() {
+    setIsDrawerOpen(true)
+  }
+
+  function closeDrawer() {
+    setIsDrawerOpen(false)
+  }
+
+  // useNeedToLogin()
 
   return (
     <PageHead title=" - 알파카살롱" description={description}>
       <Frame16to7>
         <Absolute>
           <BackIcon onClick={goBack} />
+          <DotDotDotIcon onClick={openDrawer} />
         </Absolute>
+
         <Image
           src={group?.imageUrl ?? '/images/default-image.webp'}
           alt="group cover"
@@ -98,9 +127,79 @@ export default function GroupDetailPage() {
       </Frame16to7>
       <pre style={{ overflow: 'scroll' }}>{JSON.stringify(group, null, 2)}</pre>
       <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+      <h3>게시글</h3>
+
       {posts?.map((post) => (
         <PostCard key={post.id} post={post as Post} />
       ))}
+
+      <Drawer open={isDrawerOpen} setOpen={setIsDrawerOpen}>
+        <Li>
+          <LeaveIcon /> 이 그룹 탈퇴하기
+        </Li>
+        <Li onClick={closeDrawer}>
+          <XIcon /> 취소
+        </Li>
+      </Drawer>
 
       <button onClick={() => joinGroupMutataion({ variables: { id: groupId } })}>
         {group?.isJoined ? '탈퇴하기' : '+ 이 그룹 가입하기'}
