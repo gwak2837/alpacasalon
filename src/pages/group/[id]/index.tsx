@@ -113,7 +113,7 @@ export default function GroupDetailPage() {
     setIsDrawerOpen(false)
   }
 
-  // useNeedToLogin()
+  useNeedToLogin()
 
   return (
     <PageHead title=" - 알파카살롱" description={description}>

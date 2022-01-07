@@ -63,12 +63,12 @@ export const StickyHeader = styled.header`
   }
 `
 
-export const TransparentButton = styled.button<{ disabled?: boolean }>`
+export const TransparentButton = styled.button`
   background: none;
+  color: ${(p) => (p.disabled ? '#888' : '#000')};
+  cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
   font-size: 1.1rem;
   font-weight: 600;
-  ${(p) => p.disabled && 'opacity: 0.5;'}
-  cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
   padding: 1rem;
 `
 
@@ -273,7 +273,7 @@ export default function PostCreationPage() {
     }
   }, [errors.contents, errors.title])
 
-  useNeedToLogin()
+  // useNeedToLogin()
 
   return (
     <PageHead title="글쓰기 - 알파카살롱" description={description}>
