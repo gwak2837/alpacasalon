@@ -26,7 +26,7 @@ const Frame16to7 = styled.div`
   position: relative;
 `
 
-const Li = styled.li`
+const Button = styled.button`
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -55,6 +55,17 @@ const Absolute = styled.div`
     width: 3rem;
     padding: 0.5rem;
   }
+`
+
+const FixedButton = styled(PrimaryButton)`
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+
+  margin: 0;
+  padding: 0.8rem 1.8rem;
+  white-space: nowrap;
 `
 
 const description = ''
@@ -139,25 +150,25 @@ export default function GroupDetailPage() {
       ))}
 
       <Drawer open={isDrawerOpen} setOpen={setIsDrawerOpen}>
-        <Li onClick={toggleJoiningGroup}>
+        <Button disabled={!group?.isJoined} onClick={toggleJoiningGroup}>
           <LeaveIcon /> 이 그룹 탈퇴하기
-        </Li>
-        <Li onClick={closeDrawer}>
+        </Button>
+        <Button onClick={closeDrawer}>
           <XIcon /> 취소
-        </Li>
+        </Button>
       </Drawer>
 
-      {!group?.isJoined && (
-        <button onClick={toggleJoiningGroup}>
+      {group?.isJoined ? (
+        <FixedButton disabled={!groupId} onClick={goToPostCreationPage}>
+          <WriteIcon />
+          글쓰기
+        </FixedButton>
+      ) : (
+        <FixedButton disabled={!groupId || loading} onClick={toggleJoiningGroup}>
           + 이 그룹 가입하기
           {loading && '...'}
-        </button>
+        </FixedButton>
       )}
-
-      <PrimaryButton disabled={!groupId || !group?.isJoined} onClick={goToPostCreationPage}>
-        <WriteIcon />
-        글쓰기
-      </PrimaryButton>
     </PageHead>
   )
 }

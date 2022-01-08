@@ -8,6 +8,7 @@ const Grid = styled.li`
   display: grid;
   grid-template-rows: 4fr 3fr;
 
+  background: #fff;
   border: 1px solid #eee;
   border-radius: 10px;
   overflow: hidden;

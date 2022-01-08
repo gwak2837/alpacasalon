@@ -9,6 +9,7 @@ import {
   ALPACA_SALON_DARK_GREY_COLOR,
   ALPACA_SALON_GREY_COLOR,
 } from 'src/models/constants'
+import BackIcon from 'src/svgs/back-icon.svg'
 import CalenderIcon from 'src/svgs/calender.svg'
 import ClockIcon from 'src/svgs/clock.svg'
 import styled from 'styled-components'
@@ -16,6 +17,42 @@ import styled from 'styled-components'
 const Frame4to3 = styled.div`
   aspect-ratio: 4 / 3;
   position: relative;
+
+  > svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.5rem;
+    width: 2.5rem;
+    cursor: pointer;
+  }
+
+  > svg > path {
+    stroke: #fff;
+  }
+`
+
+const Absolute = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.2rem;
+
+  color: #fff;
+`
+
+const Padding = styled.div`
+  padding: 1.2rem;
+  flex-grow: 1;
+`
+
+const FlexCenter = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 `
 
 const Sticky = styled.div`
@@ -80,59 +117,71 @@ export default function ZoomPage() {
     joinZoomMutation({ variables: { id: zoomId } })
   }
 
+  function goBack() {
+    router.back()
+  }
+
   useNeedToLogin()
 
   return (
     <PageHead title="줌 - 알파카살롱" description={description}>
-      <Frame4to3>
-        {loading || !zoom ? (
-          <Image src="/images/default-image.webp" alt="" layout="fill" objectFit="cover" />
-        ) : (
-          <Image src={zoom.imageUrl} alt="" layout="fill" objectFit="cover" />
-        )}
-      </Frame4to3>
-      <h3>{zoom?.title}</h3>
-      <p>{zoom?.description}</p>
+      <div style={{ display: 'flex', flexFlow: 'column' }}>
+        <Frame4to3>
+          <Image
+            src={zoom?.imageUrl ?? '/images/default-image.webp'}
+            alt=""
+            layout="fill"
+            objectFit="cover"
+          />
+          <BackIcon onClick={goBack} />
+          <Absolute>
+            <h3>{zoom?.title}</h3>
+            <p>{zoom?.description}</p>
+          </Absolute>
+        </Frame4to3>
 
-      <h2>언제 어디서 하나요?</h2>
-      <div>
-        <CalenderIcon />
-        {zoom?.whenWhere}
+        <Padding>
+          <h2>언제 어디서 하나요?</h2>
+          <FlexCenter>
+            <CalenderIcon />
+            {zoom?.whenWhere}
+          </FlexCenter>
+
+          <h2>무슨 이야기를 나누나요?</h2>
+          {whenWhats?.map((whenWhat, i) => {
+            switch (whenWhat[0]) {
+              case '@':
+                return (
+                  <h3 key={i}>
+                    <ClockIcon />
+                    {whenWhat.substring(1)}
+                  </h3>
+                )
+              case '#':
+                return <h4 key={i}>{whenWhat.substring(1)}</h4>
+              case '!':
+                return <div key={i}>{whenWhat.substring(1)}</div>
+              default:
+                return <div>알 수 없는 접두사입니다</div>
+            }
+          })}
+        </Padding>
+
+        <Sticky>
+          <GreyText>
+            현재 <span>1</span>명이 보고 있어요
+          </GreyText>
+          <PrimaryButton disabled={zoom?.isJoined || !zoomId} onClick={joinZoom}>
+            {zoom?.isJoined ? (
+              <span>신청 완료했어요</span>
+            ) : (
+              <>
+                <span>신청하기</span> (무료)
+              </>
+            )}
+          </PrimaryButton>
+        </Sticky>
       </div>
-
-      <h2>무슨 이야기를 나누나요?</h2>
-      {whenWhats?.map((whenWhat, i) => {
-        switch (whenWhat[0]) {
-          case '@':
-            return (
-              <h3 key={i}>
-                <ClockIcon />
-                {whenWhat.substring(1)}
-              </h3>
-            )
-          case '#':
-            return <h4 key={i}>{whenWhat.substring(1)}</h4>
-          case '!':
-            return <div key={i}>{whenWhat.substring(1)}</div>
-          default:
-            return <div>알 수 없는 접두사입니다</div>
-        }
-      })}
-
-      <Sticky>
-        <GreyText>
-          현재 <span>1</span>명이 보고 있어요
-        </GreyText>
-        <PrimaryButton disabled={zoom?.isJoined || !zoomId} onClick={joinZoom}>
-          {zoom?.isJoined ? (
-            <span>신청 완료했어요</span>
-          ) : (
-            <>
-              <span>신청하기</span> (무료)
-            </>
-          )}
-        </PrimaryButton>
-      </Sticky>
     </PageHead>
   )
 }

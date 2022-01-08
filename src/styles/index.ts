@@ -7,7 +7,7 @@ export const FlexContainerCenterCenter = styled.div`
   align-items: center;
 `
 
-export const FlexContainerAlignCenter = styled.div`
+export const FlexCenter = styled.div`
   display: flex;
   align-items: center;
 `
