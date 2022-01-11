@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { ReactElement, useEffect, useRef } from 'react'
+import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
@@ -141,7 +141,49 @@ const ZoomText = styled.p`
   /* mix-blend-mode: difference; */
 `
 
+const Notification = styled.div`
+  display: flex;
+  width: 100%;
+  height: 75px;
+  margin-bottom: 10px;
+  padding: 15px;
+  border: 1px solid #f6f6f6;
+  border-radius: 20px;
+  background-color: white;
+`
+
+const NotificationImage = styled.div`
+  margin-right: 15px;
+`
+const NotificationContent = styled.div`
+  color: ${(props) => props.color};
+
+  > span {
+    font-weight: 600;
+  }
+`
+
 const description = '알파카의 정보를 알아보세요'
+
+const typeNotification = (typename: undefined | string) => {
+  let text = ''
+  switch (typename) {
+    case 'LIKING_COMMENT':
+      text = '회원님의 댓글에 공감해요'
+
+      return text
+
+    case 'NEW_SUBCOMMENT':
+      text = '회원님의 댓글에 답글을 남겼어요'
+
+      return text
+
+    default:
+      text = '회원님의 게시글에 댓글을 남겼어요'
+
+      return text 
+  }
+}
 
 export default function UserPage() {
   const isExecuted = useRef(false)
@@ -195,6 +237,7 @@ export default function UserPage() {
 
   return (
     <PageHead title={`@${userNickname} - 알파카살롱`} description={description}>
+    <div style={{backgroundColor: "#FAFAFA"}}>
       <GridContainerTemplate>
         {nickname === userNickname && (
           <Link href={`${router.asPath}/setting`} passHref>
@@ -242,13 +285,36 @@ export default function UserPage() {
             </>
           ))}
         </Slider>
-        <h3>알림</h3>
-        {notifications?.map((notification) => (
+        <h3 style={{ marginBottom: '10px' }}>알림</h3>
+
+        {/* {notifications?.map((notification) => (
           <pre key={notification.id} style={{ overflow: 'scroll' }}>
             {JSON.stringify(notification, null, 2)}
           </pre>
+        ))} */}
+        {notifications?.map((notification) => (
+          <Notification>
+            <NotificationImage>
+              <div
+                style={{
+                  borderRadius: '50px',
+                  width: '40px',
+                  height: '40px',
+                  backgroundColor: '#C4C4C4',
+                }}
+              ></div>
+            </NotificationImage>
+            <div>
+              <NotificationContent color="black">
+                <span>{notification.sender?.nickname}</span>님이{' '}
+                {typeNotification(notification.type)}
+              </NotificationContent>
+              <NotificationContent color="#787878">"{notification.contents}"</NotificationContent>
+            </div>
+          </Notification>
         ))}
       </ContentBox>
+      </div>
     </PageHead>
   )
 }
