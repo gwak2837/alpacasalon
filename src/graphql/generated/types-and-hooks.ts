@@ -661,6 +661,7 @@ export type GroupQuery = {
         description?: any | null | undefined
         imageUrl?: any | null | undefined
         isJoined: boolean
+        memberCount: any
         leader?:
           | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
           | null
@@ -1620,6 +1621,7 @@ export const GroupDocument = gql`
       description
       imageUrl
       isJoined
+      memberCount
       leader {
         id
         nickname

@@ -3,13 +3,36 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { memo } from 'react'
 import { Post } from 'src/graphql/generated/types-and-hooks'
-import { ALPACA_SALON_COLOR, ALPACA_SALON_GREY_COLOR, TABLET_MIN_WIDTH } from 'src/models/constants'
+import {
+  ALPACA_SALON_COLOR,
+  ALPACA_SALON_DARK_GREY_COLOR,
+  ALPACA_SALON_GREY_COLOR,
+  TABLET_MIN_WIDTH,
+} from 'src/models/constants'
 import { FlexContainerBetween, Skeleton } from 'src/styles'
 import ImageIcon from 'src/svgs/image.svg'
 import { stopPropagation } from 'src/utils'
 import styled from 'styled-components'
 
-import { BoldGreySpan, GreySpan, HorizontalBorder } from './FamousPostCard'
+const HorizontalBorder = styled.div`
+  border-bottom: 1px solid #f6f6f6;
+  margin: 0.7rem 0 0.8rem;
+`
+
+const GreySpan = styled.span`
+  color: ${ALPACA_SALON_DARK_GREY_COLOR};
+  font-size: 0.9rem;
+`
+
+const BoldGreySpan = styled(GreySpan)`
+  font-weight: 600;
+  white-space: nowrap;
+  align-items: center;
+
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+`
 
 const Li = styled.li`
   background: #fff;
@@ -25,7 +48,7 @@ const FlexCenter = styled.div`
   gap: 0.6rem;
 `
 
-const Width = styled.div`
+export const SquareWidth = styled.div`
   width: 2.25rem;
   height: 2.25rem;
   position: relative;
@@ -86,8 +109,7 @@ export function PostLoadingCard() {
         <FlexCenter>
           <Skeleton width="2.25rem" height="2.25rem" borderRadius="50%" inlineBlock />
           <Skeleton width="3rem" inlineBlock />
-          -
-          <Skeleton width="3rem" inlineBlock />
+          <Skeleton width="6rem" inlineBlock background="#fee" />
         </FlexCenter>
         <Skeleton />
         <Skeleton width="80%" />
@@ -130,7 +152,7 @@ function PostCard({ post }: Props) {
     <Li onClick={goToPostDetailPage}>
       <FlexCenter>
         {author && (
-          <Width>
+          <SquareWidth>
             <Image
               src={author?.imageUrl ?? '/images/default-profile-image.webp'}
               alt="profile image"
@@ -138,7 +160,7 @@ function PostCard({ post }: Props) {
               objectFit="cover"
               onClick={goToUserPage}
             />
-          </Width>
+          </SquareWidth>
         )}
         <div>
           {author ? (

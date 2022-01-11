@@ -89,10 +89,12 @@ export const Skeleton = styled.div<{
   width?: string
   borderRadius?: string
   inlineBlock?: boolean
+  background?: string
 }>`
   width: ${(p) => p.width ?? '100%'};
   height: ${(p) => p.height ?? '1.25rem'};
-  background: linear-gradient(90deg, #cfd8dc50, #cfd8dca0, #cfd8dc50);
+  background: linear-gradient(90deg, #cfd8dc50, #cfd8dca0, #cfd8dc50)
+    ${(p) => p.background && `,${p.background}`};
   background-size: 600% 600%;
   border-radius: ${(p) => p.borderRadius ?? '4px'};
   animation: ${skeletonLoading} 3s ease infinite;

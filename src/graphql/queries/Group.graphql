@@ -5,6 +5,7 @@ query Group($id: ID!) {
     description
     imageUrl
     isJoined
+    memberCount
     leader {
       id
       nickname
