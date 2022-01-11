@@ -293,7 +293,7 @@ export default function UserPage() {
           </pre>
         ))} */}
           {notifications?.map((notification) => (
-            <Notification>
+            <Notification key={notification.id}>
               <NotificationImage>
                 <div
                   style={{
