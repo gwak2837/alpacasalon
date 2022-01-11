@@ -181,7 +181,7 @@ const typeNotification = (typename: undefined | string) => {
     default:
       text = '회원님의 게시글에 댓글을 남겼어요'
 
-      return text 
+      return text
   }
 }
 
@@ -237,83 +237,83 @@ export default function UserPage() {
 
   return (
     <PageHead title={`@${userNickname} - 알파카살롱`} description={description}>
-    <div style={{backgroundColor: "#FAFAFA"}}>
-      <GridContainerTemplate>
-        {nickname === userNickname && (
-          <Link href={`${router.asPath}/setting`} passHref>
-            <A>
-              <SettingIcon />
-            </A>
-          </Link>
-        )}
-        <Image
-          src={user?.imageUrl ?? '/images/default-profile-image.webp'}
-          alt="profile-image"
-          width="200"
-          height="200"
-          objectFit="cover"
-        />
-      </GridContainerTemplate>
+      <div style={{ backgroundColor: '#FAFAFA' }}>
+        <GridContainerTemplate>
+          {nickname === userNickname && (
+            <Link href={`${router.asPath}/setting`} passHref>
+              <A>
+                <SettingIcon />
+              </A>
+            </Link>
+          )}
+          <Image
+            src={user?.imageUrl ?? '/images/default-profile-image.webp'}
+            alt="profile-image"
+            width="200"
+            height="200"
+            objectFit="cover"
+          />
+        </GridContainerTemplate>
 
-      <Nickname>{user ? user.nickname : '로딩중'}</Nickname>
+        <Nickname>{user ? user.nickname : '로딩중'}</Nickname>
 
-      <FlexContainer>
-        <HeartIcon selected />
-        받은 공감 개수
-        <PrimaryColorText>{user?.likedCount ?? '-'}</PrimaryColorText>
-      </FlexContainer>
-      <ContentBox>
-        <h3>내 ZOOM 대화방</h3>
-        <Slider>
-          {myZooms?.map((myZoom) => (
-            <>
-              <ZoomContents>
-                <ZoomCard src={myZoom.imageUrl} />
-                <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
-                <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
-              </ZoomContents>
-              <ZoomContents>
-                <ZoomCard src={myZoom.imageUrl} />
-                <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
-                <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
-              </ZoomContents>
-              <ZoomContents>
-                <ZoomCard src={myZoom.imageUrl} />
-                <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
-                <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
-              </ZoomContents>
-            </>
-          ))}
-        </Slider>
-        <h3 style={{ marginBottom: '10px' }}>알림</h3>
+        <FlexContainer>
+          <HeartIcon selected />
+          받은 공감 개수
+          <PrimaryColorText>{user?.likedCount ?? '-'}</PrimaryColorText>
+        </FlexContainer>
+        <ContentBox>
+          <h3>내 ZOOM 대화방</h3>
+          <Slider>
+            {myZooms?.map((myZoom) => (
+              <>
+                <ZoomContents>
+                  <ZoomCard src={myZoom.imageUrl} />
+                  <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
+                  <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
+                </ZoomContents>
+                <ZoomContents>
+                  <ZoomCard src={myZoom.imageUrl} />
+                  <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
+                  <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
+                </ZoomContents>
+                <ZoomContents>
+                  <ZoomCard src={myZoom.imageUrl} />
+                  <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
+                  <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
+                </ZoomContents>
+              </>
+            ))}
+          </Slider>
+          <h3 style={{ marginBottom: '10px' }}>알림</h3>
 
-        {/* {notifications?.map((notification) => (
+          {/* {notifications?.map((notification) => (
           <pre key={notification.id} style={{ overflow: 'scroll' }}>
             {JSON.stringify(notification, null, 2)}
           </pre>
         ))} */}
-        {notifications?.map((notification) => (
-          <Notification>
-            <NotificationImage>
-              <div
-                style={{
-                  borderRadius: '50px',
-                  width: '40px',
-                  height: '40px',
-                  backgroundColor: '#C4C4C4',
-                }}
-              ></div>
-            </NotificationImage>
-            <div>
-              <NotificationContent color="black">
-                <span>{notification.sender?.nickname}</span>님이{' '}
-                {typeNotification(notification.type)}
-              </NotificationContent>
-              <NotificationContent color="#787878">"{notification.contents}"</NotificationContent>
-            </div>
-          </Notification>
-        ))}
-      </ContentBox>
+          {notifications?.map((notification) => (
+            <Notification>
+              <NotificationImage>
+                <div
+                  style={{
+                    borderRadius: '50px',
+                    width: '40px',
+                    height: '40px',
+                    backgroundColor: '#C4C4C4',
+                  }}
+                ></div>
+              </NotificationImage>
+              <div>
+                <NotificationContent color="black">
+                  <span>{notification.sender?.nickname}</span>님이{' '}
+                  {typeNotification(notification.type)}
+                </NotificationContent>
+                <NotificationContent color="#787878">"{notification.contents}"</NotificationContent>
+              </div>
+            </Notification>
+          ))}
+        </ContentBox>
       </div>
     </PageHead>
   )
