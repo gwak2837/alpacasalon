@@ -8,6 +8,7 @@ query PostsByGroup($groupId: ID!) {
     user {
       id
       nickname
+      imageUrl
     }
   }
 }
