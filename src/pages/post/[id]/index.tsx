@@ -138,7 +138,7 @@ const Frame16to11DefaultImage = styled(Frame16to11)`
   background-image: url('/images/default-image.webp');
 `
 
-const HorizontalBorder = styled.div`
+export const HorizontalBorder = styled.div`
   border-top: 1px solid #eee;
 `
 

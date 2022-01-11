@@ -17,6 +17,10 @@ const Ul = styled.ul`
   padding: 0.6rem;
 `
 
+const H2 = styled.h2`
+  padding: 0.6rem;
+`
+
 const description = ''
 const limit = 5
 
@@ -51,7 +55,7 @@ export default function ZoomsPage() {
   return (
     <PageHead title="Zoom 대화방 - 알파카살롱" description={description}>
       <Background>
-        <h2>경험자와의 진솔한 대화</h2>
+        <H2>경험자와의 진솔한 대화</H2>
 
         <Ul>
           {zooms?.map((zoom) => (
