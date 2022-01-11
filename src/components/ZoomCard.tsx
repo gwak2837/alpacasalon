@@ -17,6 +17,7 @@ const Grid = styled.li`
 const Frame16to7 = styled.div`
   aspect-ratio: 16 / 7;
   position: relative;
+  /* height: 100%; */
 `
 
 const Flex = styled.div`
@@ -34,11 +35,22 @@ const AbsoluteH3 = styled.h3`
 
   color: #fff;
   font-size: 1.25rem;
+  font-weight: 900;
   line-height: 1.9rem;
+
+  overflow: hidden;
+  white-space: nowrap;
+  width: calc(100% - 1rem);
+  text-overflow: ellipsis;
+  -webkit-text-stroke: 1px black;
 `
 
 const PrimaryH4 = styled.h4`
   color: ${ALPACA_SALON_COLOR};
+  overflow: hidden;
+  white-space: nowrap;
+  width: calc(100% - 1rem);
+  text-overflow: ellipsis;
 `
 
 export function applyLineBreak(line: string) {
