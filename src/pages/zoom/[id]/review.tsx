@@ -70,7 +70,6 @@ export default function ZoomReviewPage() {
           <Close />
         </A>
         <CompleteButton disabled={watch('reviewText') ? true : false}>완료</CompleteButton>
-        {console.log(watch('reviewText') ? 'true' : 'false')}
       </ReviewHeader>
       <ReviewContent>
         <ContentText>
