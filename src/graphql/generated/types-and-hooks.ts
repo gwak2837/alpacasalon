@@ -299,6 +299,7 @@ export type Query = {
   /** 이번 달 핫한 이야기 */
   famousPosts?: Maybe<Array<Post>>
   group?: Maybe<Group>
+  isDuplicateGroupName: Scalars['Boolean']
   /** 사용자 닉네임 중복 여부 검사 */
   isNicknameUnique: Scalars['Boolean']
   /** 좋아요 누른 댓글 */
@@ -336,6 +337,10 @@ export type QueryCommentsByPostArgs = {
 
 export type QueryGroupArgs = {
   id: Scalars['ID']
+}
+
+export type QueryIsDuplicateGroupNameArgs = {
+  name: Scalars['NonEmptyString']
 }
 
 export type QueryIsNicknameUniqueArgs = {
@@ -2496,6 +2501,7 @@ export type QueryKeySpecifier = (
   | 'commentsByPost'
   | 'famousPosts'
   | 'group'
+  | 'isDuplicateGroupName'
   | 'isNicknameUnique'
   | 'likedComments'
   | 'me'
@@ -2520,6 +2526,7 @@ export type QueryFieldPolicy = {
   commentsByPost?: FieldPolicy<any> | FieldReadFunction<any>
   famousPosts?: FieldPolicy<any> | FieldReadFunction<any>
   group?: FieldPolicy<any> | FieldReadFunction<any>
+  isDuplicateGroupName?: FieldPolicy<any> | FieldReadFunction<any>
   isNicknameUnique?: FieldPolicy<any> | FieldReadFunction<any>
   likedComments?: FieldPolicy<any> | FieldReadFunction<any>
   me?: FieldPolicy<any> | FieldReadFunction<any>
