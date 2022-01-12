@@ -8,6 +8,7 @@ query Notifications {
     sender {
       id
       nickname
+      imageUrl
     }
   }
 }
