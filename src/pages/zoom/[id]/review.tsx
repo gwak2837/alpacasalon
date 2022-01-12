@@ -1,5 +1,6 @@
 import PageHead from 'src/components/PageHead'
 import styled from 'styled-components'
+import { useForm } from 'react-hook-form'
 import Close from 'src/svgs/close.svg'
 import Icon from 'src/svgs/zoomReviewIcon.svg'
 import { ALPACA_SALON_DARK_GREY_COLOR, ALPACA_SALON_GREY_COLOR } from 'src/models/constants'
@@ -17,7 +18,7 @@ const ReviewHeader = styled.div`
 
 const CompleteButton = styled.button`
   cursor: pointer;
-  color: ${(p) => (p.disabled ? ALPACA_SALON_GREY_COLOR : '#000')};
+  color: ${(p) => (p.disabled ? 'black' : ALPACA_SALON_GREY_COLOR)};
 `
 
 const ReviewContent = styled.div`
@@ -60,13 +61,16 @@ const ReviewInput = styled.textarea`
 `
 
 export default function ZoomReviewPage() {
+  const { register, watch } = useForm()
+
   return (
     <PageHead title="후기 쓰기 - 알파카살롱" description={description}>
       <ReviewHeader>
         <A>
           <Close />
         </A>
-        <CompleteButton disabled={true}>완료</CompleteButton>
+        <CompleteButton disabled={watch('reviewText') ? true : false}>완료</CompleteButton>
+        {console.log(watch('reviewText') ? 'true' : 'false')}
       </ReviewHeader>
       <ReviewContent>
         <ContentText>
@@ -74,7 +78,10 @@ export default function ZoomReviewPage() {
           <ReviewTitle>참여한 zoom 대화는 어떠셨나요?</ReviewTitle>
           <Text>내 눈, 안검하수 해야 하는 눈일까?</Text>
         </ContentText>
-        <ReviewInput placeholder="다른 사람들이 후기를 보고 도움 받을 수 있도록 솔직한 후기를 남겨주세요." />
+        <ReviewInput
+          {...register('reviewText')}
+          placeholder="다른 사람들이 후기를 보고 도움 받을 수 있도록 솔직한 후기를 남겨주세요."
+        />
       </ReviewContent>
     </PageHead>
   )
