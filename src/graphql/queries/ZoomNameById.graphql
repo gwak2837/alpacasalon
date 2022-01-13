@@ -1,0 +1,6 @@
+query ZoomTitleById($id: ID!) {
+  zoomTitleById(id: $id) {
+    id
+    title
+  }
+}

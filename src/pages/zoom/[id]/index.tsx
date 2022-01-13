@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
@@ -197,6 +198,10 @@ export default function ZoomPage() {
           </Grid>
 
           <HorizontalBorder />
+
+          <Link href={`${router.asPath}/review`} passHref>
+            <a>후기 쓰기</a>
+          </Link>
         </Padding>
 
         <Sticky>
