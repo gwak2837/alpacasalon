@@ -1,10 +1,11 @@
 import { ReactElement, useState } from 'react'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
-import ZoomCard from 'src/components/ZoomCard'
+import ZoomCard, { ZoomLoadingCard } from 'src/components/ZoomCard'
 import { useZoomsQuery } from 'src/graphql/generated/types-and-hooks'
 import useInfiniteScroll from 'src/hooks/useInfiniteScroll'
 import Navigation from 'src/layouts/Navigation'
+import { ALPACA_SALON_DARK_GREY_COLOR } from 'src/models/constants'
 import styled from 'styled-components'
 
 import { Background } from '../group'
@@ -18,6 +19,7 @@ const Ul = styled.ul`
 
 const H2 = styled.h2`
   padding: 0.6rem;
+  font-weight: 500;
 `
 
 const zoom = {
@@ -37,6 +39,12 @@ const zoom2 = {
     'https://storage.googleapis.com/alpacasalon/164065504018182b924a5ef2d5dd632560df2bcb49779dd2955c8.jpeg',
   whenWhere: '',
 }
+
+const PostText = styled.div`
+  color: ${ALPACA_SALON_DARK_GREY_COLOR};
+  text-align: center;
+  margin-bottom: 15px;
+`
 
 const description = ''
 const limit = 5
@@ -75,6 +83,7 @@ export default function ZoomsPage() {
         <H2>경험자와의 진솔한 대화</H2>
 
         <Ul>
+          <ZoomLoadingCard />
           <ZoomCard key={zoom.id} zoom={zoom} />
           <ZoomCard key={zoom.id} zoom={zoom2} />
           {zooms?.map((zoom) => (
@@ -82,7 +91,7 @@ export default function ZoomsPage() {
           ))}
           {loading && <h5>Zoom 대화방 로딩 중..</h5>}
           {!loading && hasMoreData && <div ref={infiniteScrollRef}>무한 스크롤</div>}
-          {!hasMoreData && <div>모든 게시글을 불러왔어요</div>}
+          {!hasMoreData && <PostText>모든 게시글을 불러왔어요</PostText>}
         </Ul>
       </Background>
     </PageHead>
