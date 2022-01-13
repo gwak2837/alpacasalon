@@ -21,6 +21,15 @@ import SettingIcon from 'src/svgs/setting.svg'
 import { getUserNickname } from 'src/utils'
 import styled from 'styled-components'
 
+interface INotification {
+  bgColor: string
+}
+
+const Background = styled.div`
+  background-color: #fcfcfc;
+  padding-bottom: 10px;
+`
+
 const GridContainerTemplate = styled.div`
   display: grid;
   grid-template-columns: 1fr 1.1fr 1fr;
@@ -85,7 +94,7 @@ const PrimaryColorText = styled.h4`
 `
 
 const ContentBox = styled.div`
-  margin: 0 20px;
+  margin: 0 1.25rem;
 `
 
 const Slider = styled.ul`
@@ -141,26 +150,33 @@ const ZoomText = styled.p`
   /* mix-blend-mode: difference; */
 `
 
-const Notification = styled.div`
+const Notification = styled.div<INotification>`
   display: flex;
   width: 100%;
-  height: 75px;
+  height: 4.5rem;
   margin-bottom: 10px;
   padding: 15px;
   border: 1px solid #f6f6f6;
   border-radius: 20px;
-  background-color: white;
+  background-color: ${(p) => p.bgColor};
 `
 
 const NotificationImage = styled.div`
   margin-right: 15px;
 `
 const NotificationContent = styled.div`
-  color: ${(props) => props.color};
+  color: ${(p) => p.color};
 
   > span {
     font-weight: 600;
   }
+`
+
+const NotificationText = styled.p`
+  width: 24rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const description = '알파카의 정보를 알아보세요'
@@ -178,8 +194,13 @@ const typeNotification = (typename: undefined | string) => {
 
       return text
 
-    default:
+    case 'NEW_COMMENT':
       text = '회원님의 게시글에 댓글을 남겼어요'
+
+      return text
+
+    default:
+      text = ''
 
       return text
   }
@@ -237,7 +258,7 @@ export default function UserPage() {
 
   return (
     <PageHead title={`@${userNickname} - 알파카살롱`} description={description}>
-      <div style={{ backgroundColor: '#FAFAFA' }}>
+      <Background>
         <GridContainerTemplate>
           {nickname === userNickname && (
             <Link href={`${router.asPath}/setting`} passHref>
@@ -286,14 +307,8 @@ export default function UserPage() {
             ))}
           </Slider>
           <h3 style={{ marginBottom: '10px' }}>알림</h3>
-
-          {/* {notifications?.map((notification) => (
-          <pre key={notification.id} style={{ overflow: 'scroll' }}>
-            {JSON.stringify(notification, null, 2)}
-          </pre>
-        ))} */}
           {notifications?.map((notification) => (
-            <Notification key={notification.id}>
+            <Notification key={notification.id} bgColor={notification.isRead ? 'white' : '#F5F2F8'}>
               <NotificationImage>
                 <div
                   style={{
@@ -309,12 +324,14 @@ export default function UserPage() {
                   <span>{notification.sender?.nickname}</span>님이{' '}
                   {typeNotification(notification.type)}
                 </NotificationContent>
-                <NotificationContent color="#787878">"{notification.contents}"</NotificationContent>
+                <NotificationContent color="#787878">
+                  <NotificationText>{notification.contents}</NotificationText>
+                </NotificationContent>
               </div>
             </Notification>
           ))}
         </ContentBox>
-      </div>
+      </Background>
     </PageHead>
   )
 }
