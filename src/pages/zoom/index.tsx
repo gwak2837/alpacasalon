@@ -65,11 +65,15 @@ export default function ZoomsPage() {
         <H2>경험자와의 진솔한 대화</H2>
 
         <Ul>
-          <ZoomLoadingCard />
           {zooms?.map((zoom) => (
             <ZoomCard key={zoom.id} zoom={zoom} />
           ))}
-          {loading && <h5>Zoom 대화방 로딩 중..</h5>}
+          {loading && (
+            <>
+              <ZoomLoadingCard />
+              <ZoomLoadingCard />
+            </>
+          )}
           {!loading && hasMoreData && <div ref={infiniteScrollRef}>무한 스크롤</div>}
           {!hasMoreData && <PostText>모든 게시글을 불러왔어요</PostText>}
         </Ul>
