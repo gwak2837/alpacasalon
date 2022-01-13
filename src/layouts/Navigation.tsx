@@ -34,6 +34,7 @@ const FixedNavigation = styled.nav`
   height: ${NAVIGATION_HEIGHT};
   box-shadow: 0 -3px 3px 0 rgba(0, 0, 0, 0.06);
   background-color: #fff;
+  padding: 0 0 0.5rem;
 `
 
 const A = styled.a<{ selected: boolean }>`
