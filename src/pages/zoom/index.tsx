@@ -22,6 +22,12 @@ const H2 = styled.h2`
   font-weight: 500;
 `
 
+const PostText = styled.div`
+  color: ${ALPACA_SALON_DARK_GREY_COLOR};
+  text-align: center;
+  margin-bottom: 15px;
+`
+
 const description = ''
 const limit = 5
 
