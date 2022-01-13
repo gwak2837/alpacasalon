@@ -273,7 +273,7 @@ export default function PostCreationPage() {
     }
   }, [errors.contents, errors.title])
 
-  // useNeedToLogin()
+  useNeedToLogin()
 
   return (
     <PageHead title="글쓰기 - 알파카살롱" description={description}>

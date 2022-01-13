@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
 import { useZoomTitleByIdQuery } from 'src/graphql/generated/types-and-hooks'
+import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import { ALPACA_SALON_DARK_GREY_COLOR, ALPACA_SALON_GREY_COLOR } from 'src/models/constants'
 import Close from 'src/svgs/close.svg'
 import Icon from 'src/svgs/zoomReviewIcon.svg'
@@ -104,6 +105,8 @@ export default function ZoomReviewPage() {
   function goBack() {
     router.back()
   }
+
+  useNeedToLogin()
 
   return (
     <PageHead title="후기 쓰기 - 알파카살롱" description={description}>
