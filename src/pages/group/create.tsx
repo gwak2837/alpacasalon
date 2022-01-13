@@ -8,6 +8,7 @@ import PageHead from 'src/components/PageHead'
 import {
   CreateGroupMutationVariables,
   useCreateGroupMutation,
+  useIsGroupNameUniqueLazyQuery,
 } from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import FileUploadIcon from 'src/svgs/file-upload.svg'
@@ -60,10 +61,12 @@ export default function GroupCreationPage() {
   const [groupCreationLoading, setGroupCreationLoading] = useState(false)
   const [previewImageUrl, setPreviewImageUrl] = useState('')
   const formData = useRef(globalThis.FormData ? new FormData() : null)
+  const isGroupNameUniqueTimeout = useRef<any>(null)
   const router = useRouter()
 
   const {
     formState: { errors },
+    getValues,
     handleSubmit,
     register,
   } = useForm<GroupCreationInput>({
@@ -71,7 +74,6 @@ export default function GroupCreationPage() {
       name: '',
       description: '',
     },
-    reValidateMode: 'onBlur',
   })
 
   const [createGroupMutation] = useCreateGroupMutation({
@@ -88,8 +90,32 @@ export default function GroupCreationPage() {
     },
   })
 
+  const [isGroupNameUniqueMutation, { loading }] = useIsGroupNameUniqueLazyQuery({
+    onError: toastApolloError,
+  })
+
   function goBack() {
     router.back()
+  }
+
+  function checkNameUniquenessDebouncly() {
+    return new Promise<boolean | string>((resolve) => {
+      clearTimeout(isGroupNameUniqueTimeout.current)
+      isGroupNameUniqueTimeout.current = setTimeout(async () => {
+        // Apollo Client 오류 해결되면 없애기
+        await isGroupNameUniqueMutation({ variables: { name: getValues('name') } })
+
+        const { data, variables } = await isGroupNameUniqueMutation({
+          variables: { name: getValues('name') },
+        })
+
+        if (data?.isGroupNameUnique) {
+          return resolve(true)
+        } else {
+          return resolve(`이미 사용 중인 닉네임이에요, ${variables?.name}`)
+        }
+      }, 500)
+    })
   }
 
   function createPreviewImage(e: ChangeEvent<HTMLInputElement>) {
@@ -170,17 +196,30 @@ export default function GroupCreationPage() {
         <label htmlFor="name">그룹 이름</label>
         <input
           id="name"
+          disabled={groupCreationLoading}
+          // erred={Boolean(errors.name)}
+          // loading={loading}
+          placeholder="그룹 이름을 적어주세요"
           {...register('name', {
             required: '그룹 이름을 작성한 후 완료를 눌러주세요',
-            maxLength: { value: 20, message: '이름은 20자 이내로 입력해주세요' },
+            maxLength: {
+              value: 20,
+              message: '이름은 20자 이내로 입력해주세요',
+            },
+            validate: checkNameUniquenessDebouncly,
           })}
         />
 
         <label htmlFor="description">그룹 설명</label>
         <input
           id="description"
+          placeholder="이 그룹에 대해 설명해 주세요"
           {...register('description', {
-            maxLength: { value: 100, message: '설명은 100자 이내로 입력해주세요' },
+            required: '그룹 설명을 작성한 후 완료를 눌러주세요',
+            maxLength: {
+              value: 100,
+              message: '설명은 100자 이내로 입력해주세요',
+            },
           })}
         />
       </form>

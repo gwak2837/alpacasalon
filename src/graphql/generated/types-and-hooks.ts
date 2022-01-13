@@ -299,6 +299,7 @@ export type Query = {
   /** 이번 달 핫한 이야기 */
   famousPosts?: Maybe<Array<Post>>
   group?: Maybe<Group>
+  isGroupNameUnique: Scalars['Boolean']
   /** 사용자 닉네임 중복 여부 검사 */
   isNicknameUnique: Scalars['Boolean']
   /** 좋아요 누른 댓글 */
@@ -326,6 +327,7 @@ export type Query = {
   userByNickname?: Maybe<User>
   /** 글 상세 */
   zoom?: Maybe<Zoom>
+  zoomTitleById?: Maybe<Zoom>
   /** 글 목록 */
   zooms?: Maybe<Array<Zoom>>
 }
@@ -338,8 +340,8 @@ export type QueryGroupArgs = {
   id: Scalars['ID']
 }
 
-export type QueryIsNicknameUniqueArgs = {
-  nickname: Scalars['NonEmptyString']
+export type QueryIsGroupNameUniqueArgs = {
+  name: Scalars['NonEmptyString']
 }
 
 export type QueryPostArgs = {
@@ -367,6 +369,10 @@ export type QueryUserByNicknameArgs = {
 }
 
 export type QueryZoomArgs = {
+  id: Scalars['ID']
+}
+
+export type QueryZoomTitleByIdArgs = {
   id: Scalars['ID']
 }
 
@@ -680,6 +686,12 @@ export type GroupQuery = {
     | undefined
 }
 
+export type IsGroupNameUniqueQueryVariables = Exact<{
+  name: Scalars['NonEmptyString']
+}>
+
+export type IsGroupNameUniqueQuery = { __typename?: 'Query'; isGroupNameUnique: boolean }
+
 export type IsNicknameUniqueQueryVariables = Exact<{
   nickname: Scalars['NonEmptyString']
 }>
@@ -903,6 +915,15 @@ export type ZoomQuery = {
       }
     | null
     | undefined
+}
+
+export type ZoomTitleByIdQueryVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type ZoomTitleByIdQuery = {
+  __typename?: 'Query'
+  zoomTitleById?: { __typename?: 'Zoom'; id: string; title: any } | null | undefined
 }
 
 export type ZoomsQueryVariables = Exact<{
@@ -1676,6 +1697,52 @@ export function useGroupLazyQuery(
 export type GroupQueryHookResult = ReturnType<typeof useGroupQuery>
 export type GroupLazyQueryHookResult = ReturnType<typeof useGroupLazyQuery>
 export type GroupQueryResult = Apollo.QueryResult<GroupQuery, GroupQueryVariables>
+export const IsGroupNameUniqueDocument = gql`
+  query IsGroupNameUnique($name: NonEmptyString!) {
+    isGroupNameUnique(name: $name)
+  }
+`
+
+/**
+ * __useIsGroupNameUniqueQuery__
+ *
+ * To run a query within a React component, call `useIsGroupNameUniqueQuery` and pass it any options that fit your needs.
+ * When your component renders, `useIsGroupNameUniqueQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useIsGroupNameUniqueQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useIsGroupNameUniqueQuery(
+  baseOptions: Apollo.QueryHookOptions<IsGroupNameUniqueQuery, IsGroupNameUniqueQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<IsGroupNameUniqueQuery, IsGroupNameUniqueQueryVariables>(
+    IsGroupNameUniqueDocument,
+    options
+  )
+}
+export function useIsGroupNameUniqueLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<IsGroupNameUniqueQuery, IsGroupNameUniqueQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<IsGroupNameUniqueQuery, IsGroupNameUniqueQueryVariables>(
+    IsGroupNameUniqueDocument,
+    options
+  )
+}
+export type IsGroupNameUniqueQueryHookResult = ReturnType<typeof useIsGroupNameUniqueQuery>
+export type IsGroupNameUniqueLazyQueryHookResult = ReturnType<typeof useIsGroupNameUniqueLazyQuery>
+export type IsGroupNameUniqueQueryResult = Apollo.QueryResult<
+  IsGroupNameUniqueQuery,
+  IsGroupNameUniqueQueryVariables
+>
 export const IsNicknameUniqueDocument = gql`
   query IsNicknameUnique($nickname: NonEmptyString!) {
     isNicknameUnique(nickname: $nickname)
@@ -2257,6 +2324,55 @@ export function useZoomLazyQuery(
 export type ZoomQueryHookResult = ReturnType<typeof useZoomQuery>
 export type ZoomLazyQueryHookResult = ReturnType<typeof useZoomLazyQuery>
 export type ZoomQueryResult = Apollo.QueryResult<ZoomQuery, ZoomQueryVariables>
+export const ZoomTitleByIdDocument = gql`
+  query ZoomTitleById($id: ID!) {
+    zoomTitleById(id: $id) {
+      id
+      title
+    }
+  }
+`
+
+/**
+ * __useZoomTitleByIdQuery__
+ *
+ * To run a query within a React component, call `useZoomTitleByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useZoomTitleByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useZoomTitleByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useZoomTitleByIdQuery(
+  baseOptions: Apollo.QueryHookOptions<ZoomTitleByIdQuery, ZoomTitleByIdQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ZoomTitleByIdQuery, ZoomTitleByIdQueryVariables>(
+    ZoomTitleByIdDocument,
+    options
+  )
+}
+export function useZoomTitleByIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ZoomTitleByIdQuery, ZoomTitleByIdQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ZoomTitleByIdQuery, ZoomTitleByIdQueryVariables>(
+    ZoomTitleByIdDocument,
+    options
+  )
+}
+export type ZoomTitleByIdQueryHookResult = ReturnType<typeof useZoomTitleByIdQuery>
+export type ZoomTitleByIdLazyQueryHookResult = ReturnType<typeof useZoomTitleByIdLazyQuery>
+export type ZoomTitleByIdQueryResult = Apollo.QueryResult<
+  ZoomTitleByIdQuery,
+  ZoomTitleByIdQueryVariables
+>
 export const ZoomsDocument = gql`
   query Zooms($pagination: Pagination!) {
     zooms(pagination: $pagination) {
@@ -2502,6 +2618,7 @@ export type QueryKeySpecifier = (
   | 'commentsByPost'
   | 'famousPosts'
   | 'group'
+  | 'isGroupNameUnique'
   | 'isNicknameUnique'
   | 'likedComments'
   | 'me'
@@ -2519,6 +2636,7 @@ export type QueryKeySpecifier = (
   | 'searchZooms'
   | 'userByNickname'
   | 'zoom'
+  | 'zoomTitleById'
   | 'zooms'
   | QueryKeySpecifier
 )[]
@@ -2526,6 +2644,7 @@ export type QueryFieldPolicy = {
   commentsByPost?: FieldPolicy<any> | FieldReadFunction<any>
   famousPosts?: FieldPolicy<any> | FieldReadFunction<any>
   group?: FieldPolicy<any> | FieldReadFunction<any>
+  isGroupNameUnique?: FieldPolicy<any> | FieldReadFunction<any>
   isNicknameUnique?: FieldPolicy<any> | FieldReadFunction<any>
   likedComments?: FieldPolicy<any> | FieldReadFunction<any>
   me?: FieldPolicy<any> | FieldReadFunction<any>
@@ -2543,6 +2662,7 @@ export type QueryFieldPolicy = {
   searchZooms?: FieldPolicy<any> | FieldReadFunction<any>
   userByNickname?: FieldPolicy<any> | FieldReadFunction<any>
   zoom?: FieldPolicy<any> | FieldReadFunction<any>
+  zoomTitleById?: FieldPolicy<any> | FieldReadFunction<any>
   zooms?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type ReviewKeySpecifier = (

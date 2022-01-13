@@ -1,24 +1,33 @@
-import PageHead from 'src/components/PageHead'
-import styled from 'styled-components'
+import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
+import { toastApolloError } from 'src/apollo/error'
+import PageHead from 'src/components/PageHead'
+import { useZoomTitleByIdQuery } from 'src/graphql/generated/types-and-hooks'
+import useNeedToLogin from 'src/hooks/useNeedToLogin'
+import { ALPACA_SALON_DARK_GREY_COLOR, ALPACA_SALON_GREY_COLOR } from 'src/models/constants'
 import Close from 'src/svgs/close.svg'
 import Icon from 'src/svgs/zoomReviewIcon.svg'
-import { ALPACA_SALON_DARK_GREY_COLOR, ALPACA_SALON_GREY_COLOR } from 'src/models/constants'
+import { submitWhenShiftEnter } from 'src/utils'
+import styled from 'styled-components'
 
 const description = ''
 
-const A = styled.button`
-  cursor: pointer;
-`
-const ReviewHeader = styled.div`
+const ReviewHeader = styled.header`
   display: flex;
   justify-content: space-between;
-  padding: 20px;
+  align-items: center;
+`
+
+const XButton = styled.button`
+  display: flex;
+  align-items: center;
+  padding: 1rem;
 `
 
 const CompleteButton = styled.button`
-  cursor: pointer;
-  color: ${(p) => (p.disabled ? 'black' : ALPACA_SALON_GREY_COLOR)};
+  color: ${(p) => (p.disabled ? ALPACA_SALON_GREY_COLOR : '#000')};
+  cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
+  padding: 1.25rem;
 `
 
 const ReviewContent = styled.div`
@@ -41,7 +50,7 @@ const ReviewTitle = styled.div`
   font-weight: 500;
 `
 
-const ReviewInput = styled.textarea`
+const ReviewTextarea = styled.textarea`
   width: 100%;
   height: 200px;
   margin-top: 25px;
@@ -60,28 +69,67 @@ const ReviewInput = styled.textarea`
   }
 `
 
+type ReviewForm = {
+  contents: string
+}
+
 export default function ZoomReviewPage() {
-  const { register, watch } = useForm()
+  const router = useRouter()
+  const zoomId = (router.query.id ?? '') as string
+
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+    watch,
+  } = useForm<ReviewForm>({
+    defaultValues: {
+      contents: '',
+    },
+  })
+
+  const { data, loading } = useZoomTitleByIdQuery({
+    onError: toastApolloError,
+    skip: !zoomId,
+    variables: {
+      id: zoomId,
+    },
+  })
+
+  const zoom = data?.zoomTitleById
+
+  function createReview(input: ReviewForm) {
+    console.log('👀 - input', input)
+  }
+
+  function goBack() {
+    router.back()
+  }
+
+  useNeedToLogin()
 
   return (
     <PageHead title="후기 쓰기 - 알파카살롱" description={description}>
-      <ReviewHeader>
-        <A>
-          <Close />
-        </A>
-        <CompleteButton disabled={Boolean(watch('reviewText'))}>완료</CompleteButton>
-      </ReviewHeader>
-      <ReviewContent>
-        <ContentText>
-          <Icon />
-          <ReviewTitle>참여한 zoom 대화는 어떠셨나요?</ReviewTitle>
-          <Text>내 눈, 안검하수 해야 하는 눈일까?</Text>
-        </ContentText>
-        <ReviewInput
-          {...register('reviewText')}
-          placeholder="다른 사람들이 후기를 보고 도움 받을 수 있도록 솔직한 후기를 남겨주세요."
-        />
-      </ReviewContent>
+      <form onSubmit={handleSubmit(createReview)}>
+        <ReviewHeader>
+          <XButton onClick={goBack}>
+            <Close />
+          </XButton>
+          <CompleteButton disabled={!watch('contents')}>완료</CompleteButton>
+        </ReviewHeader>
+        <ReviewContent>
+          <ContentText>
+            <Icon />
+            <ReviewTitle>참여한 zoom 대화는 어떠셨나요?</ReviewTitle>
+            <Text>{loading ? 'loading' : zoom?.title}</Text>
+          </ContentText>
+          <ReviewTextarea
+            onKeyDown={submitWhenShiftEnter}
+            placeholder="다른 사람들이 후기를 보고 도움 받을 수 있도록 솔직한 후기를 남겨주세요."
+            {...register('contents', { required: '리뷰 내용을 작성한 후 완료를 눌러주세요' })}
+          />
+        </ReviewContent>
+      </form>
     </PageHead>
   )
 }

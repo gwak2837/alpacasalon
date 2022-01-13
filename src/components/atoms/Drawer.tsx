@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { TABLET_MIN_WIDTH } from 'src/models/constants'
 import styled from 'styled-components'
