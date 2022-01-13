@@ -20,24 +20,6 @@ const H2 = styled.h2`
   padding: 0.6rem;
 `
 
-const zoom = {
-  id: 1,
-  title: 'asd',
-  description: 'asdasds',
-  imageUrl:
-    'https://storage.googleapis.com/alpacasalon/1641824709130c56ef1332c79eab057cd139154eab3391d05c636.jpeg',
-  whenWhere: '',
-}
-
-const zoom2 = {
-  id: 1,
-  title: 'asd',
-  description: 'asdasds',
-  imageUrl:
-    'https://storage.googleapis.com/alpacasalon/164065504018182b924a5ef2d5dd632560df2bcb49779dd2955c8.jpeg',
-  whenWhere: '',
-}
-
 const description = ''
 const limit = 5
 
@@ -75,8 +57,6 @@ export default function ZoomsPage() {
         <H2>경험자와의 진솔한 대화</H2>
 
         <Ul>
-          <ZoomCard key={zoom.id} zoom={zoom} />
-          <ZoomCard key={zoom.id} zoom={zoom2} />
           {zooms?.map((zoom) => (
             <ZoomCard key={zoom.id} zoom={zoom} />
           ))}
