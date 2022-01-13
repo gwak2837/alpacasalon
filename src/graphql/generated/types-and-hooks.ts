@@ -344,10 +344,6 @@ export type QueryIsGroupNameUniqueArgs = {
   name: Scalars['NonEmptyString']
 }
 
-export type QueryIsNicknameUniqueArgs = {
-  nickname: Scalars['NonEmptyString']
-}
-
 export type QueryPostArgs = {
   id: Scalars['ID']
 }
