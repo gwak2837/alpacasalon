@@ -1,0 +1,3 @@
+query IsGroupNameUnique($name: NonEmptyString!) {
+  isGroupNameUnique(name: $name)
+}
