@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { Fragment } from 'react'
 import { ALPACA_SALON_COLOR } from 'src/models/constants'
+import { Skeleton } from 'src/styles'
 import styled from 'styled-components'
 
 const Grid = styled.li`
@@ -53,6 +54,23 @@ const PrimaryH4 = styled.h4`
   text-overflow: ellipsis;
 `
 
+const LoadingCard = styled.li`
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 0.5rem;
+  overflow: hidden;
+`
+
+const TextBox = styled.div`
+  padding: 1rem 0.65rem;
+  display: grid;
+  gap: 0.6rem;
+
+  > div:first-child {
+    margin-bottom: 0.1rem;
+  }
+`
+
 export function applyLineBreak(line: string) {
   return line.split('\n').map((title, i) => (
     <Fragment key={i}>
@@ -64,6 +82,19 @@ export function applyLineBreak(line: string) {
 
 type Props = {
   zoom: any
+}
+
+export function ZoomLoadingCard() {
+  return (
+    <LoadingCard>
+      <Skeleton height="13rem" borderRadius="0%" />
+      <TextBox>
+        <Skeleton width="90%" />
+        <Skeleton width="60%" />
+        <Skeleton width="80%" background="#fee" />
+      </TextBox>
+    </LoadingCard>
+  )
 }
 
 function ZoomCard({ zoom }: Props) {
