@@ -7,7 +7,7 @@ import { Skeleton } from 'src/styles'
 import styled from 'styled-components'
 
 interface INotification {
-  bgColor: string
+  bgColor?: string
 }
 
 const Li = styled.li<INotification>`
@@ -19,7 +19,7 @@ const Li = styled.li<INotification>`
   padding: 1rem;
   border: 1px solid #f6f6f6;
   border-radius: 20px;
-  background-color: ${(p) => p.bgColor};
+  background-color: ${(p) => p.bgColor ?? '#fff'};
 `
 
 const SquareFrame = styled.div`
