@@ -210,6 +210,7 @@ export type Notification = {
 }
 
 export enum NotificationType {
+  HotPost = 'HOT_POST',
   LikingComment = 'LIKING_COMMENT',
   NewComment = 'NEW_COMMENT',
   NewSubcomment = 'NEW_SUBCOMMENT',
@@ -342,6 +343,10 @@ export type QueryGroupArgs = {
 
 export type QueryIsGroupNameUniqueArgs = {
   name: Scalars['NonEmptyString']
+}
+
+export type QueryIsNicknameUniqueArgs = {
+  nickname: Scalars['NonEmptyString']
 }
 
 export type QueryPostArgs = {
