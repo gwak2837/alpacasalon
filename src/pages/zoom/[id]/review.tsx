@@ -6,7 +6,7 @@ import { useZoomTitleByIdQuery } from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import { ALPACA_SALON_DARK_GREY_COLOR, ALPACA_SALON_GREY_COLOR } from 'src/models/constants'
 import Close from 'src/svgs/close.svg'
-import Icon from 'src/svgs/zoomReviewIcon.svg'
+import ZoomReviewIcon from 'src/svgs/zoom-review.svg'
 import { submitWhenShiftEnter } from 'src/utils'
 import styled from 'styled-components'
 
@@ -119,7 +119,7 @@ export default function ZoomReviewPage() {
         </ReviewHeader>
         <ReviewContent>
           <ContentText>
-            <Icon />
+            <ZoomReviewIcon />
             <ReviewTitle>참여한 zoom 대화는 어떠셨나요?</ReviewTitle>
             <Text>{loading ? 'loading' : zoom?.title}</Text>
           </ContentText>
