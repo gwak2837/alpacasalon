@@ -4,26 +4,29 @@ import { useRouter } from 'next/router'
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
+import NotificationCard, { NotificationLoadingCard } from 'src/components/NotificationCard'
 import PageHead from 'src/components/PageHead'
 import { applyLineBreak } from 'src/components/ZoomCard'
 import {
+  NotificationType,
   useMyZoomsQuery,
   useNotificationsQuery,
   useReadNotificationsMutation,
   useUserByNicknameQuery,
 } from 'src/graphql/generated/types-and-hooks'
+import useInfiniteScroll from 'src/hooks/useInfiniteScroll'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import Navigation from 'src/layouts/Navigation'
-import { ALPACA_SALON_BACKGROUND_COLOR, ALPACA_SALON_COLOR } from 'src/models/constants'
+import {
+  ALPACA_SALON_BACKGROUND_COLOR,
+  ALPACA_SALON_COLOR,
+  TABLET_MIN_WIDTH,
+} from 'src/models/constants'
 import { currentUser } from 'src/models/recoil'
 import HeartIcon from 'src/svgs/HeartIcon'
 import SettingIcon from 'src/svgs/setting.svg'
 import { getUserNickname } from 'src/utils'
 import styled from 'styled-components'
-
-interface INotification {
-  bgColor: string
-}
 
 const Background = styled.div`
   background-color: #fcfcfc;
@@ -76,6 +79,11 @@ const FlexContainer = styled.div`
   > svg {
     width: 1.4rem;
   }
+`
+
+const H3 = styled.h3`
+  font-size: 1.25rem;
+  margin: 0 0 0.6rem;
 `
 
 export const FlexContainerColumnEnd = styled.div`
@@ -147,66 +155,18 @@ const ZoomText = styled.p`
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  /* mix-blend-mode: difference; */
 `
 
-const Notification = styled.div<INotification>`
-  display: flex;
-  width: 100%;
-  height: 4.5rem;
-  margin-bottom: 10px;
-  padding: 15px;
-  border: 1px solid #f6f6f6;
-  border-radius: 20px;
-  background-color: ${(p) => p.bgColor};
+const Ul = styled.ul`
+  display: grid;
+  gap: 1rem;
 `
 
-const NotificationImage = styled.div`
-  margin-right: 15px;
-`
-const NotificationContent = styled.div`
-  color: ${(p) => p.color};
-
-  > span {
-    font-weight: 600;
-  }
-`
-
-const NotificationText = styled.p`
-  width: 24rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
-
+const notificationLimit = 10
 const description = '알파카의 정보를 알아보세요'
 
-const typeNotification = (typename: undefined | string) => {
-  let text = ''
-  switch (typename) {
-    case 'LIKING_COMMENT':
-      text = '회원님의 댓글에 공감해요'
-
-      return text
-
-    case 'NEW_SUBCOMMENT':
-      text = '회원님의 댓글에 답글을 남겼어요'
-
-      return text
-
-    case 'NEW_COMMENT':
-      text = '회원님의 게시글에 댓글을 남겼어요'
-
-      return text
-
-    default:
-      text = ''
-
-      return text
-  }
-}
-
 export default function UserPage() {
+  const [hasMoreData, setHasMoreData] = useState(true)
   const isExecuted = useRef(false)
   const router = useRouter()
   const userNickname = getUserNickname(router)
@@ -228,16 +188,26 @@ export default function UserPage() {
 
   const myZooms = data3?.myZooms
 
-  const { data: data2 } = useNotificationsQuery({
+  const { data: notificationData, loading: notificationLoading } = useNotificationsQuery({
     fetchPolicy: 'cache-and-network',
     onError: toastApolloError,
     skip: !userNickname || nickname !== userNickname,
   })
 
-  const notifications = data2?.notifications
+  const notifications = notificationData?.notifications
   const unreadNotificationIds = notifications
     ?.filter((notification) => !notification.isRead)
     .map((notification) => notification.id)
+
+  const notificationInfiniteScrollRef = useInfiniteScroll({
+    hasMoreData,
+    onIntersecting: async () => {
+      if (notifications && notifications.length > 0) {
+        const lastNotifications = notifications[notifications.length - 1]
+        setHasMoreData(false)
+      }
+    },
+  })
 
   const [readNotifications] = useReadNotificationsMutation({
     onError: toastApolloError,
@@ -284,52 +254,35 @@ export default function UserPage() {
           <PrimaryColorText>{user?.likedCount ?? '-'}</PrimaryColorText>
         </FlexContainer>
         <ContentBox>
-          <h3>내 ZOOM 대화방</h3>
+          <H3>내 ZOOM 대화방</H3>
           <Slider>
             {myZooms?.map((myZoom) => (
-              <>
-                <ZoomContents>
-                  <ZoomCard src={myZoom.imageUrl} />
-                  <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
-                  <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
-                </ZoomContents>
-                <ZoomContents>
-                  <ZoomCard src={myZoom.imageUrl} />
-                  <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
-                  <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
-                </ZoomContents>
-                <ZoomContents>
-                  <ZoomCard src={myZoom.imageUrl} />
-                  <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
-                  <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
-                </ZoomContents>
-              </>
+              <ZoomContents key={myZoom.id}>
+                <ZoomCard src={myZoom.imageUrl} />
+                <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
+                <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
+              </ZoomContents>
             ))}
           </Slider>
-          <h3 style={{ marginBottom: '10px' }}>알림</h3>
-          {notifications?.map((notification) => (
-            <Notification key={notification.id} bgColor={notification.isRead ? 'white' : '#F5F2F8'}>
-              <NotificationImage>
-                <div
-                  style={{
-                    borderRadius: '50px',
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: '#C4C4C4',
-                  }}
-                ></div>
-              </NotificationImage>
-              <div>
-                <NotificationContent color="black">
-                  <span>{notification.sender?.nickname}</span>님이{' '}
-                  {typeNotification(notification.type)}
-                </NotificationContent>
-                <NotificationContent color="#787878">
-                  <NotificationText>{notification.contents}</NotificationText>
-                </NotificationContent>
-              </div>
-            </Notification>
-          ))}
+
+          <H3>알림</H3>
+          <Ul>
+            {notifications
+              ? notifications.map((notification) => (
+                  <NotificationCard key={notification.id} notification={notification} />
+                ))
+              : !notificationLoading && <div>최신 이야기가 없어요</div>}
+            {notificationLoading && (
+              <>
+                <NotificationLoadingCard />
+                <NotificationLoadingCard />
+              </>
+            )}
+          </Ul>
+          {!notificationLoading && hasMoreData && (
+            <div ref={notificationInfiniteScrollRef}>무한 스크롤</div>
+          )}
+          {!hasMoreData && <div>모든 알림을 불러왔어요</div>}
         </ContentBox>
       </Background>
     </PageHead>

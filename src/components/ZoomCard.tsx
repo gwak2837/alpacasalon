@@ -80,10 +80,6 @@ export function applyLineBreak(line: string) {
   ))
 }
 
-type Props = {
-  zoom: any
-}
-
 export function ZoomLoadingCard() {
   return (
     <LoadingCard>
@@ -95,6 +91,10 @@ export function ZoomLoadingCard() {
       </TextBox>
     </LoadingCard>
   )
+}
+
+type Props = {
+  zoom: any
 }
 
 function ZoomCard({ zoom }: Props) {
