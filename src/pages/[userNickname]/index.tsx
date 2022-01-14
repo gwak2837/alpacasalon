@@ -8,7 +8,6 @@ import NotificationCard, { NotificationLoadingCard } from 'src/components/Notifi
 import PageHead from 'src/components/PageHead'
 import { applyLineBreak } from 'src/components/ZoomCard'
 import {
-  NotificationType,
   useMyZoomsQuery,
   useNotificationsQuery,
   useReadNotificationsMutation,
@@ -17,11 +16,7 @@ import {
 import useInfiniteScroll from 'src/hooks/useInfiniteScroll'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import Navigation from 'src/layouts/Navigation'
-import {
-  ALPACA_SALON_BACKGROUND_COLOR,
-  ALPACA_SALON_COLOR,
-  TABLET_MIN_WIDTH,
-} from 'src/models/constants'
+import { ALPACA_SALON_BACKGROUND_COLOR, ALPACA_SALON_COLOR } from 'src/models/constants'
 import { currentUser } from 'src/models/recoil'
 import HeartIcon from 'src/svgs/HeartIcon'
 import SettingIcon from 'src/svgs/setting.svg'
@@ -166,12 +161,11 @@ const notificationLimit = 10
 const description = '알파카의 정보를 알아보세요'
 
 export default function UserPage() {
-  const [hasMoreData, setHasMoreData] = useState(true)
-  const isExecuted = useRef(false)
   const router = useRouter()
   const userNickname = getUserNickname(router)
   const { nickname } = useRecoilValue(currentUser)
 
+  // 사용자 정보 가져오기
   const { data } = useUserByNicknameQuery({
     fetchPolicy: 'cache-and-network',
     onError: toastApolloError,
@@ -181,6 +175,7 @@ export default function UserPage() {
 
   const user = data?.userByNickname
 
+  // 내가 신청한 줌 목록 가져오기
   const { data: data3 } = useMyZoomsQuery({
     onError: toastApolloError,
     skip: !userNickname || nickname !== userNickname,
@@ -188,6 +183,7 @@ export default function UserPage() {
 
   const myZooms = data3?.myZooms
 
+  // 알림 무한 스크롤 페이지네이션
   const { data: notificationData, loading: notificationLoading } = useNotificationsQuery({
     fetchPolicy: 'cache-and-network',
     onError: toastApolloError,
@@ -199,6 +195,8 @@ export default function UserPage() {
     ?.filter((notification) => !notification.isRead)
     .map((notification) => notification.id)
 
+  const [hasMoreData, setHasMoreData] = useState(true)
+
   const notificationInfiniteScrollRef = useInfiniteScroll({
     hasMoreData,
     onIntersecting: async () => {
@@ -208,6 +206,9 @@ export default function UserPage() {
       }
     },
   })
+
+  // 알림 읽기 API 호출
+  const isExecuted = useRef(false)
 
   const [readNotifications] = useReadNotificationsMutation({
     onError: toastApolloError,
@@ -224,6 +225,7 @@ export default function UserPage() {
     }
   }, [nickname, readNotifications, unreadNotificationIds, userNickname])
 
+  // 로그인 필요
   useNeedToLogin()
 
   return (
@@ -253,6 +255,7 @@ export default function UserPage() {
           받은 공감 개수
           <PrimaryColorText>{user?.likedCount ?? '-'}</PrimaryColorText>
         </FlexContainer>
+
         <ContentBox>
           <H3>내 ZOOM 대화방</H3>
           <Slider>
@@ -271,7 +274,7 @@ export default function UserPage() {
               ? notifications.map((notification) => (
                   <NotificationCard key={notification.id} notification={notification} />
                 ))
-              : !notificationLoading && <div>최신 이야기가 없어요</div>}
+              : !notificationLoading && <div>알림이 없어요</div>}
             {notificationLoading && (
               <>
                 <NotificationLoadingCard />
