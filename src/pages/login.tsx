@@ -7,7 +7,6 @@ import styled from 'styled-components'
 import KakaoIcon from '../svgs/kakao-icon.svg'
 import { FlexContainerColumnEnd } from './[userNickname]/setting'
 import CheckBoxIcon from '../svgs/CheckBoxIcon'
-import { useForm } from 'react-hook-form'
 
 const H5 = styled.h5`
   color: #676767;
