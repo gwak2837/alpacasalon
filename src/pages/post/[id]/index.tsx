@@ -9,6 +9,7 @@ import { toastApolloError } from 'src/apollo/error'
 import Modal from 'src/components/atoms/Modal'
 import CommentCard, { CommentLoadingCard } from 'src/components/CommentCard'
 import PageHead from 'src/components/PageHead'
+import { applyLineBreak } from 'src/components/ZoomCard'
 import {
   Comment,
   CreateCommentMutationVariables,
@@ -94,6 +95,7 @@ const GridContainer = styled.div`
   padding: 0.6rem;
 
   > span {
+    border-radius: 50%;
     cursor: pointer;
   }
 `
@@ -118,10 +120,6 @@ const GridGap2 = styled.div`
   padding: 1rem 0.6rem;
 `
 
-const H3 = styled.h3`
-  font-size: 1.1rem;
-`
-
 const P = styled.p`
   line-height: 1.6rem;
   margin: 1rem 0;
@@ -140,13 +138,12 @@ const Frame16to11DefaultImage = styled(Frame16to11)`
   background-image: url('/images/default-image.webp');
 `
 
-const HorizontalBorder = styled.div`
+export const HorizontalBorder = styled.div`
   border-top: 1px solid #eee;
 `
 
 const GreyButton = styled.button`
   background: #fff;
-  border: none;
   color: #888;
   padding: 1.3rem 0.8rem;
   text-align: left;
@@ -335,11 +332,10 @@ type ParentComment = {
 
 const description = ''
 
-export default function PostDetailPage() {
+export default function PostPage() {
   const [parentComment, setParentComment] = useState<ParentComment>()
   const [isImageDetailOpen, setIsImageDetailOpen] = useState(false)
   const commentTextareaRef = useRef<HTMLTextAreaElement>()
-  const scrollTo = useRef<any>()
   const newCommentId = useRef('')
   const clickedImageNumber = useRef(-1)
   const { nickname } = useRecoilValue(currentUser)
@@ -351,20 +347,17 @@ export default function PostDetailPage() {
     skip: !postId || !nickname,
     variables: { id: postId },
   })
+
   const post = data?.post
   const commentCount = post?.commentCount
   const author = data?.post?.user
 
   const { data: data2, loading: commentsLoading } = useCommentsByPostQuery({
-    onCompleted: () => {
-      if (scrollTo.current) {
-        scrollTo.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
-    },
     onError: toastApolloError,
     skip: !postId || !nickname,
     variables: { postId },
   })
+
   const comments = data2?.commentsByPost
 
   const [createCommentMutation, { loading }] = useCreateCommentMutation({
@@ -377,12 +370,13 @@ export default function PostDetailPage() {
       }
     },
     onError: toastApolloError,
-    refetchQueries: ['CommentsByPost', 'Posts'],
+    refetchQueries: ['CommentsByPost', 'Post'],
   })
 
   const { handleSubmit, register, reset, setFocus, watch } = useForm<CommentCreationForm>({
     defaultValues: { contents: '' },
   })
+
   const contentsLineCount = watch('contents').length
   const { ref, ...registerCommentCreationForm } = register('contents', {
     required: '댓글을 입력해주세요',
@@ -465,10 +459,11 @@ export default function PostDetailPage() {
         ) : post ? (
           <GridContainer>
             <Image
-              src={/* author.imageUrl ??  */ '/images/default-profile-image.webp'}
+              src={author?.imageUrl ?? '/images/default-profile-image.webp'}
               alt="profile"
               width="40"
               height="40"
+              objectFit="cover"
               onClick={goToUserDetailPage}
             />
             <GridGap>
@@ -477,7 +472,7 @@ export default function PostDetailPage() {
                   <H5>{author?.nickname ?? '탈퇴한 사용자'}</H5>
                 </A>
               </Link>
-              <GreyH5>{new Date(post.creationTime).toLocaleTimeString()}</GreyH5>
+              <GreyH5>{new Date(post.creationTime).toLocaleString()}</GreyH5>
             </GridGap>
           </GridContainer>
         ) : (
@@ -497,15 +492,8 @@ export default function PostDetailPage() {
           </GridGap2>
         ) : post ? (
           <GridGap2>
-            <H3>{post.title}</H3>
-            <P>
-              {(post.contents as string).split(/\n/).map((content, i) => (
-                <Fragment key={i}>
-                  <>{content}</>
-                  <br />
-                </Fragment>
-              ))}
-            </P>
+            <h3>{post.title}</h3>
+            <P>{applyLineBreak(post.contents)}</P>
             {post.imageUrls?.map((imageUrl, i) => (
               <Frame16to11DefaultImage key={i}>
                 <Image
@@ -552,7 +540,6 @@ export default function PostDetailPage() {
                     comment={comment as Comment}
                     setParentComment={setParentComment}
                     commentInputRef={commentTextareaRef}
-                    scrollTo={scrollTo}
                     newCommentId={newCommentId}
                   />
                 ))

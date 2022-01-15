@@ -1,12 +1,12 @@
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
 import PageHead from 'src/components/PageHead'
 import { ALPACA_SALON_BACKGROUND_COLOR, ALPACA_SALON_COLOR } from 'src/models/constants'
 import { SquareFrame } from 'src/styles'
 import styled from 'styled-components'
-
 import KakaoIcon from '../svgs/kakao-icon.svg'
 import { FlexContainerColumnEnd } from './[userNickname]/setting'
+import CheckBoxIcon from '../svgs/CheckBoxIcon'
 
 const H5 = styled.h5`
   color: #676767;
@@ -25,6 +25,19 @@ const GridContainerTemplate = styled.div`
     width: 100%; // for safari
     cursor: pointer;
   }
+`
+
+const AutoLogin = styled.label`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 15px 0;
+  gap: 5px;
+  cursor: pointer;
+`
+
+const LoginCheckBox = styled.input`
+  display: none;
 `
 
 const KakaoButton = styled.div`
@@ -81,12 +94,14 @@ const Text = styled.div`
 
 const description = '알파카살롱에 로그인하세요'
 
+function goToKakaoLoginPage() {
+  window.location.replace(
+    `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_BACKEND_URL}/oauth/kakao`
+  )
+}
+
 export default function LoginPage() {
-  function goToKakaoLoginPage() {
-    window.location.replace(
-      `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_BACKEND_URL}/oauth/kakao`
-    )
-  }
+  const [isChecked, setIsChecked] = useState(false)
 
   return (
     <PageHead title="로그인 - 알파카살롱" description={description}>
@@ -114,25 +129,27 @@ export default function LoginPage() {
         <FlexContainerColumnEnd>
           <H5>카카오 로그인으로 40대 이상 여성임을 확인해 주세요</H5>
 
-          <label htmlFor="auto-login">
-            <input
+          <AutoLogin htmlFor="auto-login">
+            <LoginCheckBox
               id="auto-login"
-              name="auto-login"
+              type="checkbox"
               onChange={(e) => {
                 if (e.target.checked) {
                   sessionStorage.setItem('autoLogin', 'true')
+                  setIsChecked(true)
                 } else {
                   sessionStorage.removeItem('autoLogin')
+                  setIsChecked(false)
                 }
               }}
-              type="checkbox"
             />
-            자동로그인
-          </label>
+            <CheckBoxIcon isChecked={isChecked} />
+            로그인 상태를 유지할게요
+          </AutoLogin>
 
           <KakaoButton onClick={goToKakaoLoginPage}>
             <KakaoIcon />
-            카카오로 3초 만에 시작하기
+            카카오톡으로 3초 만에 시작하기
           </KakaoButton>
         </FlexContainerColumnEnd>
       </FlexGrowPadding>

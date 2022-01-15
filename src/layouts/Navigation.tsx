@@ -10,8 +10,9 @@ import {
 import { TABLET_MIN_WIDTH } from 'src/models/constants'
 import { currentUser } from 'src/models/recoil'
 import ChatIcon from 'src/svgs/ChatIcon'
-import MedalIcon from 'src/svgs/MedalIcon'
+import HomeIcon from 'src/svgs/HomeIcon'
 import PersonIcon from 'src/svgs/PersonIcon'
+import ZoomIcon from 'src/svgs/ZoomIcon'
 import styled from 'styled-components'
 
 const Padding = styled.div`
@@ -33,6 +34,7 @@ const FixedNavigation = styled.nav`
   height: ${NAVIGATION_HEIGHT};
   box-shadow: 0 -3px 3px 0 rgba(0, 0, 0, 0.06);
   background-color: #fff;
+  padding: 0 0 0.5rem;
 `
 
 const A = styled.a<{ selected: boolean }>`
@@ -86,13 +88,14 @@ type Props = {
   children: ReactNode
 }
 
-export default function Navigation({ children }: Props) {
+function Navigation({ children }: Props) {
   const { asPath } = useRouter()
-  const { nickname } = useRecoilValue(currentUser)
+  const { nickname, hasNewNotifications } = useRecoilValue(currentUser)
 
   const isHomePageSelected = asPath === '/'
   const isPostsPageSelected = asPath.startsWith('/post')
-  const isMyPageSelected = asPath.startsWith('/@')
+  const isZoomsPageSelected = asPath.startsWith('/zoom')
+  const isMyPageSelected = asPath.startsWith(encodeURI(`/@${nickname}`))
 
   return (
     <>
@@ -101,10 +104,17 @@ export default function Navigation({ children }: Props) {
 
       <FixedNavigation>
         <Link href="/" passHref>
-          <StrokeA selected={isHomePageSelected}>
-            <MedalIcon selected={isHomePageSelected} />
-            <H4>명예의 전당</H4>
-          </StrokeA>
+          <FillA selected={isHomePageSelected}>
+            <HomeIcon selected={isHomePageSelected} />
+            <H4>홈</H4>
+          </FillA>
+        </Link>
+
+        <Link href="/zoom" passHref>
+          <FillA selected={isZoomsPageSelected}>
+            <ZoomIcon selected={isZoomsPageSelected} />
+            <H4>Zoom</H4>
+          </FillA>
         </Link>
 
         <Link href="/post" passHref>
@@ -114,16 +124,9 @@ export default function Navigation({ children }: Props) {
           </FillA>
         </Link>
 
-        <Link href="/" passHref>
-          <A selected={false}>
-            <div>?</div>
-            <H4>미정</H4>
-          </A>
-        </Link>
-
         <Link href={`/@${nickname}`} passHref>
           <StrokeA selected={isMyPageSelected}>
-            <PersonIcon selected={isMyPageSelected} />
+            <PersonIcon hasNewNotifications={hasNewNotifications} selected={isMyPageSelected} />
             <H4>my알파카</H4>
           </StrokeA>
         </Link>
@@ -131,3 +134,5 @@ export default function Navigation({ children }: Props) {
     </>
   )
 }
+
+export default Navigation

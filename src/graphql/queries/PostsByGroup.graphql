@@ -1,0 +1,14 @@
+query PostsByGroup($groupId: ID!) {
+  postsByGroup(groupId: $groupId) {
+    id
+    creationTime
+    title
+    contents
+    commentCount
+    user {
+      id
+      nickname
+      imageUrl
+    }
+  }
+}

@@ -149,7 +149,7 @@ export default function OAuthRegisterPage() {
       if (updateUser) {
         toast.success('정보 등록에 성공했어요')
 
-        setCurrentUser({ nickname: updateUser.nickname })
+        setCurrentUser({ nickname: updateUser.nickname, hasNewNotifications: false })
 
         const redirectionUrlAfterLogin = sessionStorage.getItem('redirectionUrlAfterLogin') ?? '/'
 
@@ -165,7 +165,7 @@ export default function OAuthRegisterPage() {
     onError: toastApolloError,
   })
 
-  const [isNicknameUnique, { loading: IsNicknameUniqueLoading }] = useIsNicknameUniqueLazyQuery({
+  const [isNicknameUnique, { loading: isNicknameUniqueLoading }] = useIsNicknameUniqueLazyQuery({
     onError: toastApolloError,
   })
 
@@ -227,7 +227,7 @@ export default function OAuthRegisterPage() {
               <Input
                 disabled={updateUserLoading}
                 erred={Boolean(errors.nickname)}
-                loading={IsNicknameUniqueLoading}
+                loading={isNicknameUniqueLoading}
                 placeholder="세련된 알파카"
                 {...register('nickname', {
                   required: '닉네임을 입력해주세요',
@@ -246,7 +246,7 @@ export default function OAuthRegisterPage() {
                   validate: checkNicknameUniquenessDebouncly,
                 })}
               />
-              {IsNicknameUniqueLoading ? (
+              {isNicknameUniqueLoading ? (
                 <div>
                   <LoadingSpinner />
                 </div>

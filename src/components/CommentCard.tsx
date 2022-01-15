@@ -1,8 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { Fragment, useState } from 'react'
-import { toast } from 'react-toastify'
+import React, { Fragment, memo, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
 import {
@@ -41,6 +40,7 @@ const GridLi = styled.li`
   position: relative;
 
   > span {
+    border-radius: 50%;
     cursor: pointer;
   }
 `
@@ -50,8 +50,6 @@ const AbsoluteButton = styled.button`
   top: 0;
   right: 0;
 
-  background: none;
-  border: none;
   color: ${ALPACA_SALON_GREY_COLOR};
   font-size: 0.9rem;
   font-weight: 600;
@@ -235,11 +233,10 @@ export function CommentLoadingCard() {
 
 type Props2 = {
   subcomment: Comment
-  scrollTo: any
   newCommentId: any
 }
 
-function SubcommentCard({ subcomment, scrollTo, newCommentId }: Props2) {
+function SubcommentCard({ subcomment, newCommentId }: Props2) {
   const author = subcomment.user
   const contents = (subcomment.contents as string | null)?.split('\n')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -267,9 +264,9 @@ function SubcommentCard({ subcomment, scrollTo, newCommentId }: Props2) {
     toggleLikingCommentMutation()
   }
 
-  function registerNewComment(newComment: HTMLLIElement) {
-    if (newCommentId.current === subcomment.id) {
-      scrollTo.current = newComment
+  function registerNewComment(newComment: HTMLLIElement | null) {
+    if (newCommentId.current === subcomment.id && newComment) {
+      newComment.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }
 
@@ -284,10 +281,11 @@ function SubcommentCard({ subcomment, scrollTo, newCommentId }: Props2) {
   return (
     <GridLi ref={registerNewComment}>
       <Image
-        src={/* author?.imageUrl  */ '/images/default-profile-image.webp'}
+        src={author?.imageUrl ?? '/images/default-profile-image.webp'}
         alt="profile"
         width="40"
         height="40"
+        objectFit="cover"
         onClick={goToUserDetailPage}
       />
       <GridGap>
@@ -343,31 +341,18 @@ type Props = {
   comment: Comment
   setParentComment: any
   commentInputRef: any
-  scrollTo: any
   newCommentId: any
 }
 
-function CommentCard({
-  comment,
-  setParentComment,
-  commentInputRef,
-  scrollTo,
-  newCommentId,
-}: Props) {
+function CommentCard({ comment, setParentComment, commentInputRef, newCommentId }: Props) {
   const author = comment.user
   const contents = (comment.contents as string | null)?.split('\n')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const router = useRouter()
   const { nickname } = useRecoilValue(currentUser)
 
-  // https://github.com/apollographql/apollo-client/issues/5419#issuecomment-973154976 해결되면 삭제하기
-  useUserByNicknameQuery({
-    variables: { nickname: 'a' },
-  })
-
   const [toggleLikingCommentMutation, { loading }] = useToggleLikingCommentMutation({
     onError: toastApolloError,
-    refetchQueries: ['UserByNickname'],
     variables: { id: comment.id },
   })
 
@@ -398,9 +383,9 @@ function CommentCard({
     commentInputRef.current.focus()
   }
 
-  function registerNewComment(newComment: HTMLLIElement) {
-    if (newCommentId.current === comment.id) {
-      scrollTo.current = newComment
+  function registerNewComment(newComment: HTMLLIElement | null) {
+    if (newCommentId.current === comment.id && newComment) {
+      newComment.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }
 
@@ -416,10 +401,11 @@ function CommentCard({
     <GridContainerComment>
       <GridLi ref={registerNewComment}>
         <Image
-          src={/* author?.imageUrl */ '/images/default-profile-image.webp'}
+          src={author?.imageUrl ?? '/images/default-profile-image.webp'}
           alt="profile"
           width="40"
           height="40"
+          objectFit="cover"
           onClick={goToUserDetailPage}
         />
         <GridGap>
@@ -428,7 +414,7 @@ function CommentCard({
               <H5>{author?.nickname ?? '탈퇴한 사용자'}</H5>
             </A>
           </Link>
-          <GreyH5>{new Date(comment.creationTime).toLocaleTimeString()}</GreyH5>
+          <GreyH5>{new Date(comment.creationTime).toLocaleString()}</GreyH5>
         </GridGap>
 
         {contents && nickname === author?.nickname && (
@@ -452,7 +438,7 @@ function CommentCard({
         <GridItemComment>
           {contents?.map((content, i) => (
             <Fragment key={i}>
-              <>{content}</>
+              {content}
               <br />
             </Fragment>
           )) ?? <h6>삭제된 댓글입니다</h6>}
@@ -472,16 +458,11 @@ function CommentCard({
 
       <GridContainerSubcomments>
         {comment.subcomments?.map((subcomment) => (
-          <SubcommentCard
-            key={subcomment.id}
-            subcomment={subcomment}
-            scrollTo={scrollTo}
-            newCommentId={newCommentId}
-          />
+          <SubcommentCard key={subcomment.id} subcomment={subcomment} newCommentId={newCommentId} />
         ))}
       </GridContainerSubcomments>
     </GridContainerComment>
   )
 }
 
-export default CommentCard
+export default memo(CommentCard)

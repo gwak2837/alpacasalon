@@ -1,0 +1,9 @@
+query Zooms($pagination: Pagination!) {
+  zooms(pagination: $pagination) {
+    id
+    title
+    description
+    imageUrl
+    whenWhere
+  }
+}

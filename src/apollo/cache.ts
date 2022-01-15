@@ -18,6 +18,15 @@ const typePolicies: TypedTypePolicies = {
       },
     },
   },
+  Post: {
+    fields: {
+      contents: {
+        merge: (existing, incoming) => {
+          return existing?.length > incoming?.length ? existing : incoming
+        },
+      },
+    },
+  },
 }
 
 const cache = new InMemoryCache({

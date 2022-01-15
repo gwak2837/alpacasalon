@@ -22,7 +22,6 @@ import {
   AbsoluteH3,
   FileInput,
   FileInputLabel,
-  FixedHeader,
   GreyH3,
   GridContainer,
   ImageInfo,
@@ -30,8 +29,10 @@ import {
   PreviewSlide,
   Slide,
   Slider,
+  StickyHeader,
   Textarea,
   TransparentButton,
+  resizeTextareaHeight,
 } from '../create'
 import { Frame16to11 } from '.'
 
@@ -64,7 +65,6 @@ export default function PostUpdatePage() {
     handleSubmit,
     register,
     setValue,
-    watch,
   } = useForm<PostUpdateInput>({
     defaultValues: {
       title: '',
@@ -72,8 +72,6 @@ export default function PostUpdatePage() {
     },
     reValidateMode: 'onBlur',
   })
-
-  const contentsLines = watch('contents').split('\n').length * 1.6
 
   const { loading } = usePostQuery({
     onCompleted: ({ post }) => {
@@ -200,7 +198,7 @@ export default function PostUpdatePage() {
   return (
     <PageHead title="글 수정하기 - 알파카살롱" description={description}>
       <form onSubmit={handleSubmit(updatePost)}>
-        <FixedHeader>
+        <StickyHeader>
           <XIcon onClick={goBack} />
           <AbsoluteH3>수정하기</AbsoluteH3>
           <TransparentButton
@@ -209,7 +207,7 @@ export default function PostUpdatePage() {
           >
             완료
           </TransparentButton>
-        </FixedHeader>
+        </StickyHeader>
 
         <GridContainer>
           <Input
@@ -220,8 +218,8 @@ export default function PostUpdatePage() {
           />
           <Textarea
             disabled={loading || isPostUpdateLoading}
-            height={contentsLines}
             onKeyDown={submitWhenShiftEnter}
+            onInput={resizeTextareaHeight}
             placeholder="Shift+Enter키로 글을 작성할 수 있어요"
             {...register('contents', { required: '글 내용을 작성한 후 완료를 눌러주세요' })}
           />

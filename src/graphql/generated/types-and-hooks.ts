@@ -74,9 +74,13 @@ export type Group = {
   description?: Maybe<Scalars['NonEmptyString']>
   id: Scalars['ID']
   imageUrl?: Maybe<Scalars['URL']>
+  isJoined: Scalars['Boolean']
+  leader?: Maybe<User>
   memberCount: Scalars['NonNegativeInt']
   modificationTime: Scalars['DateTime']
   name: Scalars['NonEmptyString']
+  newMembers?: Maybe<Array<User>>
+  newPostCount: Scalars['NonNegativeInt']
 }
 
 export type GroupCreationInput = {
@@ -98,12 +102,16 @@ export type Mutation = {
   createGroup?: Maybe<Group>
   createPoll?: Maybe<Poll>
   createPost?: Maybe<Post>
+  createZoom?: Maybe<Zoom>
   deleteComment?: Maybe<Comment>
   deleteGroup?: Maybe<Group>
   deletePost?: Maybe<Post>
-  joinGroup?: Maybe<Scalars['Boolean']>
+  deleteZoom?: Maybe<Zoom>
+  joinGroup?: Maybe<Group>
+  joinZoom?: Maybe<Zoom>
   /** 로그아웃 성공 여부 반환 */
   logout: Scalars['Boolean']
+  readNotifications?: Maybe<Scalars['NonNegativeInt']>
   toggleLikingComment?: Maybe<Comment>
   /** 회원탈퇴 시 사용자 정보가 모두 초기화됩니다 */
   unregister?: Maybe<User>
@@ -112,6 +120,7 @@ export type Mutation = {
   updatePost?: Maybe<Post>
   /** 사용자 정보를 수정합니다 */
   updateUser?: Maybe<User>
+  updateZoom?: Maybe<Zoom>
 }
 
 export type MutationCreateCommentArgs = {
@@ -132,6 +141,10 @@ export type MutationCreatePostArgs = {
   input: PostCreationInput
 }
 
+export type MutationCreateZoomArgs = {
+  input: ZoomCreationInput
+}
+
 export type MutationDeleteCommentArgs = {
   id: Scalars['ID']
 }
@@ -144,8 +157,20 @@ export type MutationDeletePostArgs = {
   id: Scalars['ID']
 }
 
+export type MutationDeleteZoomArgs = {
+  id: Scalars['ID']
+}
+
 export type MutationJoinGroupArgs = {
   id?: InputMaybe<Scalars['ID']>
+}
+
+export type MutationJoinZoomArgs = {
+  id: Scalars['ID']
+}
+
+export type MutationReadNotificationsArgs = {
+  ids: Array<Scalars['ID']>
 }
 
 export type MutationToggleLikingCommentArgs = {
@@ -169,14 +194,26 @@ export type MutationUpdateUserArgs = {
   input: UserModificationInput
 }
 
+export type MutationUpdateZoomArgs = {
+  input: ZoomModificationInput
+}
+
 export type Notification = {
   __typename?: 'Notification'
   contents: Scalars['NonEmptyString']
   creationTime: Scalars['DateTime']
-  id: Scalars['UUID']
+  id: Scalars['ID']
+  isRead: Scalars['Boolean']
   receiver: User
   sender?: Maybe<User>
-  type: Type
+  type: NotificationType
+}
+
+export enum NotificationType {
+  HotPost = 'HOT_POST',
+  LikingComment = 'LIKING_COMMENT',
+  NewComment = 'NEW_COMMENT',
+  NewSubcomment = 'NEW_SUBCOMMENT',
 }
 
 /** 기본값: 내림차순 */
@@ -244,16 +281,16 @@ export type Post = {
 
 export type PostCreationInput = {
   contents: Scalars['NonEmptyString']
-  groupId: Scalars['ID']
+  groupId?: InputMaybe<Scalars['ID']>
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
   title: Scalars['NonEmptyString']
 }
 
 export type PostModificationInput = {
-  contents?: InputMaybe<Scalars['String']>
+  contents?: InputMaybe<Scalars['NonEmptyString']>
   id: Scalars['ID']
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
-  title?: InputMaybe<Scalars['String']>
+  title?: InputMaybe<Scalars['NonEmptyString']>
 }
 
 export type Query = {
@@ -262,6 +299,8 @@ export type Query = {
   commentsByPost?: Maybe<Array<Comment>>
   /** 이번 달 핫한 이야기 */
   famousPosts?: Maybe<Array<Post>>
+  group?: Maybe<Group>
+  isGroupNameUnique: Scalars['Boolean']
   /** 사용자 닉네임 중복 여부 검사 */
   isNicknameUnique: Scalars['Boolean']
   /** 좋아요 누른 댓글 */
@@ -271,6 +310,8 @@ export type Query = {
   /** 내가 쓴 댓글 */
   myComments?: Maybe<Array<Comment>>
   myGroups?: Maybe<Array<Group>>
+  myPosts?: Maybe<Array<Post>>
+  myZooms?: Maybe<Array<Zoom>>
   notifications?: Maybe<Array<Notification>>
   participatingPolls?: Maybe<Array<Poll>>
   /** 글 상세 */
@@ -281,12 +322,27 @@ export type Query = {
   recommendationGroups?: Maybe<Array<Group>>
   /** 글 검색 */
   searchPosts?: Maybe<Array<Post>>
+  /** 글 검색 */
+  searchZooms?: Maybe<Array<Zoom>>
   /** 닉네임으로 사용자 검색 */
   userByNickname?: Maybe<User>
+  /** 글 상세 */
+  zoom?: Maybe<Zoom>
+  zoomTitleById?: Maybe<Zoom>
+  /** 글 목록 */
+  zooms?: Maybe<Array<Zoom>>
 }
 
 export type QueryCommentsByPostArgs = {
   postId: Scalars['ID']
+}
+
+export type QueryGroupArgs = {
+  id: Scalars['ID']
+}
+
+export type QueryIsGroupNameUniqueArgs = {
+  name: Scalars['NonEmptyString']
 }
 
 export type QueryIsNicknameUniqueArgs = {
@@ -301,7 +357,15 @@ export type QueryPostsArgs = {
   pagination: Pagination
 }
 
+export type QueryPostsByGroupArgs = {
+  groupId: Scalars['ID']
+}
+
 export type QuerySearchPostsArgs = {
+  keywords: Array<Scalars['NonEmptyString']>
+}
+
+export type QuerySearchZoomsArgs = {
   keywords: Array<Scalars['NonEmptyString']>
 }
 
@@ -309,16 +373,32 @@ export type QueryUserByNicknameArgs = {
   nickname: Scalars['NonEmptyString']
 }
 
+export type QueryZoomArgs = {
+  id: Scalars['ID']
+}
+
+export type QueryZoomTitleByIdArgs = {
+  id: Scalars['ID']
+}
+
+export type QueryZoomsArgs = {
+  pagination: Pagination
+}
+
+export type Review = {
+  __typename?: 'Review'
+  contents?: Maybe<Scalars['NonEmptyString']>
+  creationTime: Scalars['DateTime']
+  id: Scalars['ID']
+  modificationTime: Scalars['DateTime']
+  title?: Maybe<Scalars['NonEmptyString']>
+  writer?: Maybe<User>
+}
+
 export enum Status {
   Closed = 'CLOSED',
   Ongoing = 'ONGOING',
   Planned = 'PLANNED',
-}
-
-export enum Type {
-  LikingComment = 'LIKING_COMMENT',
-  NewComment = 'NEW_COMMENT',
-  NewSubcomment = 'NEW_SUBCOMMENT',
 }
 
 export type User = {
@@ -329,6 +409,7 @@ export type User = {
   creationTime: Scalars['DateTime']
   email: Scalars['EmailAddress']
   gender: Gender
+  hasNewNotifications: Scalars['Boolean']
   id: Scalars['UUID']
   imageUrl?: Maybe<Scalars['URL']>
   likedCount: Scalars['NonNegativeInt']
@@ -348,6 +429,34 @@ export type UserModificationInput = {
   phoneNumber?: InputMaybe<Scalars['NonEmptyString']>
 }
 
+export type Zoom = {
+  __typename?: 'Zoom'
+  creationTime: Scalars['DateTime']
+  description: Scalars['NonEmptyString']
+  id: Scalars['ID']
+  imageUrl?: Maybe<Scalars['URL']>
+  isJoined: Scalars['Boolean']
+  modificationTime: Scalars['DateTime']
+  tag?: Maybe<Array<Scalars['NonEmptyString']>>
+  tags?: Maybe<Array<Scalars['NonEmptyString']>>
+  title: Scalars['NonEmptyString']
+  whenWhat: Array<Scalars['NonEmptyString']>
+  whenWhere: Scalars['NonEmptyString']
+}
+
+export type ZoomCreationInput = {
+  description: Scalars['NonEmptyString']
+  imageUrl?: InputMaybe<Scalars['URL']>
+  title: Scalars['NonEmptyString']
+}
+
+export type ZoomModificationInput = {
+  contents?: InputMaybe<Scalars['NonEmptyString']>
+  id: Scalars['ID']
+  imageUrl?: InputMaybe<Scalars['URL']>
+  title?: InputMaybe<Scalars['NonEmptyString']>
+}
+
 export type CreateCommentMutationVariables = Exact<{
   postId: Scalars['ID']
   contents: Scalars['NonEmptyString']
@@ -357,6 +466,15 @@ export type CreateCommentMutationVariables = Exact<{
 export type CreateCommentMutation = {
   __typename?: 'Mutation'
   createComment?: { __typename?: 'Comment'; id: string } | null | undefined
+}
+
+export type CreateGroupMutationVariables = Exact<{
+  input: GroupCreationInput
+}>
+
+export type CreateGroupMutation = {
+  __typename?: 'Mutation'
+  createGroup?: { __typename?: 'Group'; id: string } | null | undefined
 }
 
 export type CreatePostMutationVariables = Exact<{
@@ -377,9 +495,36 @@ export type DeleteCommentMutation = {
   deleteComment?: { __typename?: 'Comment'; id: string } | null | undefined
 }
 
+export type JoinGroupMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']>
+}>
+
+export type JoinGroupMutation = {
+  __typename?: 'Mutation'
+  joinGroup?: { __typename?: 'Group'; id: string; isJoined: boolean } | null | undefined
+}
+
+export type JoinZoomMutationVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type JoinZoomMutation = {
+  __typename?: 'Mutation'
+  joinZoom?: { __typename?: 'Zoom'; id: string; isJoined: boolean } | null | undefined
+}
+
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>
 
 export type LogoutMutation = { __typename?: 'Mutation'; logout: boolean }
+
+export type ReadNotificationsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID']
+}>
+
+export type ReadNotificationsMutation = {
+  __typename?: 'Mutation'
+  readNotifications?: any | null | undefined
+}
 
 export type ToggleLikingCommentMutationVariables = Exact<{
   id: Scalars['ID']
@@ -414,6 +559,18 @@ export type UpdatePostMutation = {
         contents: any
         imageUrls?: Array<any> | null | undefined
       }
+    | null
+    | undefined
+}
+
+export type UpdateProfileImageMutationVariables = Exact<{
+  input: UserModificationInput
+}>
+
+export type UpdateProfileImageMutation = {
+  __typename?: 'Mutation'
+  updateUser?:
+    | { __typename?: 'User'; id: any; imageUrl?: any | null | undefined }
     | null
     | undefined
 }
@@ -501,6 +658,45 @@ export type FamousPostsQuery = {
     | undefined
 }
 
+export type GroupQueryVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type GroupQuery = {
+  __typename?: 'Query'
+  group?:
+    | {
+        __typename?: 'Group'
+        id: string
+        name: any
+        description?: any | null | undefined
+        imageUrl?: any | null | undefined
+        isJoined: boolean
+        memberCount: any
+        leader?:
+          | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
+          | null
+          | undefined
+        newMembers?:
+          | Array<{
+              __typename?: 'User'
+              id: any
+              nickname?: any | null | undefined
+              imageUrl?: any | null | undefined
+            }>
+          | null
+          | undefined
+      }
+    | null
+    | undefined
+}
+
+export type IsGroupNameUniqueQueryVariables = Exact<{
+  name: Scalars['NonEmptyString']
+}>
+
+export type IsGroupNameUniqueQuery = { __typename?: 'Query'; isGroupNameUnique: boolean }
+
 export type IsNicknameUniqueQueryVariables = Exact<{
   nickname: Scalars['NonEmptyString']
 }>
@@ -511,7 +707,15 @@ export type MeQueryVariables = Exact<{ [key: string]: never }>
 
 export type MeQuery = {
   __typename?: 'Query'
-  me?: { __typename?: 'User'; id: any; nickname?: any | null | undefined } | null | undefined
+  me?:
+    | {
+        __typename?: 'User'
+        id: any
+        nickname?: any | null | undefined
+        hasNewNotifications: boolean
+      }
+    | null
+    | undefined
 }
 
 export type MyGroupsQueryVariables = Exact<{ [key: string]: never }>
@@ -526,7 +730,25 @@ export type MyGroupsQuery = {
         description?: any | null | undefined
         imageUrl?: any | null | undefined
         memberCount: any
+        newPostCount: any
       }>
+    | null
+    | undefined
+}
+
+export type MyGroupsInfoQueryVariables = Exact<{ [key: string]: never }>
+
+export type MyGroupsInfoQuery = {
+  __typename?: 'Query'
+  myGroups?: Array<{ __typename?: 'Group'; id: string; name: any }> | null | undefined
+}
+
+export type MyZoomsQueryVariables = Exact<{ [key: string]: never }>
+
+export type MyZoomsQuery = {
+  __typename?: 'Query'
+  myZooms?:
+    | Array<{ __typename?: 'Zoom'; id: string; title: any; imageUrl?: any | null | undefined }>
     | null
     | undefined
 }
@@ -538,12 +760,18 @@ export type NotificationsQuery = {
   notifications?:
     | Array<{
         __typename?: 'Notification'
-        id: any
+        id: string
         creationTime: any
-        type: Type
+        type: NotificationType
         contents: any
+        isRead: boolean
         sender?:
-          | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
+          | {
+              __typename?: 'User'
+              id: any
+              nickname?: any | null | undefined
+              imageUrl?: any | null | undefined
+            }
           | null
           | undefined
       }>
@@ -594,11 +822,62 @@ export type PostsQuery = {
         title: any
         contents: any
         commentCount: any
+        imageUrls?: Array<any> | null | undefined
         user?:
-          | { __typename?: 'User'; id: any; nickname?: any | null | undefined }
+          | {
+              __typename?: 'User'
+              id: any
+              nickname?: any | null | undefined
+              imageUrl?: any | null | undefined
+            }
           | null
           | undefined
         group?: { __typename?: 'Group'; id: string; name: any } | null | undefined
+      }>
+    | null
+    | undefined
+}
+
+export type PostsByGroupQueryVariables = Exact<{
+  groupId: Scalars['ID']
+}>
+
+export type PostsByGroupQuery = {
+  __typename?: 'Query'
+  postsByGroup?:
+    | Array<{
+        __typename?: 'Post'
+        id: string
+        creationTime: any
+        title: any
+        contents: any
+        commentCount: any
+        user?:
+          | {
+              __typename?: 'User'
+              id: any
+              nickname?: any | null | undefined
+              imageUrl?: any | null | undefined
+            }
+          | null
+          | undefined
+      }>
+    | null
+    | undefined
+}
+
+export type RecommendationGroupsQueryVariables = Exact<{ [key: string]: never }>
+
+export type RecommendationGroupsQuery = {
+  __typename?: 'Query'
+  recommendationGroups?:
+    | Array<{
+        __typename?: 'Group'
+        id: string
+        name: any
+        description?: any | null | undefined
+        imageUrl?: any | null | undefined
+        memberCount: any
       }>
     | null
     | undefined
@@ -618,6 +897,55 @@ export type UserByNicknameQuery = {
         imageUrl?: any | null | undefined
         likedCount: any
       }
+    | null
+    | undefined
+}
+
+export type ZoomQueryVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type ZoomQuery = {
+  __typename?: 'Query'
+  zoom?:
+    | {
+        __typename?: 'Zoom'
+        id: string
+        title: any
+        description: any
+        imageUrl?: any | null | undefined
+        whenWhere: any
+        whenWhat: Array<any>
+        isJoined: boolean
+      }
+    | null
+    | undefined
+}
+
+export type ZoomTitleByIdQueryVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type ZoomTitleByIdQuery = {
+  __typename?: 'Query'
+  zoomTitleById?: { __typename?: 'Zoom'; id: string; title: any } | null | undefined
+}
+
+export type ZoomsQueryVariables = Exact<{
+  pagination: Pagination
+}>
+
+export type ZoomsQuery = {
+  __typename?: 'Query'
+  zooms?:
+    | Array<{
+        __typename?: 'Zoom'
+        id: string
+        title: any
+        description: any
+        imageUrl?: any | null | undefined
+        whenWhere: any
+      }>
     | null
     | undefined
 }
@@ -667,6 +995,50 @@ export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMut
 export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<
   CreateCommentMutation,
   CreateCommentMutationVariables
+>
+export const CreateGroupDocument = gql`
+  mutation CreateGroup($input: GroupCreationInput!) {
+    createGroup(input: $input) {
+      id
+    }
+  }
+`
+export type CreateGroupMutationFn = Apollo.MutationFunction<
+  CreateGroupMutation,
+  CreateGroupMutationVariables
+>
+
+/**
+ * __useCreateGroupMutation__
+ *
+ * To run a mutation, you first call `useCreateGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createGroupMutation, { data, loading, error }] = useCreateGroupMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateGroupMutation(
+  baseOptions?: Apollo.MutationHookOptions<CreateGroupMutation, CreateGroupMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateGroupMutation, CreateGroupMutationVariables>(
+    CreateGroupDocument,
+    options
+  )
+}
+export type CreateGroupMutationHookResult = ReturnType<typeof useCreateGroupMutation>
+export type CreateGroupMutationResult = Apollo.MutationResult<CreateGroupMutation>
+export type CreateGroupMutationOptions = Apollo.BaseMutationOptions<
+  CreateGroupMutation,
+  CreateGroupMutationVariables
 >
 export const CreatePostDocument = gql`
   mutation CreatePost($input: PostCreationInput!) {
@@ -756,6 +1128,93 @@ export type DeleteCommentMutationOptions = Apollo.BaseMutationOptions<
   DeleteCommentMutation,
   DeleteCommentMutationVariables
 >
+export const JoinGroupDocument = gql`
+  mutation JoinGroup($id: ID) {
+    joinGroup(id: $id) {
+      id
+      isJoined
+    }
+  }
+`
+export type JoinGroupMutationFn = Apollo.MutationFunction<
+  JoinGroupMutation,
+  JoinGroupMutationVariables
+>
+
+/**
+ * __useJoinGroupMutation__
+ *
+ * To run a mutation, you first call `useJoinGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinGroupMutation, { data, loading, error }] = useJoinGroupMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useJoinGroupMutation(
+  baseOptions?: Apollo.MutationHookOptions<JoinGroupMutation, JoinGroupMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<JoinGroupMutation, JoinGroupMutationVariables>(
+    JoinGroupDocument,
+    options
+  )
+}
+export type JoinGroupMutationHookResult = ReturnType<typeof useJoinGroupMutation>
+export type JoinGroupMutationResult = Apollo.MutationResult<JoinGroupMutation>
+export type JoinGroupMutationOptions = Apollo.BaseMutationOptions<
+  JoinGroupMutation,
+  JoinGroupMutationVariables
+>
+export const JoinZoomDocument = gql`
+  mutation JoinZoom($id: ID!) {
+    joinZoom(id: $id) {
+      id
+      isJoined
+    }
+  }
+`
+export type JoinZoomMutationFn = Apollo.MutationFunction<
+  JoinZoomMutation,
+  JoinZoomMutationVariables
+>
+
+/**
+ * __useJoinZoomMutation__
+ *
+ * To run a mutation, you first call `useJoinZoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinZoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinZoomMutation, { data, loading, error }] = useJoinZoomMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useJoinZoomMutation(
+  baseOptions?: Apollo.MutationHookOptions<JoinZoomMutation, JoinZoomMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<JoinZoomMutation, JoinZoomMutationVariables>(JoinZoomDocument, options)
+}
+export type JoinZoomMutationHookResult = ReturnType<typeof useJoinZoomMutation>
+export type JoinZoomMutationResult = Apollo.MutationResult<JoinZoomMutation>
+export type JoinZoomMutationOptions = Apollo.BaseMutationOptions<
+  JoinZoomMutation,
+  JoinZoomMutationVariables
+>
 export const LogoutDocument = gql`
   mutation Logout {
     logout
@@ -790,6 +1249,51 @@ export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<
   LogoutMutation,
   LogoutMutationVariables
+>
+export const ReadNotificationsDocument = gql`
+  mutation ReadNotifications($ids: [ID!]!) {
+    readNotifications(ids: $ids)
+  }
+`
+export type ReadNotificationsMutationFn = Apollo.MutationFunction<
+  ReadNotificationsMutation,
+  ReadNotificationsMutationVariables
+>
+
+/**
+ * __useReadNotificationsMutation__
+ *
+ * To run a mutation, you first call `useReadNotificationsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReadNotificationsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [readNotificationsMutation, { data, loading, error }] = useReadNotificationsMutation({
+ *   variables: {
+ *      ids: // value for 'ids'
+ *   },
+ * });
+ */
+export function useReadNotificationsMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ReadNotificationsMutation,
+    ReadNotificationsMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<ReadNotificationsMutation, ReadNotificationsMutationVariables>(
+    ReadNotificationsDocument,
+    options
+  )
+}
+export type ReadNotificationsMutationHookResult = ReturnType<typeof useReadNotificationsMutation>
+export type ReadNotificationsMutationResult = Apollo.MutationResult<ReadNotificationsMutation>
+export type ReadNotificationsMutationOptions = Apollo.BaseMutationOptions<
+  ReadNotificationsMutation,
+  ReadNotificationsMutationVariables
 >
 export const ToggleLikingCommentDocument = gql`
   mutation ToggleLikingComment($id: ID!) {
@@ -931,6 +1435,54 @@ export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>
 export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<
   UpdatePostMutation,
   UpdatePostMutationVariables
+>
+export const UpdateProfileImageDocument = gql`
+  mutation UpdateProfileImage($input: UserModificationInput!) {
+    updateUser(input: $input) {
+      id
+      imageUrl
+    }
+  }
+`
+export type UpdateProfileImageMutationFn = Apollo.MutationFunction<
+  UpdateProfileImageMutation,
+  UpdateProfileImageMutationVariables
+>
+
+/**
+ * __useUpdateProfileImageMutation__
+ *
+ * To run a mutation, you first call `useUpdateProfileImageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProfileImageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProfileImageMutation, { data, loading, error }] = useUpdateProfileImageMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateProfileImageMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateProfileImageMutation,
+    UpdateProfileImageMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<UpdateProfileImageMutation, UpdateProfileImageMutationVariables>(
+    UpdateProfileImageDocument,
+    options
+  )
+}
+export type UpdateProfileImageMutationHookResult = ReturnType<typeof useUpdateProfileImageMutation>
+export type UpdateProfileImageMutationResult = Apollo.MutationResult<UpdateProfileImageMutation>
+export type UpdateProfileImageMutationOptions = Apollo.BaseMutationOptions<
+  UpdateProfileImageMutation,
+  UpdateProfileImageMutationVariables
 >
 export const UpdateUserDocument = gql`
   mutation UpdateUser($input: UserModificationInput!) {
@@ -1097,6 +1649,105 @@ export function useFamousPostsLazyQuery(
 export type FamousPostsQueryHookResult = ReturnType<typeof useFamousPostsQuery>
 export type FamousPostsLazyQueryHookResult = ReturnType<typeof useFamousPostsLazyQuery>
 export type FamousPostsQueryResult = Apollo.QueryResult<FamousPostsQuery, FamousPostsQueryVariables>
+export const GroupDocument = gql`
+  query Group($id: ID!) {
+    group(id: $id) {
+      id
+      name
+      description
+      imageUrl
+      isJoined
+      memberCount
+      leader {
+        id
+        nickname
+      }
+      newMembers {
+        id
+        nickname
+        imageUrl
+      }
+    }
+  }
+`
+
+/**
+ * __useGroupQuery__
+ *
+ * To run a query within a React component, call `useGroupQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGroupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGroupQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGroupQuery(
+  baseOptions: Apollo.QueryHookOptions<GroupQuery, GroupQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GroupQuery, GroupQueryVariables>(GroupDocument, options)
+}
+export function useGroupLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GroupQuery, GroupQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GroupQuery, GroupQueryVariables>(GroupDocument, options)
+}
+export type GroupQueryHookResult = ReturnType<typeof useGroupQuery>
+export type GroupLazyQueryHookResult = ReturnType<typeof useGroupLazyQuery>
+export type GroupQueryResult = Apollo.QueryResult<GroupQuery, GroupQueryVariables>
+export const IsGroupNameUniqueDocument = gql`
+  query IsGroupNameUnique($name: NonEmptyString!) {
+    isGroupNameUnique(name: $name)
+  }
+`
+
+/**
+ * __useIsGroupNameUniqueQuery__
+ *
+ * To run a query within a React component, call `useIsGroupNameUniqueQuery` and pass it any options that fit your needs.
+ * When your component renders, `useIsGroupNameUniqueQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useIsGroupNameUniqueQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useIsGroupNameUniqueQuery(
+  baseOptions: Apollo.QueryHookOptions<IsGroupNameUniqueQuery, IsGroupNameUniqueQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<IsGroupNameUniqueQuery, IsGroupNameUniqueQueryVariables>(
+    IsGroupNameUniqueDocument,
+    options
+  )
+}
+export function useIsGroupNameUniqueLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<IsGroupNameUniqueQuery, IsGroupNameUniqueQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<IsGroupNameUniqueQuery, IsGroupNameUniqueQueryVariables>(
+    IsGroupNameUniqueDocument,
+    options
+  )
+}
+export type IsGroupNameUniqueQueryHookResult = ReturnType<typeof useIsGroupNameUniqueQuery>
+export type IsGroupNameUniqueLazyQueryHookResult = ReturnType<typeof useIsGroupNameUniqueLazyQuery>
+export type IsGroupNameUniqueQueryResult = Apollo.QueryResult<
+  IsGroupNameUniqueQuery,
+  IsGroupNameUniqueQueryVariables
+>
 export const IsNicknameUniqueDocument = gql`
   query IsNicknameUnique($nickname: NonEmptyString!) {
     isNicknameUnique(nickname: $nickname)
@@ -1148,6 +1799,7 @@ export const MeDocument = gql`
     me {
       id
       nickname
+      hasNewNotifications
     }
   }
 `
@@ -1188,6 +1840,7 @@ export const MyGroupsDocument = gql`
       description
       imageUrl
       memberCount
+      newPostCount
     }
   }
 `
@@ -1222,6 +1875,94 @@ export function useMyGroupsLazyQuery(
 export type MyGroupsQueryHookResult = ReturnType<typeof useMyGroupsQuery>
 export type MyGroupsLazyQueryHookResult = ReturnType<typeof useMyGroupsLazyQuery>
 export type MyGroupsQueryResult = Apollo.QueryResult<MyGroupsQuery, MyGroupsQueryVariables>
+export const MyGroupsInfoDocument = gql`
+  query MyGroupsInfo {
+    myGroups {
+      id
+      name
+    }
+  }
+`
+
+/**
+ * __useMyGroupsInfoQuery__
+ *
+ * To run a query within a React component, call `useMyGroupsInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyGroupsInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyGroupsInfoQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyGroupsInfoQuery(
+  baseOptions?: Apollo.QueryHookOptions<MyGroupsInfoQuery, MyGroupsInfoQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<MyGroupsInfoQuery, MyGroupsInfoQueryVariables>(
+    MyGroupsInfoDocument,
+    options
+  )
+}
+export function useMyGroupsInfoLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<MyGroupsInfoQuery, MyGroupsInfoQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<MyGroupsInfoQuery, MyGroupsInfoQueryVariables>(
+    MyGroupsInfoDocument,
+    options
+  )
+}
+export type MyGroupsInfoQueryHookResult = ReturnType<typeof useMyGroupsInfoQuery>
+export type MyGroupsInfoLazyQueryHookResult = ReturnType<typeof useMyGroupsInfoLazyQuery>
+export type MyGroupsInfoQueryResult = Apollo.QueryResult<
+  MyGroupsInfoQuery,
+  MyGroupsInfoQueryVariables
+>
+export const MyZoomsDocument = gql`
+  query MyZooms {
+    myZooms {
+      id
+      title
+      imageUrl
+    }
+  }
+`
+
+/**
+ * __useMyZoomsQuery__
+ *
+ * To run a query within a React component, call `useMyZoomsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyZoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyZoomsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyZoomsQuery(
+  baseOptions?: Apollo.QueryHookOptions<MyZoomsQuery, MyZoomsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<MyZoomsQuery, MyZoomsQueryVariables>(MyZoomsDocument, options)
+}
+export function useMyZoomsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<MyZoomsQuery, MyZoomsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<MyZoomsQuery, MyZoomsQueryVariables>(MyZoomsDocument, options)
+}
+export type MyZoomsQueryHookResult = ReturnType<typeof useMyZoomsQuery>
+export type MyZoomsLazyQueryHookResult = ReturnType<typeof useMyZoomsLazyQuery>
+export type MyZoomsQueryResult = Apollo.QueryResult<MyZoomsQuery, MyZoomsQueryVariables>
 export const NotificationsDocument = gql`
   query Notifications {
     notifications {
@@ -1229,9 +1970,11 @@ export const NotificationsDocument = gql`
       creationTime
       type
       contents
+      isRead
       sender {
         id
         nickname
+        imageUrl
       }
     }
   }
@@ -1331,9 +2074,11 @@ export const PostsDocument = gql`
       title
       contents
       commentCount
+      imageUrls
       user {
         id
         nickname
+        imageUrl
       }
       group {
         id
@@ -1374,6 +2119,122 @@ export function usePostsLazyQuery(
 export type PostsQueryHookResult = ReturnType<typeof usePostsQuery>
 export type PostsLazyQueryHookResult = ReturnType<typeof usePostsLazyQuery>
 export type PostsQueryResult = Apollo.QueryResult<PostsQuery, PostsQueryVariables>
+export const PostsByGroupDocument = gql`
+  query PostsByGroup($groupId: ID!) {
+    postsByGroup(groupId: $groupId) {
+      id
+      creationTime
+      title
+      contents
+      commentCount
+      user {
+        id
+        nickname
+        imageUrl
+      }
+    }
+  }
+`
+
+/**
+ * __usePostsByGroupQuery__
+ *
+ * To run a query within a React component, call `usePostsByGroupQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePostsByGroupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePostsByGroupQuery({
+ *   variables: {
+ *      groupId: // value for 'groupId'
+ *   },
+ * });
+ */
+export function usePostsByGroupQuery(
+  baseOptions: Apollo.QueryHookOptions<PostsByGroupQuery, PostsByGroupQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<PostsByGroupQuery, PostsByGroupQueryVariables>(
+    PostsByGroupDocument,
+    options
+  )
+}
+export function usePostsByGroupLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<PostsByGroupQuery, PostsByGroupQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<PostsByGroupQuery, PostsByGroupQueryVariables>(
+    PostsByGroupDocument,
+    options
+  )
+}
+export type PostsByGroupQueryHookResult = ReturnType<typeof usePostsByGroupQuery>
+export type PostsByGroupLazyQueryHookResult = ReturnType<typeof usePostsByGroupLazyQuery>
+export type PostsByGroupQueryResult = Apollo.QueryResult<
+  PostsByGroupQuery,
+  PostsByGroupQueryVariables
+>
+export const RecommendationGroupsDocument = gql`
+  query RecommendationGroups {
+    recommendationGroups {
+      id
+      name
+      description
+      imageUrl
+      memberCount
+    }
+  }
+`
+
+/**
+ * __useRecommendationGroupsQuery__
+ *
+ * To run a query within a React component, call `useRecommendationGroupsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRecommendationGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRecommendationGroupsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useRecommendationGroupsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    RecommendationGroupsQuery,
+    RecommendationGroupsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<RecommendationGroupsQuery, RecommendationGroupsQueryVariables>(
+    RecommendationGroupsDocument,
+    options
+  )
+}
+export function useRecommendationGroupsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    RecommendationGroupsQuery,
+    RecommendationGroupsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<RecommendationGroupsQuery, RecommendationGroupsQueryVariables>(
+    RecommendationGroupsDocument,
+    options
+  )
+}
+export type RecommendationGroupsQueryHookResult = ReturnType<typeof useRecommendationGroupsQuery>
+export type RecommendationGroupsLazyQueryHookResult = ReturnType<
+  typeof useRecommendationGroupsLazyQuery
+>
+export type RecommendationGroupsQueryResult = Apollo.QueryResult<
+  RecommendationGroupsQuery,
+  RecommendationGroupsQueryVariables
+>
 export const UserByNicknameDocument = gql`
   query UserByNickname($nickname: NonEmptyString!) {
     userByNickname(nickname: $nickname) {
@@ -1425,6 +2286,141 @@ export type UserByNicknameQueryResult = Apollo.QueryResult<
   UserByNicknameQuery,
   UserByNicknameQueryVariables
 >
+export const ZoomDocument = gql`
+  query Zoom($id: ID!) {
+    zoom(id: $id) {
+      id
+      title
+      description
+      imageUrl
+      whenWhere
+      whenWhat
+      isJoined
+    }
+  }
+`
+
+/**
+ * __useZoomQuery__
+ *
+ * To run a query within a React component, call `useZoomQuery` and pass it any options that fit your needs.
+ * When your component renders, `useZoomQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useZoomQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useZoomQuery(baseOptions: Apollo.QueryHookOptions<ZoomQuery, ZoomQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ZoomQuery, ZoomQueryVariables>(ZoomDocument, options)
+}
+export function useZoomLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ZoomQuery, ZoomQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ZoomQuery, ZoomQueryVariables>(ZoomDocument, options)
+}
+export type ZoomQueryHookResult = ReturnType<typeof useZoomQuery>
+export type ZoomLazyQueryHookResult = ReturnType<typeof useZoomLazyQuery>
+export type ZoomQueryResult = Apollo.QueryResult<ZoomQuery, ZoomQueryVariables>
+export const ZoomTitleByIdDocument = gql`
+  query ZoomTitleById($id: ID!) {
+    zoomTitleById(id: $id) {
+      id
+      title
+    }
+  }
+`
+
+/**
+ * __useZoomTitleByIdQuery__
+ *
+ * To run a query within a React component, call `useZoomTitleByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useZoomTitleByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useZoomTitleByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useZoomTitleByIdQuery(
+  baseOptions: Apollo.QueryHookOptions<ZoomTitleByIdQuery, ZoomTitleByIdQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ZoomTitleByIdQuery, ZoomTitleByIdQueryVariables>(
+    ZoomTitleByIdDocument,
+    options
+  )
+}
+export function useZoomTitleByIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ZoomTitleByIdQuery, ZoomTitleByIdQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ZoomTitleByIdQuery, ZoomTitleByIdQueryVariables>(
+    ZoomTitleByIdDocument,
+    options
+  )
+}
+export type ZoomTitleByIdQueryHookResult = ReturnType<typeof useZoomTitleByIdQuery>
+export type ZoomTitleByIdLazyQueryHookResult = ReturnType<typeof useZoomTitleByIdLazyQuery>
+export type ZoomTitleByIdQueryResult = Apollo.QueryResult<
+  ZoomTitleByIdQuery,
+  ZoomTitleByIdQueryVariables
+>
+export const ZoomsDocument = gql`
+  query Zooms($pagination: Pagination!) {
+    zooms(pagination: $pagination) {
+      id
+      title
+      description
+      imageUrl
+      whenWhere
+    }
+  }
+`
+
+/**
+ * __useZoomsQuery__
+ *
+ * To run a query within a React component, call `useZoomsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useZoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useZoomsQuery({
+ *   variables: {
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useZoomsQuery(
+  baseOptions: Apollo.QueryHookOptions<ZoomsQuery, ZoomsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ZoomsQuery, ZoomsQueryVariables>(ZoomsDocument, options)
+}
+export function useZoomsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ZoomsQuery, ZoomsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ZoomsQuery, ZoomsQueryVariables>(ZoomsDocument, options)
+}
+export type ZoomsQueryHookResult = ReturnType<typeof useZoomsQuery>
+export type ZoomsLazyQueryHookResult = ReturnType<typeof useZoomsLazyQuery>
+export type ZoomsQueryResult = Apollo.QueryResult<ZoomsQuery, ZoomsQueryVariables>
 export type CommentKeySpecifier = (
   | 'contents'
   | 'creationTime'
@@ -1459,9 +2455,13 @@ export type GroupKeySpecifier = (
   | 'description'
   | 'id'
   | 'imageUrl'
+  | 'isJoined'
+  | 'leader'
   | 'memberCount'
   | 'modificationTime'
   | 'name'
+  | 'newMembers'
+  | 'newPostCount'
   | GroupKeySpecifier
 )[]
 export type GroupFieldPolicy = {
@@ -1469,26 +2469,35 @@ export type GroupFieldPolicy = {
   description?: FieldPolicy<any> | FieldReadFunction<any>
   id?: FieldPolicy<any> | FieldReadFunction<any>
   imageUrl?: FieldPolicy<any> | FieldReadFunction<any>
+  isJoined?: FieldPolicy<any> | FieldReadFunction<any>
+  leader?: FieldPolicy<any> | FieldReadFunction<any>
   memberCount?: FieldPolicy<any> | FieldReadFunction<any>
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
   name?: FieldPolicy<any> | FieldReadFunction<any>
+  newMembers?: FieldPolicy<any> | FieldReadFunction<any>
+  newPostCount?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type MutationKeySpecifier = (
   | 'createComment'
   | 'createGroup'
   | 'createPoll'
   | 'createPost'
+  | 'createZoom'
   | 'deleteComment'
   | 'deleteGroup'
   | 'deletePost'
+  | 'deleteZoom'
   | 'joinGroup'
+  | 'joinZoom'
   | 'logout'
+  | 'readNotifications'
   | 'toggleLikingComment'
   | 'unregister'
   | 'updateComment'
   | 'updateGroup'
   | 'updatePost'
   | 'updateUser'
+  | 'updateZoom'
   | MutationKeySpecifier
 )[]
 export type MutationFieldPolicy = {
@@ -1496,22 +2505,28 @@ export type MutationFieldPolicy = {
   createGroup?: FieldPolicy<any> | FieldReadFunction<any>
   createPoll?: FieldPolicy<any> | FieldReadFunction<any>
   createPost?: FieldPolicy<any> | FieldReadFunction<any>
+  createZoom?: FieldPolicy<any> | FieldReadFunction<any>
   deleteComment?: FieldPolicy<any> | FieldReadFunction<any>
   deleteGroup?: FieldPolicy<any> | FieldReadFunction<any>
   deletePost?: FieldPolicy<any> | FieldReadFunction<any>
+  deleteZoom?: FieldPolicy<any> | FieldReadFunction<any>
   joinGroup?: FieldPolicy<any> | FieldReadFunction<any>
+  joinZoom?: FieldPolicy<any> | FieldReadFunction<any>
   logout?: FieldPolicy<any> | FieldReadFunction<any>
+  readNotifications?: FieldPolicy<any> | FieldReadFunction<any>
   toggleLikingComment?: FieldPolicy<any> | FieldReadFunction<any>
   unregister?: FieldPolicy<any> | FieldReadFunction<any>
   updateComment?: FieldPolicy<any> | FieldReadFunction<any>
   updateGroup?: FieldPolicy<any> | FieldReadFunction<any>
   updatePost?: FieldPolicy<any> | FieldReadFunction<any>
   updateUser?: FieldPolicy<any> | FieldReadFunction<any>
+  updateZoom?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type NotificationKeySpecifier = (
   | 'contents'
   | 'creationTime'
   | 'id'
+  | 'isRead'
   | 'receiver'
   | 'sender'
   | 'type'
@@ -1521,6 +2536,7 @@ export type NotificationFieldPolicy = {
   contents?: FieldPolicy<any> | FieldReadFunction<any>
   creationTime?: FieldPolicy<any> | FieldReadFunction<any>
   id?: FieldPolicy<any> | FieldReadFunction<any>
+  isRead?: FieldPolicy<any> | FieldReadFunction<any>
   receiver?: FieldPolicy<any> | FieldReadFunction<any>
   sender?: FieldPolicy<any> | FieldReadFunction<any>
   type?: FieldPolicy<any> | FieldReadFunction<any>
@@ -1606,11 +2622,15 @@ export type PostFieldPolicy = {
 export type QueryKeySpecifier = (
   | 'commentsByPost'
   | 'famousPosts'
+  | 'group'
+  | 'isGroupNameUnique'
   | 'isNicknameUnique'
   | 'likedComments'
   | 'me'
   | 'myComments'
   | 'myGroups'
+  | 'myPosts'
+  | 'myZooms'
   | 'notifications'
   | 'participatingPolls'
   | 'post'
@@ -1618,17 +2638,25 @@ export type QueryKeySpecifier = (
   | 'postsByGroup'
   | 'recommendationGroups'
   | 'searchPosts'
+  | 'searchZooms'
   | 'userByNickname'
+  | 'zoom'
+  | 'zoomTitleById'
+  | 'zooms'
   | QueryKeySpecifier
 )[]
 export type QueryFieldPolicy = {
   commentsByPost?: FieldPolicy<any> | FieldReadFunction<any>
   famousPosts?: FieldPolicy<any> | FieldReadFunction<any>
+  group?: FieldPolicy<any> | FieldReadFunction<any>
+  isGroupNameUnique?: FieldPolicy<any> | FieldReadFunction<any>
   isNicknameUnique?: FieldPolicy<any> | FieldReadFunction<any>
   likedComments?: FieldPolicy<any> | FieldReadFunction<any>
   me?: FieldPolicy<any> | FieldReadFunction<any>
   myComments?: FieldPolicy<any> | FieldReadFunction<any>
   myGroups?: FieldPolicy<any> | FieldReadFunction<any>
+  myPosts?: FieldPolicy<any> | FieldReadFunction<any>
+  myZooms?: FieldPolicy<any> | FieldReadFunction<any>
   notifications?: FieldPolicy<any> | FieldReadFunction<any>
   participatingPolls?: FieldPolicy<any> | FieldReadFunction<any>
   post?: FieldPolicy<any> | FieldReadFunction<any>
@@ -1636,7 +2664,28 @@ export type QueryFieldPolicy = {
   postsByGroup?: FieldPolicy<any> | FieldReadFunction<any>
   recommendationGroups?: FieldPolicy<any> | FieldReadFunction<any>
   searchPosts?: FieldPolicy<any> | FieldReadFunction<any>
+  searchZooms?: FieldPolicy<any> | FieldReadFunction<any>
   userByNickname?: FieldPolicy<any> | FieldReadFunction<any>
+  zoom?: FieldPolicy<any> | FieldReadFunction<any>
+  zoomTitleById?: FieldPolicy<any> | FieldReadFunction<any>
+  zooms?: FieldPolicy<any> | FieldReadFunction<any>
+}
+export type ReviewKeySpecifier = (
+  | 'contents'
+  | 'creationTime'
+  | 'id'
+  | 'modificationTime'
+  | 'title'
+  | 'writer'
+  | ReviewKeySpecifier
+)[]
+export type ReviewFieldPolicy = {
+  contents?: FieldPolicy<any> | FieldReadFunction<any>
+  creationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  id?: FieldPolicy<any> | FieldReadFunction<any>
+  modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  title?: FieldPolicy<any> | FieldReadFunction<any>
+  writer?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type UserKeySpecifier = (
   | 'bio'
@@ -1645,6 +2694,7 @@ export type UserKeySpecifier = (
   | 'creationTime'
   | 'email'
   | 'gender'
+  | 'hasNewNotifications'
   | 'id'
   | 'imageUrl'
   | 'likedCount'
@@ -1660,12 +2710,40 @@ export type UserFieldPolicy = {
   creationTime?: FieldPolicy<any> | FieldReadFunction<any>
   email?: FieldPolicy<any> | FieldReadFunction<any>
   gender?: FieldPolicy<any> | FieldReadFunction<any>
+  hasNewNotifications?: FieldPolicy<any> | FieldReadFunction<any>
   id?: FieldPolicy<any> | FieldReadFunction<any>
   imageUrl?: FieldPolicy<any> | FieldReadFunction<any>
   likedCount?: FieldPolicy<any> | FieldReadFunction<any>
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
   nickname?: FieldPolicy<any> | FieldReadFunction<any>
   phoneNumber?: FieldPolicy<any> | FieldReadFunction<any>
+}
+export type ZoomKeySpecifier = (
+  | 'creationTime'
+  | 'description'
+  | 'id'
+  | 'imageUrl'
+  | 'isJoined'
+  | 'modificationTime'
+  | 'tag'
+  | 'tags'
+  | 'title'
+  | 'whenWhat'
+  | 'whenWhere'
+  | ZoomKeySpecifier
+)[]
+export type ZoomFieldPolicy = {
+  creationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  description?: FieldPolicy<any> | FieldReadFunction<any>
+  id?: FieldPolicy<any> | FieldReadFunction<any>
+  imageUrl?: FieldPolicy<any> | FieldReadFunction<any>
+  isJoined?: FieldPolicy<any> | FieldReadFunction<any>
+  modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  tag?: FieldPolicy<any> | FieldReadFunction<any>
+  tags?: FieldPolicy<any> | FieldReadFunction<any>
+  title?: FieldPolicy<any> | FieldReadFunction<any>
+  whenWhat?: FieldPolicy<any> | FieldReadFunction<any>
+  whenWhere?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type StrictTypedTypePolicies = {
   Comment?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
@@ -1704,9 +2782,17 @@ export type StrictTypedTypePolicies = {
     keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier)
     fields?: QueryFieldPolicy
   }
+  Review?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?: false | ReviewKeySpecifier | (() => undefined | ReviewKeySpecifier)
+    fields?: ReviewFieldPolicy
+  }
   User?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?: false | UserKeySpecifier | (() => undefined | UserKeySpecifier)
     fields?: UserFieldPolicy
+  }
+  Zoom?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?: false | ZoomKeySpecifier | (() => undefined | ZoomKeySpecifier)
+    fields?: ZoomFieldPolicy
   }
 }
 export type TypedTypePolicies = StrictTypedTypePolicies & TypePolicies

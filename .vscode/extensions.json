@@ -7,6 +7,7 @@
     "esbenp.prettier-vscode",
     "styled-components.vscode-styled-components",
     "graphql.vscode-graphql",
-    "arcanis.vscode-zipfs"
+    "arcanis.vscode-zipfs",
+    "amatiasq.sort-imports"
   ]
 }

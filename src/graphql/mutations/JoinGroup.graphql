@@ -1,0 +1,6 @@
+mutation JoinGroup($id: ID) {
+  joinGroup(id: $id) {
+    id
+    isJoined
+  }
+}

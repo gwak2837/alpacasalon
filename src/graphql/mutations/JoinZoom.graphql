@@ -1,0 +1,6 @@
+mutation JoinZoom($id: ID!) {
+  joinZoom(id: $id) {
+    id
+    isJoined
+  }
+}

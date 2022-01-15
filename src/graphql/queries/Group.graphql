@@ -1,0 +1,19 @@
+query Group($id: ID!) {
+  group(id: $id) {
+    id
+    name
+    description
+    imageUrl
+    isJoined
+    memberCount
+    leader {
+      id
+      nickname
+    }
+    newMembers {
+      id
+      nickname
+      imageUrl
+    }
+  }
+}

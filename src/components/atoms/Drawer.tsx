@@ -1,4 +1,5 @@
 import { ReactNode, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { TABLET_MIN_WIDTH } from 'src/models/constants'
 import styled from 'styled-components'
 
@@ -39,15 +40,17 @@ const DrawerSection = styled.section`
   bottom: -33vh;
   left: 50%;
   z-index: 9;
+  transform: translateX(-50%);
 
   width: 100%;
   max-width: ${TABLET_MIN_WIDTH};
-  transform: translateX(-50%);
-  height: 33vh;
+  height: fit-content;
+  max-height: 33vh;
 
-  padding: 20px 1rem 1rem;
   background: #fff;
   border-radius: 20px 20px 0px 0px;
+  overflow: auto;
+  padding: 20px 0 0;
 `
 
 type Props = {
@@ -74,26 +77,25 @@ function Drawer({ children, open, setOpen }: Props) {
 
       document.addEventListener('keydown', closeOnEscapeKey, false)
       bodyStyle.overflow = 'hidden'
-      bodyStyle.position = 'fixed' // For Safari 15
-      bodyStyle.top = `-${scrollY}px` // For Safari 15
 
       return () => {
         document.removeEventListener('keydown', closeOnEscapeKey, false)
-        bodyStyle.overflow = ''
-        bodyStyle.position = '' // For Safari 15
-        bodyStyle.top = '' // For Safari 15
+        document.body.removeAttribute('style')
         window.scrollTo(0, scrollY) // For Safari 15
       }
     }
   }, [open, setOpen])
 
-  return (
-    <Transition>
-      <DrawerInput checked={open} readOnly type="checkbox" />
-      <DrawerBackground onClick={closeDrawer} />
-      <DrawerSection>{children}</DrawerSection>
-    </Transition>
-  )
+  return globalThis.document
+    ? createPortal(
+        <Transition>
+          <DrawerInput checked={open} readOnly type="checkbox" />
+          <DrawerBackground onClick={closeDrawer} />
+          <DrawerSection>{children}</DrawerSection>
+        </Transition>,
+        document.body
+      )
+    : null
 }
 
 export default Drawer

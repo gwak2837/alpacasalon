@@ -112,7 +112,7 @@ export default class AlpacaSalonDocument extends Document {
           <meta name="apple-mobile-web-app-title" content={APPLICATION_SHORT_NAME} />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-          <meta name="generator" content="Next.js 12" />
+          <meta name="generator" content="Next.js" />
           <meta name="subject" content={subject} />
           <meta name="rating" content="general" />
           <meta name="robots" content="index,follow" />

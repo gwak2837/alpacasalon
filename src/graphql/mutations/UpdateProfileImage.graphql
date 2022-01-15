@@ -1,0 +1,6 @@
+mutation UpdateProfileImage($input: UserModificationInput!) {
+  updateUser(input: $input) {
+    id
+    imageUrl
+  }
+}

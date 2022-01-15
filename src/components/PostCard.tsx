@@ -1,14 +1,38 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 import React, { memo } from 'react'
 import { Post } from 'src/graphql/generated/types-and-hooks'
-import { ALPACA_SALON_COLOR, ALPACA_SALON_GREY_COLOR, TABLET_MIN_WIDTH } from 'src/models/constants'
+import {
+  ALPACA_SALON_COLOR,
+  ALPACA_SALON_DARK_GREY_COLOR,
+  ALPACA_SALON_GREY_COLOR,
+  TABLET_MIN_WIDTH,
+} from 'src/models/constants'
 import { FlexContainerBetween, Skeleton } from 'src/styles'
+import ImageIcon from 'src/svgs/image.svg'
 import { stopPropagation } from 'src/utils'
 import styled from 'styled-components'
 
-import { BoldGreySpan, GreySpan, HorizontalBorder } from './FamousPostCard'
+const HorizontalBorder = styled.div`
+  border-bottom: 1px solid #f6f6f6;
+  margin: 0.7rem 0 0.8rem;
+`
+
+const GreySpan = styled.span`
+  color: ${ALPACA_SALON_DARK_GREY_COLOR};
+  font-size: 0.9rem;
+`
+
+const BoldGreySpan = styled(GreySpan)`
+  font-weight: 600;
+  white-space: nowrap;
+  align-items: center;
+
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+`
 
 const Li = styled.li`
   background: #fff;
@@ -24,10 +48,15 @@ const FlexCenter = styled.div`
   gap: 0.6rem;
 `
 
-const Width = styled.div`
+export const SquareWidth = styled.div`
   width: 2.25rem;
   height: 2.25rem;
   position: relative;
+  cursor: pointer;
+
+  > span {
+    border-radius: 50%;
+  }
 `
 
 const H5 = styled.h5<{ disabled?: boolean }>`
@@ -36,8 +65,22 @@ const H5 = styled.h5<{ disabled?: boolean }>`
   display: inline;
 `
 
+const InlineH5 = styled.h5`
+  display: inline;
+`
+
 const H4 = styled.h4`
   margin: 0.75rem 0 0.5rem;
+  > svg {
+    width: 1rem;
+    display: inline;
+    vertical-align: middle;
+  }
+`
+
+const Span = styled.span`
+  cursor: pointer;
+  color: ${ALPACA_SALON_COLOR};
 `
 
 const OneLineP = styled.p`
@@ -63,7 +106,11 @@ export function PostLoadingCard() {
   return (
     <Li>
       <GridContainerGap>
-        <Skeleton width="3rem" />
+        <FlexCenter>
+          <Skeleton width="2.25rem" height="2.25rem" borderRadius="50%" inlineBlock />
+          <Skeleton width="3rem" inlineBlock />
+          <Skeleton width="6rem" inlineBlock background="#fee" />
+        </FlexCenter>
         <Skeleton />
         <Skeleton width="80%" />
       </GridContainerGap>
@@ -94,18 +141,26 @@ function PostCard({ post }: Props) {
     router.push(`/post/${post.id}`)
   }
 
+  function goToUserPage(e: any) {
+    if (author) {
+      e.stopPropagation()
+      router.push(`/@${author.nickname}`)
+    }
+  }
+
   return (
     <Li onClick={goToPostDetailPage}>
       <FlexCenter>
         {author && (
-          <Width>
+          <SquareWidth>
             <Image
-              src={author.imageUrl ?? '/images/default-profile-image.webp'}
+              src={author?.imageUrl ?? '/images/default-profile-image.webp'}
               alt="profile image"
               layout="fill"
               objectFit="cover"
+              onClick={goToUserPage}
             />
-          </Width>
+          </SquareWidth>
         )}
         <div>
           {author ? (
@@ -124,7 +179,7 @@ function PostCard({ post }: Props) {
               <span>&nbsp;-&nbsp;</span>
               <Link href={`/group/${post.group.id}`} passHref>
                 <a onClick={stopPropagation} role="link" tabIndex={0}>
-                  {post.group.name}
+                  <InlineH5>{post.group.name}</InlineH5>
                 </a>
               </Link>
             </>
@@ -132,17 +187,12 @@ function PostCard({ post }: Props) {
         </div>
       </FlexCenter>
 
-      <H4>{post.title}</H4>
+      <H4>
+        {post.imageUrls && post.imageUrls.length > 0 && <ImageIcon />} {post.title}
+      </H4>
 
       <OneLineP>
-        {contents[0]}{' '}
-        {contents.length > 1 && (
-          <Link href={`/post/${post.id}`} passHref>
-            <a onClick={stopPropagation} role="link" tabIndex={0}>
-              <h5>...</h5>
-            </a>
-          </Link>
-        )}
+        {contents[0]} {contents.length > 1 && <Span>...</Span>}
       </OneLineP>
       <HorizontalBorder />
       <FlexContainerBetween>

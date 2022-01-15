@@ -8,7 +8,12 @@ import { Post, usePostsQuery } from 'src/graphql/generated/types-and-hooks'
 import useInfiniteScroll from 'src/hooks/useInfiniteScroll'
 import Navigation from 'src/layouts/Navigation'
 import PostTab from 'src/layouts/PostTab'
-import { ALPACA_SALON_COLOR, NAVIGATION_HEIGHT, TABLET_MIN_WIDTH } from 'src/models/constants'
+import {
+  ALPACA_SALON_COLOR,
+  ALPACA_SALON_GREY_COLOR,
+  NAVIGATION_HEIGHT,
+  TABLET_MIN_WIDTH,
+} from 'src/models/constants'
 import WriteIcon from 'src/svgs/write-icon.svg'
 import styled from 'styled-components'
 
@@ -23,36 +28,38 @@ const GridContainerPost = styled.ul`
   display: grid;
   gap: 0.9rem;
   padding: 0.6rem;
+
+  background: #fff;
 `
 
-const FixedPosition = styled.div`
-  position: fixed;
-  bottom: ${NAVIGATION_HEIGHT};
-  z-index: 1;
-
-  width: 100%;
-  max-width: ${TABLET_MIN_WIDTH};
-
-  display: flex;
-  justify-content: flex-end;
-`
-
-const PrimaryButton = styled.button`
+export const PrimaryButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.5rem;
 
-  background: ${ALPACA_SALON_COLOR};
+  background: ${(p) => (p.disabled ? ALPACA_SALON_GREY_COLOR : ALPACA_SALON_COLOR)};
   box-shadow: 0px 4px 20px rgba(16, 16, 16, 0.25);
-  border: none;
-  border-radius: 10px;
+  border-radius: 99px;
   color: #fff;
+  cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
+`
+
+const FixedButton = styled(PrimaryButton)`
+  position: fixed;
+  bottom: ${NAVIGATION_HEIGHT};
+  right: 50%;
+  transform: translateX(50vw);
 
   margin: 1.25rem;
-  padding: 0.7rem 1rem;
+  padding: 0.7rem 1.2rem;
+
+  @media (min-width: ${TABLET_MIN_WIDTH}) {
+    transform: translateX(230%);
+  }
 `
 
 const limit = 5
+const description = ''
 
 export default function PostsPage() {
   const [hasMoreData, setHasMoreData] = useState(true)
@@ -104,7 +111,7 @@ export default function PostsPage() {
   }
 
   return (
-    <PageHead>
+    <PageHead title="피드 - 알파카살롱" description={description}>
       <GridContainerPost>
         {posts
           ? posts.map((post, i) => <PostCard key={i} post={post as Post} />)
@@ -119,12 +126,10 @@ export default function PostsPage() {
       {!loading && hasMoreData && <div ref={infiniteScrollRef}>무한 스크롤</div>}
       {!hasMoreData && <div>모든 게시글을 불러왔어요</div>}
 
-      <FixedPosition>
-        <PrimaryButton onClick={goToPostCreationPage}>
-          <WriteIcon />
-          글쓰기
-        </PrimaryButton>
-      </FixedPosition>
+      <FixedButton onClick={goToPostCreationPage}>
+        <WriteIcon />
+        글쓰기
+      </FixedButton>
     </PageHead>
   )
 }

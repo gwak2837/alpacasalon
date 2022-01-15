@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { toastApolloError } from 'src/apollo/error'
@@ -8,7 +8,7 @@ import PageHead from 'src/components/PageHead'
 import {
   CreatePostMutationVariables,
   useCreatePostMutation,
-  usePostsQuery,
+  useMyGroupsInfoQuery,
 } from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import {
@@ -28,7 +28,6 @@ import { Frame16to11 } from './[id]'
 type PostCreationInput = {
   title: string
   contents: string
-  groupId: string
 }
 
 export type ImageInfo = {
@@ -41,13 +40,10 @@ export const AbsoluteH3 = styled.h3`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
-  cursor: pointer;
-  font-size: 1.1rem;
 `
 
-export const FixedHeader = styled.header`
-  position: fixed;
+export const StickyHeader = styled.header`
+  position: sticky;
   top: 0;
   z-index: 1;
   width: 100%;
@@ -62,17 +58,17 @@ export const FixedHeader = styled.header`
 
   > svg {
     padding: 1rem;
-    width: 1rem;
+    width: 3rem;
+    cursor: pointer;
   }
 `
 
-export const TransparentButton = styled.button<{ disabled?: boolean }>`
-  border: none;
+export const TransparentButton = styled.button`
   background: none;
+  color: ${(p) => (p.disabled ? '#888' : '#000')};
+  cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
   font-size: 1.1rem;
   font-weight: 600;
-  ${(p) => p.disabled && 'opacity: 0.5;'}
-  cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
   padding: 1rem;
 `
 
@@ -93,12 +89,11 @@ export const GridContainer = styled.div`
   display: grid;
   gap: 1.5rem;
 
-  padding: 4.4rem 0.5rem 2rem;
+  padding: 2rem 0.5rem;
 `
 
-export const Textarea = styled.textarea<{ height: number }>`
+export const Textarea = styled.textarea`
   width: 100%;
-  height: ${(p) => p.height}rem;
   min-height: 20vh;
   max-height: 50vh;
   padding: 0.5rem 0;
@@ -126,7 +121,6 @@ export const FileInputLabel = styled.label<{ disabled?: boolean }>`
 `
 
 export const GreyH3 = styled.h3`
-  font-size: 1.1rem;
   color: ${ALPACA_SALON_GREY_COLOR};
   text-align: center;
 `
@@ -163,11 +157,24 @@ export const PreviewSlide = styled(Slide)`
   }
 `
 
+function getGroupIdFromQueryString() {
+  return globalThis.location
+    ? new URLSearchParams(globalThis.location.search).get('groupId') ?? ''
+    : ''
+}
+
+export function resizeTextareaHeight(e: KeyboardEvent<HTMLTextAreaElement>) {
+  const eventTarget = e.target as HTMLTextAreaElement
+  eventTarget.style.height = 'auto'
+  eventTarget.style.height = `${eventTarget.scrollHeight}px`
+}
+
 const description = '알파카살롱에 글을 작성해보세요'
 
 export default function PostCreationPage() {
   const [imageInfos, setImageInfos] = useState<ImageInfo[]>([])
   const [postCreationLoading, setPostCreationLoading] = useState(false)
+  const [selectedGroupId, setSelectedGroupId] = useState(getGroupIdFromQueryString())
   const formData = useRef(globalThis.FormData ? new FormData() : null)
   const imageId = useRef(0)
   const router = useRouter()
@@ -176,24 +183,12 @@ export default function PostCreationPage() {
     formState: { errors },
     handleSubmit,
     register,
-    watch,
   } = useForm<PostCreationInput>({
     defaultValues: {
       title: '',
       contents: '',
-      groupId: '',
     },
     reValidateMode: 'onBlur',
-  })
-
-  const contentsLines = watch('contents').split('\n').length * 1.6
-
-  // https://github.com/apollographql/apollo-client/issues/5419#issuecomment-973154976 해결되면 삭제하기
-  usePostsQuery({
-    onError: toastApolloError,
-    variables: {
-      pagination: { limit: 1 },
-    },
   })
 
   const [createPostMutation] = useCreatePostMutation({
@@ -204,8 +199,19 @@ export default function PostCreationPage() {
       }
     },
     onError: toastApolloError,
-    refetchQueries: ['Posts'],
+    update: (cache) => {
+      cache.evict({ fieldName: 'posts' })
+      if (selectedGroupId) {
+        cache.evict({ fieldName: 'postsByGroup' })
+      }
+    },
   })
+
+  const { data } = useMyGroupsInfoQuery({
+    onError: toastApolloError,
+  })
+
+  const myGroups = data?.myGroups
 
   function goBack() {
     router.back()
@@ -237,7 +243,11 @@ export default function PostCreationPage() {
 
   async function createPost(input: PostCreationInput) {
     setPostCreationLoading(true)
-    const variables: CreatePostMutationVariables = { input: { ...input } }
+    const variables: CreatePostMutationVariables = { input }
+
+    if (selectedGroupId) {
+      variables.input.groupId = selectedGroupId
+    }
 
     if (formData.current) {
       const files = [...formData.current.values()]
@@ -268,25 +278,54 @@ export default function PostCreationPage() {
   return (
     <PageHead title="글쓰기 - 알파카살롱" description={description}>
       <form onSubmit={handleSubmit(createPost)}>
-        <FixedHeader>
+        <StickyHeader>
           <XIcon onClick={goBack} />
           <AbsoluteH3>글쓰기</AbsoluteH3>
           <TransparentButton disabled={!isEmpty(errors) || postCreationLoading} type="submit">
             완료
           </TransparentButton>
-        </FixedHeader>
+        </StickyHeader>
+
+        <button
+          onClick={(e) => {
+            e.preventDefault()
+            setSelectedGroupId('')
+          }}
+        >
+          {!selectedGroupId && 'O '}
+          전체 공개
+        </button>
+        {myGroups?.map((myGroup) => (
+          <button
+            key={myGroup.id}
+            onClick={(e) => {
+              e.preventDefault()
+              if (selectedGroupId === myGroup.id) {
+                setSelectedGroupId('')
+              } else {
+                setSelectedGroupId(myGroup.id)
+              }
+            }}
+          >
+            {selectedGroupId === myGroup.id && 'O '}
+            {myGroup.name}
+          </button>
+        ))}
 
         <GridContainer>
           <Input
             disabled={postCreationLoading}
             erred={Boolean(errors.title)}
             placeholder="안녕하세요 우아한 알파카님. 평소에 궁금했던 것을 물어보세요."
-            {...register('title', { required: '글 제목을 작성한 후 완료를 눌러주세요' })}
+            {...register('title', {
+              required: '글 제목을 작성한 후 완료를 눌러주세요',
+              maxLength: { value: 100, message: '제목은 100자 이내로 입력해주세요' },
+            })}
           />
           <Textarea
             disabled={postCreationLoading}
-            height={contentsLines}
             onKeyDown={submitWhenShiftEnter}
+            onInput={resizeTextareaHeight}
             placeholder="Shift+Enter키로 글을 작성할 수 있어요"
             {...register('contents', { required: '글 내용을 작성한 후 완료를 눌러주세요' })}
           />

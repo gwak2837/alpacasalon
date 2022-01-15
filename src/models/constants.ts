@@ -9,7 +9,7 @@ export const ALPACA_SALON_GREY_COLOR = '#B5B5B5'
 export const ALPACA_SALON_DARK_GREY_COLOR = '#787878'
 export const ALPACA_SALON_RED_COLOR = '#D70F0F'
 
-export const NAVIGATION_HEIGHT = '4rem'
+export const NAVIGATION_HEIGHT = '4.5rem'
 
 export const SECONDARY_BACKGROUND_COLOR = '#2fccba'
 export const SECONDARY_TEXT_COLOR = '#2fccba'

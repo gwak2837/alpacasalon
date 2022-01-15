@@ -14,7 +14,7 @@ function Authentication({ children }: Props) {
   useMeQuery({
     onCompleted: ({ me }) => {
       if (me) {
-        setCurrentUser({ nickname: me.nickname })
+        setCurrentUser({ nickname: me.nickname, hasNewNotifications: me.hasNewNotifications })
       }
     },
     onError: (error) => {

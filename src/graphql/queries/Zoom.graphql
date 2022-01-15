@@ -1,0 +1,11 @@
+query Zoom($id: ID!) {
+  zoom(id: $id) {
+    id
+    title
+    description
+    imageUrl
+    whenWhere
+    whenWhat
+    isJoined
+  }
+}
