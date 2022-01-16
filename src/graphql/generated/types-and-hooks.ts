@@ -103,6 +103,7 @@ export type Mutation = {
   createPoll?: Maybe<Poll>
   createPost?: Maybe<Post>
   createZoom?: Maybe<Zoom>
+  createZoomReview?: Maybe<ZoomReview>
   deleteComment?: Maybe<Comment>
   deleteGroup?: Maybe<Group>
   deletePost?: Maybe<Post>
@@ -143,6 +144,10 @@ export type MutationCreatePostArgs = {
 
 export type MutationCreateZoomArgs = {
   input: ZoomCreationInput
+}
+
+export type MutationCreateZoomReviewArgs = {
+  input: ZoomReviewCreationInput
 }
 
 export type MutationDeleteCommentArgs = {
@@ -328,6 +333,8 @@ export type Query = {
   userByNickname?: Maybe<User>
   /** 글 상세 */
   zoom?: Maybe<Zoom>
+  /** review 목록 */
+  zoomReviews?: Maybe<Array<ZoomReview>>
   zoomTitleById?: Maybe<Zoom>
   /** 글 목록 */
   zooms?: Maybe<Array<Zoom>>
@@ -377,22 +384,17 @@ export type QueryZoomArgs = {
   id: Scalars['ID']
 }
 
+export type QueryZoomReviewsArgs = {
+  pagination: Pagination
+  zoomId: Scalars['ID']
+}
+
 export type QueryZoomTitleByIdArgs = {
   id: Scalars['ID']
 }
 
 export type QueryZoomsArgs = {
   pagination: Pagination
-}
-
-export type Review = {
-  __typename?: 'Review'
-  contents?: Maybe<Scalars['NonEmptyString']>
-  creationTime: Scalars['DateTime']
-  id: Scalars['ID']
-  modificationTime: Scalars['DateTime']
-  title?: Maybe<Scalars['NonEmptyString']>
-  writer?: Maybe<User>
 }
 
 export enum Status {
@@ -457,6 +459,20 @@ export type ZoomModificationInput = {
   title?: InputMaybe<Scalars['NonEmptyString']>
 }
 
+export type ZoomReview = {
+  __typename?: 'ZoomReview'
+  contents?: Maybe<Scalars['NonEmptyString']>
+  creationTime: Scalars['DateTime']
+  id: Scalars['ID']
+  modificationTime: Scalars['DateTime']
+  writer?: Maybe<User>
+}
+
+export type ZoomReviewCreationInput = {
+  contents: Scalars['NonEmptyString']
+  zoomId: Scalars['ID']
+}
+
 export type CreateCommentMutationVariables = Exact<{
   postId: Scalars['ID']
   contents: Scalars['NonEmptyString']
@@ -484,6 +500,15 @@ export type CreatePostMutationVariables = Exact<{
 export type CreatePostMutation = {
   __typename?: 'Mutation'
   createPost?: { __typename?: 'Post'; id: string } | null | undefined
+}
+
+export type CreateZoomReviewMutationVariables = Exact<{
+  input: ZoomReviewCreationInput
+}>
+
+export type CreateZoomReviewMutation = {
+  __typename?: 'Mutation'
+  createZoomReview?: { __typename?: 'ZoomReview'; id: string } | null | undefined
 }
 
 export type DeleteCommentMutationVariables = Exact<{
@@ -931,6 +956,33 @@ export type ZoomTitleByIdQuery = {
   zoomTitleById?: { __typename?: 'Zoom'; id: string; title: any } | null | undefined
 }
 
+export type ZoomReviewsQueryVariables = Exact<{
+  zoomId: Scalars['ID']
+  pagination: Pagination
+}>
+
+export type ZoomReviewsQuery = {
+  __typename?: 'Query'
+  zoomReviews?:
+    | Array<{
+        __typename?: 'ZoomReview'
+        id: string
+        creationTime: any
+        contents?: any | null | undefined
+        writer?:
+          | {
+              __typename?: 'User'
+              id: any
+              nickname?: any | null | undefined
+              imageUrl?: any | null | undefined
+            }
+          | null
+          | undefined
+      }>
+    | null
+    | undefined
+}
+
 export type ZoomsQueryVariables = Exact<{
   pagination: Pagination
 }>
@@ -1083,6 +1135,53 @@ export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>
 export type CreatePostMutationOptions = Apollo.BaseMutationOptions<
   CreatePostMutation,
   CreatePostMutationVariables
+>
+export const CreateZoomReviewDocument = gql`
+  mutation CreateZoomReview($input: ZoomReviewCreationInput!) {
+    createZoomReview(input: $input) {
+      id
+    }
+  }
+`
+export type CreateZoomReviewMutationFn = Apollo.MutationFunction<
+  CreateZoomReviewMutation,
+  CreateZoomReviewMutationVariables
+>
+
+/**
+ * __useCreateZoomReviewMutation__
+ *
+ * To run a mutation, you first call `useCreateZoomReviewMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateZoomReviewMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createZoomReviewMutation, { data, loading, error }] = useCreateZoomReviewMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateZoomReviewMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateZoomReviewMutation,
+    CreateZoomReviewMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateZoomReviewMutation, CreateZoomReviewMutationVariables>(
+    CreateZoomReviewDocument,
+    options
+  )
+}
+export type CreateZoomReviewMutationHookResult = ReturnType<typeof useCreateZoomReviewMutation>
+export type CreateZoomReviewMutationResult = Apollo.MutationResult<CreateZoomReviewMutation>
+export type CreateZoomReviewMutationOptions = Apollo.BaseMutationOptions<
+  CreateZoomReviewMutation,
+  CreateZoomReviewMutationVariables
 >
 export const DeleteCommentDocument = gql`
   mutation DeleteComment($id: ID!) {
@@ -2378,6 +2477,56 @@ export type ZoomTitleByIdQueryResult = Apollo.QueryResult<
   ZoomTitleByIdQuery,
   ZoomTitleByIdQueryVariables
 >
+export const ZoomReviewsDocument = gql`
+  query ZoomReviews($zoomId: ID!, $pagination: Pagination!) {
+    zoomReviews(zoomId: $zoomId, pagination: $pagination) {
+      id
+      creationTime
+      contents
+      writer {
+        id
+        nickname
+        imageUrl
+      }
+    }
+  }
+`
+
+/**
+ * __useZoomReviewsQuery__
+ *
+ * To run a query within a React component, call `useZoomReviewsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useZoomReviewsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useZoomReviewsQuery({
+ *   variables: {
+ *      zoomId: // value for 'zoomId'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useZoomReviewsQuery(
+  baseOptions: Apollo.QueryHookOptions<ZoomReviewsQuery, ZoomReviewsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ZoomReviewsQuery, ZoomReviewsQueryVariables>(ZoomReviewsDocument, options)
+}
+export function useZoomReviewsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ZoomReviewsQuery, ZoomReviewsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ZoomReviewsQuery, ZoomReviewsQueryVariables>(
+    ZoomReviewsDocument,
+    options
+  )
+}
+export type ZoomReviewsQueryHookResult = ReturnType<typeof useZoomReviewsQuery>
+export type ZoomReviewsLazyQueryHookResult = ReturnType<typeof useZoomReviewsLazyQuery>
+export type ZoomReviewsQueryResult = Apollo.QueryResult<ZoomReviewsQuery, ZoomReviewsQueryVariables>
 export const ZoomsDocument = gql`
   query Zooms($pagination: Pagination!) {
     zooms(pagination: $pagination) {
@@ -2483,6 +2632,7 @@ export type MutationKeySpecifier = (
   | 'createPoll'
   | 'createPost'
   | 'createZoom'
+  | 'createZoomReview'
   | 'deleteComment'
   | 'deleteGroup'
   | 'deletePost'
@@ -2506,6 +2656,7 @@ export type MutationFieldPolicy = {
   createPoll?: FieldPolicy<any> | FieldReadFunction<any>
   createPost?: FieldPolicy<any> | FieldReadFunction<any>
   createZoom?: FieldPolicy<any> | FieldReadFunction<any>
+  createZoomReview?: FieldPolicy<any> | FieldReadFunction<any>
   deleteComment?: FieldPolicy<any> | FieldReadFunction<any>
   deleteGroup?: FieldPolicy<any> | FieldReadFunction<any>
   deletePost?: FieldPolicy<any> | FieldReadFunction<any>
@@ -2641,6 +2792,7 @@ export type QueryKeySpecifier = (
   | 'searchZooms'
   | 'userByNickname'
   | 'zoom'
+  | 'zoomReviews'
   | 'zoomTitleById'
   | 'zooms'
   | QueryKeySpecifier
@@ -2667,25 +2819,9 @@ export type QueryFieldPolicy = {
   searchZooms?: FieldPolicy<any> | FieldReadFunction<any>
   userByNickname?: FieldPolicy<any> | FieldReadFunction<any>
   zoom?: FieldPolicy<any> | FieldReadFunction<any>
+  zoomReviews?: FieldPolicy<any> | FieldReadFunction<any>
   zoomTitleById?: FieldPolicy<any> | FieldReadFunction<any>
   zooms?: FieldPolicy<any> | FieldReadFunction<any>
-}
-export type ReviewKeySpecifier = (
-  | 'contents'
-  | 'creationTime'
-  | 'id'
-  | 'modificationTime'
-  | 'title'
-  | 'writer'
-  | ReviewKeySpecifier
-)[]
-export type ReviewFieldPolicy = {
-  contents?: FieldPolicy<any> | FieldReadFunction<any>
-  creationTime?: FieldPolicy<any> | FieldReadFunction<any>
-  id?: FieldPolicy<any> | FieldReadFunction<any>
-  modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
-  title?: FieldPolicy<any> | FieldReadFunction<any>
-  writer?: FieldPolicy<any> | FieldReadFunction<any>
 }
 export type UserKeySpecifier = (
   | 'bio'
@@ -2745,6 +2881,21 @@ export type ZoomFieldPolicy = {
   whenWhat?: FieldPolicy<any> | FieldReadFunction<any>
   whenWhere?: FieldPolicy<any> | FieldReadFunction<any>
 }
+export type ZoomReviewKeySpecifier = (
+  | 'contents'
+  | 'creationTime'
+  | 'id'
+  | 'modificationTime'
+  | 'writer'
+  | ZoomReviewKeySpecifier
+)[]
+export type ZoomReviewFieldPolicy = {
+  contents?: FieldPolicy<any> | FieldReadFunction<any>
+  creationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  id?: FieldPolicy<any> | FieldReadFunction<any>
+  modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
+  writer?: FieldPolicy<any> | FieldReadFunction<any>
+}
 export type StrictTypedTypePolicies = {
   Comment?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?: false | CommentKeySpecifier | (() => undefined | CommentKeySpecifier)
@@ -2782,10 +2933,6 @@ export type StrictTypedTypePolicies = {
     keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier)
     fields?: QueryFieldPolicy
   }
-  Review?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?: false | ReviewKeySpecifier | (() => undefined | ReviewKeySpecifier)
-    fields?: ReviewFieldPolicy
-  }
   User?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?: false | UserKeySpecifier | (() => undefined | UserKeySpecifier)
     fields?: UserFieldPolicy
@@ -2793,6 +2940,10 @@ export type StrictTypedTypePolicies = {
   Zoom?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?: false | ZoomKeySpecifier | (() => undefined | ZoomKeySpecifier)
     fields?: ZoomFieldPolicy
+  }
+  ZoomReview?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?: false | ZoomReviewKeySpecifier | (() => undefined | ZoomReviewKeySpecifier)
+    fields?: ZoomReviewFieldPolicy
   }
 }
 export type TypedTypePolicies = StrictTypedTypePolicies & TypePolicies

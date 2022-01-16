@@ -1,0 +1,5 @@
+mutation CreateZoomReview($input: ZoomReviewCreationInput!) {
+  createZoomReview(input: $input) {
+    id
+  }
+}

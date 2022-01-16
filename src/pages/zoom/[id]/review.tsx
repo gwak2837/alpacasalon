@@ -1,13 +1,19 @@
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
-import { useZoomTitleByIdQuery } from 'src/graphql/generated/types-and-hooks'
+import {
+  useCreateZoomReviewMutation,
+  useZoomTitleByIdQuery,
+} from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import { ALPACA_SALON_DARK_GREY_COLOR, ALPACA_SALON_GREY_COLOR } from 'src/models/constants'
+import { resizeTextareaHeight } from 'src/pages/post/create'
+import { Skeleton } from 'src/styles'
 import Close from 'src/svgs/close.svg'
 import ZoomReviewIcon from 'src/svgs/zoom-review.svg'
-import { submitWhenShiftEnter } from 'src/utils'
+import { isEmpty, submitWhenShiftEnter } from 'src/utils'
 import styled from 'styled-components'
 
 const description = ''
@@ -52,14 +58,16 @@ const ReviewTitle = styled.div`
 
 const ReviewTextarea = styled.textarea`
   width: 100%;
-  height: 200px;
-  margin-top: 25px;
-  resize: none;
+  min-height: 20vh;
+  max-height: 50vh;
+  margin: 1.5rem 0 0;
   padding: 10px;
-  word-break: break-all;
-  outline: none;
+
   border-radius: 10px;
   background-color: #fafafa;
+  outline: none;
+  resize: none;
+  word-break: break-all;
 
   &::placeholder {
     color: ${ALPACA_SALON_GREY_COLOR};
@@ -81,13 +89,13 @@ export default function ZoomReviewPage() {
     formState: { errors },
     handleSubmit,
     register,
-    watch,
   } = useForm<ReviewForm>({
     defaultValues: {
       contents: '',
     },
   })
 
+  // Zoom 제목 불러오기
   const { data, loading } = useZoomTitleByIdQuery({
     onError: toastApolloError,
     skip: !zoomId,
@@ -98,8 +106,29 @@ export default function ZoomReviewPage() {
 
   const zoom = data?.zoomTitleById
 
+  const [createZoomReviewMutation, { loading: zoomReviewCreationLoading }] =
+    useCreateZoomReviewMutation({
+      onCompleted: ({ createZoomReview }) => {
+        if (createZoomReview) {
+          toast.success('리뷰를 작성했어요')
+          router.back()
+        }
+      },
+      onError: toastApolloError,
+      update: (cache) => {
+        cache.evict({ fieldName: 'zoomReviews' })
+      },
+    })
+
   function createReview(input: ReviewForm) {
-    console.log('👀 - input', input)
+    createZoomReviewMutation({
+      variables: {
+        input: {
+          zoomId,
+          contents: input.contents,
+        },
+      },
+    })
   }
 
   function goBack() {
@@ -115,19 +144,24 @@ export default function ZoomReviewPage() {
           <XButton onClick={goBack}>
             <Close />
           </XButton>
-          <CompleteButton disabled={!watch('contents')}>완료</CompleteButton>
+          <CompleteButton disabled={!isEmpty(errors) || zoomReviewCreationLoading}>
+            완료
+          </CompleteButton>
         </ReviewHeader>
         <ReviewContent>
           <ContentText>
             <ZoomReviewIcon />
             <ReviewTitle>참여한 zoom 대화는 어떠셨나요?</ReviewTitle>
-            <Text>{loading ? 'loading' : zoom?.title}</Text>
+            {loading ? <Skeleton /> : <Text>{zoom?.title}</Text>}
           </ContentText>
           <ReviewTextarea
+            disabled={zoomReviewCreationLoading}
             onKeyDown={submitWhenShiftEnter}
+            onInput={resizeTextareaHeight}
             placeholder="다른 사람들이 후기를 보고 도움 받을 수 있도록 솔직한 후기를 남겨주세요."
             {...register('contents', { required: '리뷰 내용을 작성한 후 완료를 눌러주세요' })}
           />
+          <h5 style={{ color: '#800' }}>{errors.contents?.message}</h5>
         </ReviewContent>
       </form>
     </PageHead>
