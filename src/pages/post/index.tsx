@@ -58,7 +58,7 @@ const FixedButton = styled(PrimaryButton)`
   }
 `
 
-const limit = 5
+const limit = 10
 const description = ''
 
 export default function PostsPage() {

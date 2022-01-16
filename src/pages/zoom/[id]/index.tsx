@@ -1,9 +1,17 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 import { toastApolloError } from 'src/apollo/error'
 import PageHead from 'src/components/PageHead'
-import { useJoinZoomMutation, useZoomQuery } from 'src/graphql/generated/types-and-hooks'
+import ZoomReviewCard, { ZoomReviewLoadingCard } from 'src/components/ZoomReviewCard'
+import {
+  ZoomReview,
+  useJoinZoomMutation,
+  useZoomQuery,
+  useZoomReviewsQuery,
+} from 'src/graphql/generated/types-and-hooks'
+import useInfiniteScroll from 'src/hooks/useInfiniteScroll'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import { ALPACA_SALON_COLOR, ALPACA_SALON_DARK_GREY_COLOR } from 'src/models/constants'
 import { HorizontalBorder as HorizontalBorder1 } from 'src/pages/post/[id]'
@@ -119,12 +127,18 @@ const Div = styled.div`
   grid-column: 2 / 3;
 `
 
+const GridUl = styled.ul`
+  display: grid;
+`
+
+const limit = 10
 const description = ''
 
 export default function ZoomPage() {
   const router = useRouter()
   const zoomId = (router.query.id ?? '') as string
 
+  // Zoom 상세 정보 불러오기
   const { data, loading } = useZoomQuery({
     onError: toastApolloError,
     skip: !zoomId,
@@ -134,10 +148,52 @@ export default function ZoomPage() {
   const zoom = data?.zoom
   const whenWhats = data?.zoom?.whenWhat as string[] | undefined
 
+  // Zoom 참가
   const [joinZoomMutation] = useJoinZoomMutation({
     onError: toastApolloError,
     update: (cache) => {
       cache.evict({ fieldName: 'myZooms' })
+    },
+  })
+
+  // Zoom 리뷰 목록 불러오기
+  const [hasMoreData, setHasMoreData] = useState(true)
+
+  const {
+    data: data2,
+    loading: isZoomReviewLoading,
+    fetchMore,
+  } = useZoomReviewsQuery({
+    notifyOnNetworkStatusChange: true,
+    onError: (error) => {
+      toastApolloError(error)
+      setHasMoreData(false)
+    },
+    skip: !zoomId || !limit,
+    variables: {
+      zoomId,
+      pagination: { limit },
+    },
+  })
+
+  const zoomReviews = data2?.zoomReviews
+
+  const infiniteScrollRef = useInfiniteScroll({
+    hasMoreData,
+    onIntersecting: async () => {
+      if (zoomReviews && zoomReviews.length > 0) {
+        const lastZoomReview = zoomReviews[zoomReviews.length - 1]
+        const response = await fetchMore({
+          variables: {
+            pagination: {
+              lastId: lastZoomReview.id,
+              limit,
+            },
+          },
+        }).catch(() => setHasMoreData(false))
+
+        if (response?.data.zoomReviews?.length !== limit) setHasMoreData(false)
+      }
     },
   })
 
@@ -153,72 +209,86 @@ export default function ZoomPage() {
 
   return (
     <PageHead title="줌 - 알파카살롱" description={description}>
-      <div style={{ display: 'flex', flexFlow: 'column' }}>
-        <Frame4to3>
-          <Image
-            src={zoom?.imageUrl ?? '/images/default-image.webp'}
-            alt=""
-            layout="fill"
-            objectFit="cover"
-          />
-          <BackIcon onClick={goBack} />
-          <Absolute>
-            <h3>{zoom?.title}</h3>
-            <p>{zoom?.description}</p>
-          </Absolute>
-        </Frame4to3>
+      <Frame4to3>
+        <Image
+          src={zoom?.imageUrl ?? '/images/default-image.webp'}
+          alt=""
+          layout="fill"
+          objectFit="cover"
+        />
+        <BackIcon onClick={goBack} />
+        <Absolute>
+          <h3>{zoom?.title}</h3>
+          <p>{zoom?.description}</p>
+        </Absolute>
+      </Frame4to3>
 
-        <Padding>
-          <H2>언제 어디서 하나요?</H2>
-          <FlexCenter>
-            <CalenderIcon />
-            {zoom?.whenWhere}
-          </FlexCenter>
+      <Padding>
+        <H2>언제 어디서 하나요?</H2>
+        <FlexCenter>
+          <CalenderIcon />
+          {zoom?.whenWhere}
+        </FlexCenter>
 
-          <H2>무슨 이야기를 나누나요?</H2>
+        <H2>무슨 이야기를 나누나요?</H2>
 
-          <Grid>
-            {whenWhats?.map((whenWhat, i) => {
-              switch (whenWhat[0]) {
-                case '@':
-                  return (
-                    <>
-                      <ClockIcon />
-                      <H3 key={i}>{whenWhat.substring(1)}</H3>
-                    </>
-                  )
-                case '#':
-                  return <H4 key={i}>{whenWhat.substring(1)}</H4>
-                case '!':
-                  return <Div key={i}>{whenWhat.substring(1)}</Div>
-                default:
-                  return <div>알 수 없는 접두사입니다</div>
-              }
-            })}
-          </Grid>
+        <Grid>
+          {whenWhats?.map((whenWhat, i) => {
+            switch (whenWhat[0]) {
+              case '@':
+                return (
+                  <>
+                    <ClockIcon />
+                    <H3 key={i}>{whenWhat.substring(1)}</H3>
+                  </>
+                )
+              case '#':
+                return <H4 key={i}>{whenWhat.substring(1)}</H4>
+              case '!':
+                return <Div key={i}>{whenWhat.substring(1)}</Div>
+              default:
+                return <div>알 수 없는 접두사입니다</div>
+            }
+          })}
+        </Grid>
 
-          <HorizontalBorder />
+        <HorizontalBorder />
 
-          <Link href={`${router.asPath}/review`} passHref>
-            <a>후기 쓰기</a>
-          </Link>
-        </Padding>
+        <Link href={`${router.asPath}/review`} passHref>
+          <a>후기 쓰기</a>
+        </Link>
+      </Padding>
 
-        <Sticky>
-          <GreyText>
-            현재 <span>1</span>명이 보고 있어요
-          </GreyText>
-          <PrimaryButton disabled={zoom?.isJoined || !zoomId} onClick={joinZoom}>
-            {zoom?.isJoined ? (
-              <span>신청 완료했어요</span>
-            ) : (
-              <>
-                <span>신청하기</span> (무료)
-              </>
-            )}
-          </PrimaryButton>
-        </Sticky>
-      </div>
+      <GridUl>
+        {zoomReviews
+          ? zoomReviews.map((zoomReview, i) => (
+              <ZoomReviewCard key={i} zoomReview={zoomReview as ZoomReview} />
+            ))
+          : !isZoomReviewLoading && <div>최신 후기가 없어요</div>}
+        {isZoomReviewLoading && (
+          <>
+            <ZoomReviewLoadingCard />
+            <ZoomReviewLoadingCard />
+          </>
+        )}
+      </GridUl>
+      {!isZoomReviewLoading && hasMoreData && <div ref={infiniteScrollRef}>무한 스크롤</div>}
+      {!hasMoreData && <div>모든 후기를 불러왔어요</div>}
+
+      <Sticky>
+        <GreyText>
+          현재 <span>1</span>명이 보고 있어요
+        </GreyText>
+        <PrimaryButton disabled={zoom?.isJoined || !zoomId} onClick={joinZoom}>
+          {zoom?.isJoined ? (
+            <span>신청 완료했어요</span>
+          ) : (
+            <>
+              <span>신청하기</span> (무료)
+            </>
+          )}
+        </PrimaryButton>
+      </Sticky>
     </PageHead>
   )
 }

@@ -16,6 +16,10 @@ const typePolicies: TypedTypePolicies = {
         merge: infiniteScroll,
         keyArgs: [],
       },
+      zoomReviews: {
+        merge: infiniteScroll,
+        keyArgs: [],
+      },
     },
   },
   Post: {
