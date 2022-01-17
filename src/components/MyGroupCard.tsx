@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ALPACA_SALON_DARK_GREY_COLOR } from 'src/models/constants'
 import styled from 'styled-components'
+import { Skeleton } from 'src/styles'
 
 const Li = styled.li`
   display: grid;
@@ -34,6 +35,52 @@ const Grid = styled.div`
 const DarkGreyText = styled.div`
   color: ${ALPACA_SALON_DARK_GREY_COLOR};
 `
+
+const LoadingCard = styled.div`
+  margin: 0 1rem;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: white;
+`
+const TextBox = styled.div`
+  padding: 2rem 0.65rem;
+  display: grid;
+  gap: 0.6rem;
+
+  > div:first-child {
+    margin-bottom: 0.1rem;
+  }
+`
+
+const Grid1 = styled(Grid)`
+  align-content: space-evenly;
+`
+
+export function GroupLoadingCard() {
+  return (
+    <LoadingCard>
+      <Skeleton height="8rem" borderRadius="0%" />
+      <TextBox>
+        <Skeleton width="70%" />
+        <Skeleton width="80%" />
+        <Skeleton width="15%" background="#fee" />
+      </TextBox>
+    </LoadingCard>
+  )
+}
+
+export function MyGroupLoadingCard() {
+  return (
+    <Li>
+      <Skeleton width="5.5rem" height="5.5rem" borderRadius="10px" />
+      <Grid1>
+        <Skeleton width="60%" />
+        <Skeleton width="90%" />
+      </Grid1>
+    </Li>
+  )
+}
 
 type Props2 = {
   group: any
