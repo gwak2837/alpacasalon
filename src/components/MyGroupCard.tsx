@@ -1,8 +1,8 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ALPACA_SALON_DARK_GREY_COLOR } from 'src/models/constants'
-import styled from 'styled-components'
 import { Skeleton } from 'src/styles'
+import styled from 'styled-components'
 
 const Li = styled.li`
   display: grid;
@@ -27,8 +27,9 @@ const FlexCenter = styled.div`
   align-items: center;
 `
 
-const Grid = styled.div`
+const GridCenter = styled.div`
   display: grid;
+  align-items: center;
   gap: 0.5rem;
 `
 
@@ -36,54 +37,17 @@ const DarkGreyText = styled.div`
   color: ${ALPACA_SALON_DARK_GREY_COLOR};
 `
 
-const LoadingCard = styled.div`
-  margin-bottom: 1.7rem;
-  border: 1px solid #eee;
-  border-radius: 20px;
-  overflow: hidden;
-  background-color: white;
-`
-
-const LoadingMyCard = styled(Li)`
-  margin: 1rem 0;
-`
-
-const TextBox = styled.div`
-  padding: 2rem 0.65rem;
-  display: grid;
-  gap: 0.6rem;
-
-  > div:first-child {
-    margin-bottom: 0.1rem;
-  }
-`
-
-const Grid1 = styled(Grid)`
-  align-content: space-evenly;
-`
-
-export function GroupLoadingCard() {
-  return (
-    <LoadingCard>
-      <Skeleton height="8rem" borderRadius="0%" />
-      <TextBox>
-        <Skeleton width="70%" />
-        <Skeleton width="80%" />
-        <Skeleton width="15%" background="#fee" />
-      </TextBox>
-    </LoadingCard>
-  )
-}
-
 export function MyGroupLoadingCard() {
   return (
-    <LoadingMyCard>
-      <Skeleton width="5.5rem" height="5.5rem" borderRadius="10px" />
-      <Grid1>
-        <Skeleton width="60%" />
+    <Li>
+      <SquareFrame>
+        <Skeleton height="100%" />
+      </SquareFrame>
+      <GridCenter>
+        <Skeleton width="30%" />
         <Skeleton width="90%" />
-      </Grid1>
-    </LoadingMyCard>
+      </GridCenter>
+    </Li>
   )
 }
 
@@ -105,12 +69,12 @@ function MyGroupCard({ group }: Props2) {
         />
       </SquareFrame>
       <FlexCenter>
-        <Grid>
+        <GridCenter>
           <h3>{group.name}</h3>
           {group.newPostCount > 0 && (
             <DarkGreyText>하루 동안 새로운 게시물이 {group.newPostCount}개 올라왔어요</DarkGreyText>
           )}
-        </Grid>
+        </GridCenter>
       </FlexCenter>
     </Li>
   )

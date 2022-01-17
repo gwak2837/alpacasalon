@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { Skeleton } from 'src/styles'
 import PeopleIcon from 'src/svgs/people.svg'
 import styled from 'styled-components'
 
@@ -37,6 +38,27 @@ const FlexCenter = styled.div`
   align-items: center;
   gap: 0.3rem;
 `
+
+export function GroupLoadingCard() {
+  return (
+    <Li>
+      <Frame16to5>
+        <Skeleton height="100%" />
+      </Frame16to5>
+      <Padding>
+        <div>
+          <Skeleton width="30%" />
+          <Skeleton />
+          <Skeleton width="70%" />
+        </div>
+
+        <FlexCenter>
+          <PeopleIcon width="1.5rem" /> <Skeleton width="3rem" inlineBlock />명
+        </FlexCenter>
+      </Padding>
+    </Li>
+  )
+}
 
 type Props = {
   group: any

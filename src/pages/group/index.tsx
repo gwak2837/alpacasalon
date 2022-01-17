@@ -3,9 +3,9 @@ import { useRouter } from 'next/router'
 import React, { ReactElement } from 'react'
 import { useRecoilValue } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
-import MyGroupCard, { GroupLoadingCard, MyGroupLoadingCard } from 'src/components/MyGroupCard'
+import MyGroupCard, { MyGroupLoadingCard } from 'src/components/MyGroupCard'
 import PageHead from 'src/components/PageHead'
-import RecommendedGroupCard from 'src/components/RecommendedGroupCard'
+import RecommendedGroupCard, { GroupLoadingCard } from 'src/components/RecommendedGroupCard'
 import {
   useMyGroupsQuery,
   useRecommendationGroupsQuery,
@@ -15,6 +15,7 @@ import PostTab from 'src/layouts/PostTab'
 import { ALPACA_SALON_DARK_GREY_COLOR } from 'src/models/constants'
 import { currentUser } from 'src/models/recoil'
 import styled from 'styled-components'
+
 import { FetchedAllData } from '../zoom/index'
 
 export const Background = styled.div`
@@ -89,33 +90,37 @@ export default function GroupsPage() {
             <A>새 그룹 만들기</A>
           </Link>
         </Flex>
-        {isRecommendedGroupLoading && (
-          <Loading>
-            <GroupLoadingCard />
-            <H2>내 그룹</H2>
-            <MyGroupLoadingCard />
-            <MyGroupLoadingCard />
-          </Loading>
-        )}
 
         <Slider>
-          {recommendationGroups?.map((group) => (
-            <RecommendedGroupCard key={group.id} group={group} />
-          ))}
+          {recommendationGroups && recommendationGroups.length > 0 ? (
+            recommendationGroups.map((group) => (
+              <RecommendedGroupCard key={group.id} group={group} />
+            ))
+          ) : (
+            <div>추천 그룹이 없어요</div>
+          )}
+          {isRecommendedGroupLoading && (
+            <>
+              <GroupLoadingCard />
+              <GroupLoadingCard />
+            </>
+          )}
         </Slider>
+
         {nickname && (
           <Padding>
-            {myGroups ? (
-              <>
-                <H2>내 그룹 {myGroups.length}개</H2>
-                {isMyGroupLoading && <MyGroupLoadingCard />}
-                {myGroups?.map((group) => (
-                  <MyGroupCard key={group.id} group={group} />
-                ))}
-              </>
-            ) : (
-              <FetchedAllData>내 그룹이 없어요</FetchedAllData>
-            )}
+            {myGroups &&
+              (myGroups.length > 0 ? (
+                <>
+                  <H2>내 그룹 {myGroups.length}개</H2>
+                  {myGroups.map((group) => (
+                    <MyGroupCard key={group.id} group={group} />
+                  ))}
+                </>
+              ) : (
+                <FetchedAllData>내 그룹이 없어요</FetchedAllData>
+              ))}
+            {isMyGroupLoading && <MyGroupLoadingCard />}
           </Padding>
         )}
       </Background>
