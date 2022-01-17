@@ -116,7 +116,6 @@ const H2 = styled.h2`
 
 const H3 = styled.h3`
   color: ${ALPACA_SALON_COLOR};
-  /* padding: 0 0 1rem; */
 `
 
 const H4 = styled.h4`
@@ -129,6 +128,23 @@ const Div = styled.div`
 
 const GridUl = styled.ul`
   display: grid;
+  gap: 1rem;
+`
+
+const FlexBetweenStart = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding: 0 0 0.6rem;
+`
+
+const ReviewH3 = styled.h3`
+  font-size: 1.25rem;
+`
+
+const A = styled.a`
+  color: ${ALPACA_SALON_DARK_GREY_COLOR};
 `
 
 const limit = 10
@@ -254,26 +270,29 @@ export default function ZoomPage() {
 
         <HorizontalBorder />
 
-        <Link href={`${router.asPath}/review`} passHref>
-          <a>후기 쓰기</a>
-        </Link>
-      </Padding>
+        <FlexBetweenStart>
+          <ReviewH3>이전 회차 후기</ReviewH3>
+          <Link href={`${router.asPath}/review`} passHref>
+            <A>후기 쓰기</A>
+          </Link>
+        </FlexBetweenStart>
 
-      <GridUl>
-        {zoomReviews
-          ? zoomReviews.map((zoomReview, i) => (
-              <ZoomReviewCard key={i} zoomReview={zoomReview as ZoomReview} />
-            ))
-          : !isZoomReviewLoading && <div>최신 후기가 없어요</div>}
-        {isZoomReviewLoading && (
-          <>
-            <ZoomReviewLoadingCard />
-            <ZoomReviewLoadingCard />
-          </>
-        )}
-      </GridUl>
-      {!isZoomReviewLoading && hasMoreData && <div ref={infiniteScrollRef}>무한 스크롤</div>}
-      {!hasMoreData && <div>모든 후기를 불러왔어요</div>}
+        <GridUl>
+          {zoomReviews
+            ? zoomReviews.map((zoomReview, i) => (
+                <ZoomReviewCard key={i} zoomReview={zoomReview as ZoomReview} />
+              ))
+            : !isZoomReviewLoading && <div>최신 후기가 없어요</div>}
+          {isZoomReviewLoading && (
+            <>
+              <ZoomReviewLoadingCard />
+              <ZoomReviewLoadingCard />
+            </>
+          )}
+        </GridUl>
+        {!isZoomReviewLoading && hasMoreData && <div ref={infiniteScrollRef}>무한 스크롤</div>}
+        {!hasMoreData && <div>모든 후기를 불러왔어요</div>}
+      </Padding>
 
       <Sticky>
         <GreyText>
