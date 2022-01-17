@@ -19,6 +19,7 @@ import BackIcon from 'src/svgs/back-icon.svg'
 import CalenderIcon from 'src/svgs/calender.svg'
 import ClockIcon from 'src/svgs/clock.svg'
 import styled from 'styled-components'
+import { FetchedAllData } from '../index'
 
 const Frame4to3 = styled.div`
   aspect-ratio: 4 / 3;
@@ -273,7 +274,7 @@ export default function ZoomPage() {
         )}
       </GridUl>
       {!isZoomReviewLoading && hasMoreData && <div ref={infiniteScrollRef}>무한 스크롤</div>}
-      {!hasMoreData && <div>모든 후기를 불러왔어요</div>}
+      {!hasMoreData && <FetchedAllData>모든 후기를 불러왔어요</FetchedAllData>}
 
       <Sticky>
         <GreyText>
