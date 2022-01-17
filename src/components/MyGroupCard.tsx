@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ALPACA_SALON_DARK_GREY_COLOR } from 'src/models/constants'
+import { Skeleton } from 'src/styles'
 import styled from 'styled-components'
 
 const Li = styled.li`
@@ -26,14 +27,29 @@ const FlexCenter = styled.div`
   align-items: center;
 `
 
-const Grid = styled.div`
+const GridCenter = styled.div`
   display: grid;
+  align-items: center;
   gap: 0.5rem;
 `
 
 const DarkGreyText = styled.div`
   color: ${ALPACA_SALON_DARK_GREY_COLOR};
 `
+
+export function MyGroupLoadingCard() {
+  return (
+    <Li>
+      <SquareFrame>
+        <Skeleton height="100%" />
+      </SquareFrame>
+      <GridCenter>
+        <Skeleton width="30%" />
+        <Skeleton width="90%" />
+      </GridCenter>
+    </Li>
+  )
+}
 
 type Props2 = {
   group: any
@@ -53,12 +69,12 @@ function MyGroupCard({ group }: Props2) {
         />
       </SquareFrame>
       <FlexCenter>
-        <Grid>
+        <GridCenter>
           <h3>{group.name}</h3>
           {group.newPostCount > 0 && (
             <DarkGreyText>하루 동안 새로운 게시물이 {group.newPostCount}개 올라왔어요</DarkGreyText>
           )}
-        </Grid>
+        </GridCenter>
       </FlexCenter>
     </Li>
   )

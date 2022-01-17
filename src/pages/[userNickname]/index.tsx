@@ -21,6 +21,7 @@ import { currentUser } from 'src/models/recoil'
 import HeartIcon from 'src/svgs/HeartIcon'
 import SettingIcon from 'src/svgs/setting.svg'
 import { getUserNickname } from 'src/utils'
+import { FetchedAllData } from '../zoom'
 import styled from 'styled-components'
 
 const Background = styled.div`
@@ -274,7 +275,7 @@ export default function UserPage() {
               ? notifications.map((notification) => (
                   <NotificationCard key={notification.id} notification={notification} />
                 ))
-              : !notificationLoading && <div>알림이 없어요</div>}
+              : !notificationLoading && <FetchedAllData>알림이 없어요</FetchedAllData>}
             {notificationLoading && (
               <>
                 <NotificationLoadingCard />
@@ -285,7 +286,7 @@ export default function UserPage() {
           {!notificationLoading && hasMoreData && (
             <div ref={notificationInfiniteScrollRef}>무한 스크롤</div>
           )}
-          {!hasMoreData && <div>모든 알림을 불러왔어요</div>}
+          {!hasMoreData && <FetchedAllData>모든 알림을 불러왔어요</FetchedAllData>}
         </ContentBox>
       </Background>
     </PageHead>

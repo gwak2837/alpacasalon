@@ -22,10 +22,10 @@ const H2 = styled.h2`
   font-weight: 500;
 `
 
-const PostText = styled.div`
+export const FetchedAllData = styled.div`
   color: ${ALPACA_SALON_DARK_GREY_COLOR};
   text-align: center;
-  margin-bottom: 15px;
+  margin: 15px 0;
 `
 
 const description = ''
@@ -75,7 +75,7 @@ export default function ZoomsPage() {
             </>
           )}
           {!loading && hasMoreData && <div ref={infiniteScrollRef}>무한 스크롤</div>}
-          {!hasMoreData && <PostText>모든 게시글을 불러왔어요</PostText>}
+          {!hasMoreData && <FetchedAllData>모든 게시글을 불러왔어요</FetchedAllData>}
         </Ul>
       </Background>
     </PageHead>
