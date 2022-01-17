@@ -1,8 +1,32 @@
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { ZoomReview } from 'src/graphql/generated/types-and-hooks'
+import { ALPACA_SALON_GREY_COLOR } from 'src/models/constants'
+import { H5 } from 'src/pages/post/[id]'
 import { Skeleton } from 'src/styles'
+import { stopPropagation } from 'src/utils'
 import styled from 'styled-components'
 
+import { SquareWidth } from './PostCard'
+
 const Li = styled.li`
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 20px;
   overflow: auto;
+
+  padding: 0.6rem;
+`
+
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`
+
+const DisabledH5 = styled.h5`
+  color: ${ALPACA_SALON_GREY_COLOR};
 `
 
 export function ZoomReviewLoadingCard() {
@@ -14,11 +38,54 @@ export function ZoomReviewLoadingCard() {
 }
 
 type Props = {
-  zoomReview: any
+  zoomReview: ZoomReview
 }
 
 function ZoomReviewCard({ zoomReview }: Props) {
-  return <Li>{JSON.stringify(zoomReview, null, 2)}</Li>
+  const writer = zoomReview.writer
+  const router = useRouter()
+
+  function goToPostDetailPage() {
+    router.push(`/zoom/${zoomReview.id}`)
+  }
+
+  function goToUserPage(e: any) {
+    if (writer) {
+      e.stopPropagation()
+      router.push(`/@${writer.nickname}`)
+    }
+  }
+
+  return (
+    <Li>
+      {writer ? (
+        <Flex>
+          <SquareWidth>
+            <Image
+              src={writer?.imageUrl ?? '/images/default-profile-image.webp'}
+              alt="profile image"
+              layout="fill"
+              objectFit="cover"
+              onClick={goToUserPage}
+            />
+          </SquareWidth>
+          <div>
+            <Link href={`/@${writer.nickname}`} passHref>
+              <a onClick={stopPropagation} role="link" tabIndex={0}>
+                <H5>{writer.nickname}</H5>
+              </a>
+            </Link>
+            {zoomReview.creationTime}
+          </div>
+        </Flex>
+      ) : (
+        <DisabledH5 onClick={stopPropagation} role="link" tabIndex={0}>
+          탈퇴한 사용자
+        </DisabledH5>
+      )}
+      {zoomReview.contents}
+    </Li>
+  )
 }
 
 export default ZoomReviewCard
