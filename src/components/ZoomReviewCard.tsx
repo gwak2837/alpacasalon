@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ZoomReview } from 'src/graphql/generated/types-and-hooks'
+import { ALPACA_SALON_GREY_COLOR } from 'src/models/constants'
 import { H5 } from 'src/pages/post/[id]'
 import { Skeleton } from 'src/styles'
 import { stopPropagation } from 'src/utils'
@@ -22,6 +23,10 @@ const Flex = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+`
+
+const DisabledH5 = styled.h5`
+  color: ${ALPACA_SALON_GREY_COLOR};
 `
 
 export function ZoomReviewLoadingCard() {
@@ -74,9 +79,9 @@ function ZoomReviewCard({ zoomReview }: Props) {
           </div>
         </Flex>
       ) : (
-        <H5 disabled onClick={stopPropagation} role="link" tabIndex={0}>
+        <DisabledH5 onClick={stopPropagation} role="link" tabIndex={0}>
           탈퇴한 사용자
-        </H5>
+        </DisabledH5>
       )}
       {zoomReview.contents}
     </Li>
