@@ -92,13 +92,14 @@ export default function GroupsPage() {
         </Flex>
 
         <Slider>
-          {recommendationGroups && recommendationGroups.length > 0 ? (
-            recommendationGroups.map((group) => (
-              <RecommendedGroupCard key={group.id} group={group} />
-            ))
-          ) : (
-            <div>추천 그룹이 없어요</div>
-          )}
+          {recommendationGroups &&
+            (recommendationGroups.length > 0 ? (
+              recommendationGroups.map((group) => (
+                <RecommendedGroupCard key={group.id} group={group} />
+              ))
+            ) : (
+              <div>추천 그룹이 없어요</div>
+            ))}
           {isRecommendedGroupLoading && (
             <>
               <GroupLoadingCard />
