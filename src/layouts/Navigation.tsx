@@ -93,7 +93,7 @@ function Navigation({ children }: Props) {
   const { nickname, hasNewNotifications } = useRecoilValue(currentUser)
 
   const isHomePageSelected = asPath === '/'
-  const isPostsPageSelected = asPath.startsWith('/post')
+  const isPostsPageSelected = asPath.startsWith('/post') || asPath.startsWith('/group')
   const isZoomsPageSelected = asPath.startsWith('/zoom')
   const isMyPageSelected = asPath.startsWith(encodeURI(`/@${nickname}`))
 
