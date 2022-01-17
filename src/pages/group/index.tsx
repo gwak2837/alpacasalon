@@ -60,6 +60,10 @@ const Slider = styled.ul`
   }
 `
 
+const Loading = styled.div`
+  padding: 0 1rem;
+`
+
 const description = ''
 
 export default function GroupsPage() {
@@ -85,7 +89,14 @@ export default function GroupsPage() {
             <A>새 그룹 만들기</A>
           </Link>
         </Flex>
-        {isRecommendedGroupLoading && <GroupLoadingCard />}
+        {isRecommendedGroupLoading && (
+          <Loading>
+            <GroupLoadingCard />
+            <H2>내 그룹</H2>
+            <MyGroupLoadingCard />
+            <MyGroupLoadingCard />
+          </Loading>
+        )}
 
         <Slider>
           {recommendationGroups?.map((group) => (

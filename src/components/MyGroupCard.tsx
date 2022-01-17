@@ -37,12 +37,17 @@ const DarkGreyText = styled.div`
 `
 
 const LoadingCard = styled.div`
-  margin: 0 1rem;
+  margin-bottom: 1.7rem;
   border: 1px solid #eee;
   border-radius: 20px;
   overflow: hidden;
   background-color: white;
 `
+
+const LoadingMyCard = styled(Li)`
+  margin: 1rem 0;
+`
+
 const TextBox = styled.div`
   padding: 2rem 0.65rem;
   display: grid;
@@ -72,13 +77,13 @@ export function GroupLoadingCard() {
 
 export function MyGroupLoadingCard() {
   return (
-    <Li>
+    <LoadingMyCard>
       <Skeleton width="5.5rem" height="5.5rem" borderRadius="10px" />
       <Grid1>
         <Skeleton width="60%" />
         <Skeleton width="90%" />
       </Grid1>
-    </Li>
+    </LoadingMyCard>
   )
 }
 

@@ -275,7 +275,7 @@ export default function UserPage() {
               ? notifications.map((notification) => (
                   <NotificationCard key={notification.id} notification={notification} />
                 ))
-              : !notificationLoading && <div>알림이 없어요</div>}
+              : !notificationLoading && <FetchedAllData>알림이 없어요</FetchedAllData>}
             {notificationLoading && (
               <>
                 <NotificationLoadingCard />
