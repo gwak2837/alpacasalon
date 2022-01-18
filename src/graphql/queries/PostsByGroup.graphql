@@ -10,5 +10,9 @@ query PostsByGroup($groupId: ID!) {
       nickname
       imageUrl
     }
+    group {
+      id
+      isJoined
+    }
   }
 }

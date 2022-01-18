@@ -236,7 +236,9 @@ export default function GroupPage() {
 
         <Grid>
           {posts?.map((post) => (
-            <PostCard key={post.id} post={post as Post} />
+            <>
+              <PostCard key={post.id} post={post as Post} />
+            </>
           ))}
         </Grid>
 
