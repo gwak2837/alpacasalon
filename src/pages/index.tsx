@@ -22,9 +22,9 @@ const Sticky = styled.div`
   align-items: center;
 
   > svg {
-    width: 100%;
-    /* height: 100%; */
-    /* padding: 0.5rem; */
+    width: 15rem;
+    height: 100%;
+    padding: 0.5rem;
   }
 `
 
