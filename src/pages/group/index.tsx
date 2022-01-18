@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import React, { ReactElement } from 'react'
 import { useRecoilValue } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
@@ -59,10 +58,6 @@ const Slider = styled.ul`
     scroll-snap-align: center;
     flex: 0 0 94%;
   }
-`
-
-const Loading = styled.div`
-  padding: 0 1rem;
 `
 
 const description = ''

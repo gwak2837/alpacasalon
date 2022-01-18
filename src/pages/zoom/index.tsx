@@ -29,7 +29,7 @@ export const FetchedAllData = styled.div`
 `
 
 const description = ''
-const limit = 5
+const limit = 10
 
 export default function ZoomsPage() {
   const [hasMoreData, setHasMoreData] = useState(true)

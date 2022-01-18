@@ -73,7 +73,7 @@ export default function PostUpdatePage() {
     reValidateMode: 'onBlur',
   })
 
-  const { loading } = usePostQuery({
+  const { loading: isPostLoading } = usePostQuery({
     onCompleted: ({ post }) => {
       if (post) {
         prevPostData.current = {
@@ -145,6 +145,13 @@ export default function PostUpdatePage() {
   }
 
   async function updatePost(postUpdateInput: PostUpdateInput) {
+    if (
+      prevPostData.current?.title === postUpdateInput.title &&
+      prevPostData.current?.contents === postUpdateInput.contents &&
+      isArrayEqual(prevPostData.current?.imageUrls, oldImageInfos)
+    )
+      return
+
     setIsPostUpdateLoading(true)
     const variables: UpdatePostMutationVariables = {
       input: {
@@ -202,7 +209,7 @@ export default function PostUpdatePage() {
           <XIcon onClick={goBack} />
           <AbsoluteH3>수정하기</AbsoluteH3>
           <TransparentButton
-            disabled={loading || !isEmpty(errors) || isPostUpdateLoading}
+            disabled={isPostLoading || !isEmpty(errors) || isPostUpdateLoading}
             type="submit"
           >
             완료
@@ -211,13 +218,13 @@ export default function PostUpdatePage() {
 
         <GridContainer>
           <Input
-            disabled={loading || isPostUpdateLoading}
+            disabled={isPostLoading || isPostUpdateLoading}
             erred={Boolean(errors.title)}
             placeholder="안녕하세요 우아한 알파카님. 평소에 궁금했던 것을 물어보세요."
             {...register('title', { required: '글 제목을 작성한 후 완료를 눌러주세요' })}
           />
           <Textarea
-            disabled={loading || isPostUpdateLoading}
+            disabled={isPostLoading || isPostUpdateLoading}
             onKeyDown={submitWhenShiftEnter}
             onInput={resizeTextareaHeight}
             placeholder="Shift+Enter키로 글을 작성할 수 있어요"
@@ -245,13 +252,13 @@ export default function PostUpdatePage() {
           <Slide
             flexBasis={oldImageInfos.length === 0 && newImageInfos.length === 0 ? '100%' : '96%'}
           >
-            <FileInputLabel disabled={loading || isPostUpdateLoading} htmlFor="images">
+            <FileInputLabel disabled={isPostLoading || isPostUpdateLoading} htmlFor="images">
               <FileUploadIcon />
               <GreyH3>사진을 추가해주세요</GreyH3>
             </FileInputLabel>
             <FileInput
               accept="image/*"
-              disabled={loading || isPostUpdateLoading}
+              disabled={isPostLoading || isPostUpdateLoading}
               id="images"
               multiple
               onChange={createPreviewImages}
