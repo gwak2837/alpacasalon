@@ -102,11 +102,11 @@ function ZoomReviewCard({ zoomReview }: Props) {
   }
 
   function changeDate() {
-    const today = moment().format('YYYY-MM-DD')
-    const createDate = moment(zoomReview.creationTime).format('YYYY-MM-DD')
+    const today = moment().format('YYYY.MM.DD')
+    const createDate = moment(zoomReview.creationTime).format('YYYY.MM.DD')
     const date = moment(today).diff(moment(createDate), 'days')
 
-    return date === 0 ? '오늘' : date + '일 전'
+    return date === 0 ? '오늘' : date < 8 ? date + '일 전' : createDate
   }
 
   return (
