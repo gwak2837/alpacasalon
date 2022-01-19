@@ -8,7 +8,7 @@ import {
   ALPACA_SALON_DARK_GREY_COLOR,
   ALPACA_SALON_GREY_COLOR,
 } from 'src/models/constants'
-import { H5 } from 'src/pages/post/[id]'
+import { GridGap, H5 } from 'src/pages/post/[id]'
 import { Skeleton } from 'src/styles'
 import { stopPropagation } from 'src/utils'
 import LikeIcon from 'src/svgs/zoomReviewLikeIcon.svg'
@@ -59,10 +59,24 @@ const Button = styled.button`
   }
 `
 
+const GridLi = styled.li`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  margin-bottom: 1rem;
+  gap: 0.9rem;
+`
+
 export function ZoomReviewLoadingCard() {
   return (
     <Li>
-      <Skeleton />
+      <GridLi>
+        <Skeleton width="2.3rem" height="2.3rem" borderRadius="100%" />
+        <GridGap>
+          <Skeleton width="5.5rem" height="1rem" />
+          <Skeleton width="3.5rem" height="1rem" />
+        </GridGap>
+      </GridLi>
+      <Skeleton width="80%" />
     </Li>
   )
 }
@@ -93,8 +107,6 @@ function ZoomReviewCard({ zoomReview }: Props) {
 
     return date === 0 ? '오늘' : date + '일 전'
   }
-
-  console.log(zoomReview)
 
   return (
     <Li>
