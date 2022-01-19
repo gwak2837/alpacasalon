@@ -2,7 +2,7 @@ import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ZoomReview } from 'src/graphql/generated/types-and-hooks'
+import { Maybe, User, ZoomReview } from 'src/graphql/generated/types-and-hooks'
 import {
   ALPACA_SALON_COLOR,
   ALPACA_SALON_DARK_GREY_COLOR,
@@ -67,6 +67,14 @@ const GridLi = styled.li`
   gap: 0.9rem;
 `
 
+function changeDate(time: string) {
+  const today = moment().format('YYYY.MM.DD')
+  const createDate = moment(time).format('YYYY.MM.DD')
+  const date = moment(today).diff(moment(createDate), 'days')
+
+  return date === 0 ? '오늘' : date < 8 ? date + '일 전' : createDate
+}
+
 export function ZoomReviewLoadingCard() {
   return (
     <Li>
@@ -101,14 +109,6 @@ function ZoomReviewCard({ zoomReview }: Props) {
     }
   }
 
-  function changeDate() {
-    const today = moment().format('YYYY.MM.DD')
-    const createDate = moment(zoomReview.creationTime).format('YYYY.MM.DD')
-    const date = moment(today).diff(moment(createDate), 'days')
-
-    return date === 0 ? '오늘' : date < 8 ? date + '일 전' : createDate
-  }
-
   return (
     <Li>
       {writer ? (
@@ -128,7 +128,7 @@ function ZoomReviewCard({ zoomReview }: Props) {
                 <H5>{writer.nickname}</H5>
               </a>
             </Link>
-            <Date>{changeDate()}</Date>
+            <Date>{changeDate(zoomReview.creationTime)}</Date>
           </div>
         </Flex>
       ) : (
