@@ -1,4 +1,3 @@
-import Inko from 'inko'
 import { NextRouter } from 'next/router'
 import { KeyboardEvent, MouseEvent } from 'react'
 
@@ -9,8 +8,6 @@ export function stopPropagation(e: MouseEvent<HTMLElement>) {
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
-
-export const { ko2en } = new Inko()
 
 export function getUserNickname(router: NextRouter) {
   return ((router.query.userNickname ?? '') as string).slice(1)
