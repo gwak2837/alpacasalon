@@ -24,7 +24,7 @@ const ReviewHeader = styled.header`
   align-items: center;
 `
 
-const XButton = styled.button`
+export const XButton = styled.button`
   display: flex;
   align-items: center;
   padding: 1rem;
@@ -40,7 +40,7 @@ const ReviewContent = styled.div`
   padding: 20px;
 `
 
-const ContentText = styled.div`
+export const ContentText = styled.div`
   text-align: center;
   flex-direction: column;
   justify-content: center;
@@ -50,7 +50,7 @@ const Text = styled.div`
   color: ${ALPACA_SALON_DARK_GREY_COLOR};
 `
 
-const ReviewTitle = styled.div`
+export const ReviewTitle = styled.div`
   margin: 25px 0 10px;
   font-size: 24px;
   font-weight: 500;

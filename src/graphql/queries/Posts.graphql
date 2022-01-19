@@ -14,6 +14,7 @@ query Posts($pagination: Pagination!) {
     group {
       id
       name
+      isJoined
     }
   }
 }
