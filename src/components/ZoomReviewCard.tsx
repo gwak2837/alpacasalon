@@ -11,10 +11,11 @@ import {
 import { GridGap, H5 } from 'src/pages/post/[id]'
 import { Skeleton } from 'src/styles'
 import { stopPropagation } from 'src/utils'
-import LikeIcon from 'src/svgs/zoomReviewLikeIcon.svg'
+import LikeIcon from 'src/svgs/ZoomReviewLikeIcon'
 import styled from 'styled-components'
-
 import { SquareWidth } from './PostCard'
+
+const isLiked = false
 
 const Li = styled.li`
   background: #fff;
@@ -40,16 +41,16 @@ const DisabledH5 = styled.h5`
 `
 
 const Content = styled.div`
-  margin: 0.5rem 0;
+  margin: 0.5rem 0 1rem;
 `
 
-const Button = styled.button`
+const Button = styled.button<{ isLiked: boolean }>`
   display: flex;
   padding: 5px 10px;
   font-size: 14px;
   justify-content: center;
   align-items: center;
-  border: 1px solid #eeeeee;
+  border: 1px solid ${(p) => (p.isLiked ? ALPACA_SALON_COLOR : '#eeeeee')};
   border-radius: 50px;
   gap: 0.3rem;
 
@@ -136,8 +137,8 @@ function ZoomReviewCard({ zoomReview }: Props) {
         </DisabledH5>
       )}
       <Content>{zoomReview.contents}</Content>
-      <Button>
-        <LikeIcon />
+      <Button isLiked={isLiked}>
+        <LikeIcon isLiked={isLiked} />
         도움이 돼요
         <span>{/* 좋아요 수 */}</span>
       </Button>
