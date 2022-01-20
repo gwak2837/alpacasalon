@@ -7,43 +7,43 @@ import { ALPACA_SALON_COLOR, ALPACA_SALON_DARK_GREY_COLOR } from 'src/models/con
 
 const description = ''
 
-const Grid = styled.div`
+export const Grid = styled.div`
   display: grid;
   height: 100vh;
   padding: 20px;
 `
 
-const JoinHeader = styled.header`
+export const JoinHeader = styled.header`
   display: flex;
   justify-content: flex-end;
   align-items: center;
 `
 
-const JoinContent = styled.div`
+export const JoinContent = styled.div`
   display: flex;
   flex-direction: column;
   text-align: center;
   justify-content: center;
 `
 
-const JoinText = styled.div`
+export const JoinText = styled.div`
   margin-top: 30px;
   font-weight: 300;
 `
 
-const JoinFooter = styled.div`
+export const JoinFooter = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 2rem;
 `
 
-const Button = styled.button`
+export const Button = styled.button`
   color: ${ALPACA_SALON_DARK_GREY_COLOR};
-  margin: 35px 0 15px;
 `
 
-const JoinGroupButton = styled.button`
+export const JoinGroupButton = styled.button`
   width: 100%;
   color: white;
   padding: 17px 0;
