@@ -24,7 +24,6 @@ import { FileInput } from '../post/create'
 const FlexContainerHeight100 = styled.div`
   display: flex;
   flex-flow: column;
-  height: 100vh;
 
   > :last-child {
     flex-grow: 1;

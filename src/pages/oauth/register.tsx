@@ -31,7 +31,6 @@ const H4 = styled.h4`
 const FlexContainerGrow = styled.div`
   display: flex;
   flex-flow: column;
-  height: 100vh;
   padding: 2rem 0.6rem 0;
 
   > form > :last-child {
