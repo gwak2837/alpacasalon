@@ -2,7 +2,12 @@ import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Maybe, User, ZoomReview } from 'src/graphql/generated/types-and-hooks'
+import { memo } from 'react'
+import { toastApolloError } from 'src/apollo/error'
+import {
+  ZoomReview,
+  useToggleLikingZoomReviewMutation,
+} from 'src/graphql/generated/types-and-hooks'
 import {
   ALPACA_SALON_COLOR,
   ALPACA_SALON_DARK_GREY_COLOR,
@@ -10,9 +15,10 @@ import {
 } from 'src/models/constants'
 import { GridGap, H5 } from 'src/pages/post/[id]'
 import { Skeleton } from 'src/styles'
-import { stopPropagation } from 'src/utils'
 import LikeIcon from 'src/svgs/ZoomReviewLikeIcon'
+import { stopPropagation } from 'src/utils'
 import styled from 'styled-components'
+
 import { SquareWidth } from './PostCard'
 
 const isLiked = false
@@ -98,8 +104,18 @@ function ZoomReviewCard({ zoomReview }: Props) {
   const writer = zoomReview.writer
   const router = useRouter()
 
-  function goToPostDetailPage() {
-    router.push(`/zoom/${zoomReview.id}`)
+  // function goToZoomReviewDetailPage() {
+  //   router.push(`/zoom/${zoomReview.id}`)
+  // }
+
+  const [toggleLikingZoomReviewMutation, { loading: toggleLikingZoomReviewLoading }] =
+    useToggleLikingZoomReviewMutation({
+      onError: toastApolloError,
+      variables: { id: zoomReview.id },
+    })
+
+  function toggleLikingZoomReview() {
+    toggleLikingZoomReviewMutation()
   }
 
   function goToUserPage(e: any) {
@@ -137,13 +153,17 @@ function ZoomReviewCard({ zoomReview }: Props) {
         </DisabledH5>
       )}
       <Content>{zoomReview.contents}</Content>
-      <Button isLiked={isLiked}>
-        <LikeIcon isLiked={isLiked} />
+      <Button
+        disabled={toggleLikingZoomReviewLoading}
+        isLiked={zoomReview.isLiked}
+        onClick={toggleLikingZoomReview}
+      >
+        <LikeIcon isLiked={zoomReview.isLiked} />
         도움이 돼요
-        <span>{/* 좋아요 수 */}</span>
+        <span>{zoomReview.likedCount}</span>
       </Button>
     </Li>
   )
 }
 
-export default ZoomReviewCard
+export default memo(ZoomReviewCard)

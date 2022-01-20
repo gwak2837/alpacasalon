@@ -3,6 +3,8 @@ query ZoomReviews($zoomId: ID!, $pagination: Pagination!) {
     id
     creationTime
     contents
+    isLiked
+    likedCount
     writer {
       id
       nickname

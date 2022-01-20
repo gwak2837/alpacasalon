@@ -114,6 +114,7 @@ export type Mutation = {
   logout: Scalars['Boolean']
   readNotifications?: Maybe<Scalars['NonNegativeInt']>
   toggleLikingComment?: Maybe<Comment>
+  toggleLikingZoomReview?: Maybe<ZoomReview>
   /** 회원탈퇴 시 사용자 정보가 모두 초기화됩니다 */
   unregister?: Maybe<User>
   updateComment?: Maybe<Comment>
@@ -179,6 +180,10 @@ export type MutationReadNotificationsArgs = {
 }
 
 export type MutationToggleLikingCommentArgs = {
+  id: Scalars['ID']
+}
+
+export type MutationToggleLikingZoomReviewArgs = {
   id: Scalars['ID']
 }
 
@@ -464,6 +469,8 @@ export type ZoomReview = {
   contents?: Maybe<Scalars['NonEmptyString']>
   creationTime: Scalars['DateTime']
   id: Scalars['ID']
+  isLiked: Scalars['Boolean']
+  likedCount: Scalars['NonNegativeInt']
   modificationTime: Scalars['DateTime']
   writer?: Maybe<User>
 }
@@ -559,6 +566,18 @@ export type ToggleLikingCommentMutation = {
   __typename?: 'Mutation'
   toggleLikingComment?:
     | { __typename?: 'Comment'; id: string; isLiked: boolean; likedCount: any }
+    | null
+    | undefined
+}
+
+export type ToggleLikingZoomReviewMutationVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type ToggleLikingZoomReviewMutation = {
+  __typename?: 'Mutation'
+  toggleLikingZoomReview?:
+    | { __typename?: 'ZoomReview'; id: string; isLiked: boolean; likedCount: any }
     | null
     | undefined
 }
@@ -857,7 +876,10 @@ export type PostsQuery = {
             }
           | null
           | undefined
-        group?: { __typename?: 'Group'; id: string; name: any } | null | undefined
+        group?:
+          | { __typename?: 'Group'; id: string; name: any; isJoined: boolean }
+          | null
+          | undefined
       }>
     | null
     | undefined
@@ -886,6 +908,7 @@ export type PostsByGroupQuery = {
             }
           | null
           | undefined
+        group?: { __typename?: 'Group'; id: string; isJoined: boolean } | null | undefined
       }>
     | null
     | undefined
@@ -969,6 +992,8 @@ export type ZoomReviewsQuery = {
         id: string
         creationTime: any
         contents?: any | null | undefined
+        isLiked: boolean
+        likedCount: any
         writer?:
           | {
               __typename?: 'User'
@@ -1444,6 +1469,58 @@ export type ToggleLikingCommentMutationResult = Apollo.MutationResult<ToggleLiki
 export type ToggleLikingCommentMutationOptions = Apollo.BaseMutationOptions<
   ToggleLikingCommentMutation,
   ToggleLikingCommentMutationVariables
+>
+export const ToggleLikingZoomReviewDocument = gql`
+  mutation ToggleLikingZoomReview($id: ID!) {
+    toggleLikingZoomReview(id: $id) {
+      id
+      isLiked
+      likedCount
+    }
+  }
+`
+export type ToggleLikingZoomReviewMutationFn = Apollo.MutationFunction<
+  ToggleLikingZoomReviewMutation,
+  ToggleLikingZoomReviewMutationVariables
+>
+
+/**
+ * __useToggleLikingZoomReviewMutation__
+ *
+ * To run a mutation, you first call `useToggleLikingZoomReviewMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useToggleLikingZoomReviewMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [toggleLikingZoomReviewMutation, { data, loading, error }] = useToggleLikingZoomReviewMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useToggleLikingZoomReviewMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ToggleLikingZoomReviewMutation,
+    ToggleLikingZoomReviewMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    ToggleLikingZoomReviewMutation,
+    ToggleLikingZoomReviewMutationVariables
+  >(ToggleLikingZoomReviewDocument, options)
+}
+export type ToggleLikingZoomReviewMutationHookResult = ReturnType<
+  typeof useToggleLikingZoomReviewMutation
+>
+export type ToggleLikingZoomReviewMutationResult =
+  Apollo.MutationResult<ToggleLikingZoomReviewMutation>
+export type ToggleLikingZoomReviewMutationOptions = Apollo.BaseMutationOptions<
+  ToggleLikingZoomReviewMutation,
+  ToggleLikingZoomReviewMutationVariables
 >
 export const UnregisterDocument = gql`
   mutation Unregister {
@@ -2182,6 +2259,7 @@ export const PostsDocument = gql`
       group {
         id
         name
+        isJoined
       }
     }
   }
@@ -2230,6 +2308,10 @@ export const PostsByGroupDocument = gql`
         id
         nickname
         imageUrl
+      }
+      group {
+        id
+        isJoined
       }
     }
   }
@@ -2483,6 +2565,8 @@ export const ZoomReviewsDocument = gql`
       id
       creationTime
       contents
+      isLiked
+      likedCount
       writer {
         id
         nickname
@@ -2642,6 +2726,7 @@ export type MutationKeySpecifier = (
   | 'logout'
   | 'readNotifications'
   | 'toggleLikingComment'
+  | 'toggleLikingZoomReview'
   | 'unregister'
   | 'updateComment'
   | 'updateGroup'
@@ -2666,6 +2751,7 @@ export type MutationFieldPolicy = {
   logout?: FieldPolicy<any> | FieldReadFunction<any>
   readNotifications?: FieldPolicy<any> | FieldReadFunction<any>
   toggleLikingComment?: FieldPolicy<any> | FieldReadFunction<any>
+  toggleLikingZoomReview?: FieldPolicy<any> | FieldReadFunction<any>
   unregister?: FieldPolicy<any> | FieldReadFunction<any>
   updateComment?: FieldPolicy<any> | FieldReadFunction<any>
   updateGroup?: FieldPolicy<any> | FieldReadFunction<any>
@@ -2885,6 +2971,8 @@ export type ZoomReviewKeySpecifier = (
   | 'contents'
   | 'creationTime'
   | 'id'
+  | 'isLiked'
+  | 'likedCount'
   | 'modificationTime'
   | 'writer'
   | ZoomReviewKeySpecifier
@@ -2893,6 +2981,8 @@ export type ZoomReviewFieldPolicy = {
   contents?: FieldPolicy<any> | FieldReadFunction<any>
   creationTime?: FieldPolicy<any> | FieldReadFunction<any>
   id?: FieldPolicy<any> | FieldReadFunction<any>
+  isLiked?: FieldPolicy<any> | FieldReadFunction<any>
+  likedCount?: FieldPolicy<any> | FieldReadFunction<any>
   modificationTime?: FieldPolicy<any> | FieldReadFunction<any>
   writer?: FieldPolicy<any> | FieldReadFunction<any>
 }
