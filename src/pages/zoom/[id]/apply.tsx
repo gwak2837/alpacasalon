@@ -12,6 +12,7 @@ import {
   JoinHeader,
   JoinText,
 } from 'src/pages/group/[id]/join'
+import router from 'next/router'
 
 const description = ''
 
@@ -31,7 +32,7 @@ const NoticeText = styled.div`
 
   > span {
     width: 100%;
-    line-height: 1.5rem
+    line-height: 1.5rem;
   }
 `
 
@@ -40,7 +41,7 @@ export default function ZoomApplyPage() {
     <PageHead title=" - 알파카살롱" description={description}>
       <JoinHeader>
         <XButton>
-          <Close />
+          <Close onClick={() => router.back()} />
         </XButton>
       </JoinHeader>
       <Grid>
@@ -62,7 +63,9 @@ export default function ZoomApplyPage() {
               시 제재를 받을 수 있습니다.
             </span>
           </NoticeText>
-          <JoinGroupButton>다른 줌 대화도 둘러볼래요</JoinGroupButton>
+          <JoinGroupButton onClick={() => router.push('/zoom')}>
+            다른 줌 대화도 둘러볼래요
+          </JoinGroupButton>
         </JoinFooter>
       </Grid>
     </PageHead>
