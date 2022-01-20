@@ -13,21 +13,29 @@ import {
 import {
   ALPACA_SALON_BACKGROUND_COLOR,
   ALPACA_SALON_COLOR,
+  ALPACA_SALON_DARK_GREY_COLOR,
   ALPACA_SALON_GREY_COLOR,
   ALPACA_SALON_RED_COLOR,
 } from 'src/models/constants'
 import { currentUser } from 'src/models/recoil'
 import { A, GreyH5, GridGap, H5 } from 'src/pages/post/[id]'
 import { Skeleton } from 'src/styles'
-import HeartIcon from 'src/svgs/HeartIcon'
 import { stopPropagation } from 'src/utils'
 import styled, { css } from 'styled-components'
+import Arrow from 'src/svgs/subCommentArrow.svg'
 
 import LazyModal from './atoms/LazyModal'
 
 const GridContainerComment = styled.ul`
   display: grid;
   gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+`
+
+const FlexContainer = styled.div`
+  display: flex;
+  gap: 2rem;
 `
 
 const GridLi = styled.li`
@@ -82,38 +90,41 @@ const GridItemDiv = styled.div`
 
   display: flex;
   gap: 0.7rem;
+
+  font-size: 16px;
 `
 
 const GridContainerSubcomments = styled.ul`
   display: grid;
   gap: 1rem;
-  padding-left: 4rem;
 `
 
 const ButtonCSS = css`
   border: none;
   border-radius: 99px;
-  font-size: 0.75rem;
-  padding: 0.4rem 0.75rem;
 `
 
-const LikingButton = styled.button`
+const LikingButton = styled.button<{ selected: boolean }>`
   ${ButtonCSS}
   display: flex;
   align-items: center;
+  padding: 0;
   gap: 0.4rem;
 
-  background: ${(p) => (p.disabled ? '#eee' : ALPACA_SALON_BACKGROUND_COLOR)};
   cursor: ${(p) => (p.disabled ? 'default' : 'pointer')};
 
   > svg {
     width: 0.8rem;
   }
+
+  > span {
+    color: ${(p) => (p.selected ? ALPACA_SALON_COLOR : ALPACA_SALON_DARK_GREY_COLOR)};
+  }
 `
 
 const SubcommentButton = styled.button`
   ${ButtonCSS}
-  background: ${(p) => (p.disabled ? '#eee' : ALPACA_SALON_BACKGROUND_COLOR)};
+  color: ${ALPACA_SALON_DARK_GREY_COLOR};
   cursor: ${(p) => (p.disabled ? 'default' : 'pointer')};
 `
 
@@ -186,8 +197,7 @@ function SubcommentLoadingCard() {
         </GridItemGap>
 
         <GridItemDiv>
-          <LikingButton disabled>
-            <HeartIcon />
+          <LikingButton disabled selected={false}>
             공감해요
             <SelectableSpan>-</SelectableSpan>
           </LikingButton>
@@ -214,8 +224,7 @@ export function CommentLoadingCard() {
         </GridItemGap>
 
         <GridItemDiv>
-          <LikingButton disabled>
-            <HeartIcon />
+          <LikingButton disabled selected={false}>
             공감해요
             <SelectableSpan>-</SelectableSpan>
           </LikingButton>
@@ -279,61 +288,67 @@ function SubcommentCard({ subcomment, newCommentId }: Props2) {
   }
 
   return (
-    <GridLi ref={registerNewComment}>
-      <Image
-        src={author?.imageUrl ?? '/images/default-profile-image.webp'}
-        alt="profile"
-        width="40"
-        height="40"
-        objectFit="cover"
-        onClick={goToUserDetailPage}
-      />
-      <GridGap>
-        <Link href={`/@${author?.nickname}`} passHref>
-          <A disabled={!author}>
-            <H5>{author?.nickname ?? '탈퇴한 사용자'}</H5>
-          </A>
-        </Link>
-        <GreyH5>{new Date(subcomment.creationTime).toLocaleTimeString()}</GreyH5>
-      </GridGap>
+    <FlexContainer>
+      <Arrow />
+      <GridLi ref={registerNewComment}>
+        <Image
+          src={author?.imageUrl ?? '/images/default-profile-image.webp'}
+          alt="profile"
+          width="40"
+          height="40"
+          objectFit="cover"
+          onClick={goToUserDetailPage}
+        />
+        <GridGap>
+          <Link href={`/@${author?.nickname}`} passHref>
+            <A disabled={!author}>
+              <H5>{author?.nickname ?? '탈퇴한 사용자'}</H5>
+            </A>
+          </Link>
+          <GreyH5>{new Date(subcomment.creationTime).toLocaleTimeString()}</GreyH5>
+        </GridGap>
 
-      {contents && nickname === author?.nickname && (
-        <>
-          <AbsoluteButton disabled={isCommentDeletionLoading} onClick={openModal}>
-            삭제
-          </AbsoluteButton>
-          <LazyModal open={isModalOpen} setOpen={setIsModalOpen}>
-            <WhiteBackground>
-              <GridItem onClick={stopPropagation}>
-                <h4>정말 이 답글을 삭제하시겠어요?</h4>
-                <ModalP>삭제한 답글은 다시 복구할 수 없어요</ModalP>
-              </GridItem>
-              <Button>취소</Button>
-              <RedButton onClick={deleteSubcomment}>삭제</RedButton>
-            </WhiteBackground>
-          </LazyModal>
-        </>
-      )}
-
-      <GridItemComment>
-        {contents?.map((content, i) => (
-          <Fragment key={i}>
-            <>{content}</>
-            <br />
-          </Fragment>
-        )) ?? <h6>삭제된 답글입니다</h6>}
-      </GridItemComment>
-
-      <GridItemDiv>
-        {contents && (
-          <LikingButton disabled={loading} onClick={toggleLikingComment}>
-            <HeartIcon selected={subcomment.isLiked} />
-            공감해요
-            <SelectableSpan selected={subcomment.isLiked}>{subcomment.likedCount}</SelectableSpan>
-          </LikingButton>
+        {contents && nickname === author?.nickname && (
+          <>
+            <AbsoluteButton disabled={isCommentDeletionLoading} onClick={openModal}>
+              삭제
+            </AbsoluteButton>
+            <LazyModal open={isModalOpen} setOpen={setIsModalOpen}>
+              <WhiteBackground>
+                <GridItem onClick={stopPropagation}>
+                  <h4>정말 이 답글을 삭제하시겠어요?</h4>
+                  <ModalP>삭제한 답글은 다시 복구할 수 없어요</ModalP>
+                </GridItem>
+                <Button>취소</Button>
+                <RedButton onClick={deleteSubcomment}>삭제</RedButton>
+              </WhiteBackground>
+            </LazyModal>
+          </>
         )}
-      </GridItemDiv>
-    </GridLi>
+
+        <GridItemComment>
+          {contents?.map((content, i) => (
+            <Fragment key={i}>
+              <>{content}</>
+              <br />
+            </Fragment>
+          )) ?? <h6>삭제된 답글입니다</h6>}
+        </GridItemComment>
+
+        <GridItemDiv>
+          {contents && (
+            <LikingButton
+              disabled={loading}
+              onClick={toggleLikingComment}
+              selected={subcomment.isLiked}
+            >
+              <span>공감해요</span>
+              <SelectableSpan selected={subcomment.isLiked}>{subcomment.likedCount}</SelectableSpan>
+            </LikingButton>
+          )}
+        </GridItemDiv>
+      </GridLi>
+    </FlexContainer>
   )
 }
 
@@ -446,9 +461,8 @@ function CommentCard({ comment, setParentComment, commentInputRef, newCommentId 
 
         {contents && (
           <GridItemDiv>
-            <LikingButton onClick={toggleLikingComment}>
-              <HeartIcon selected={comment.isLiked} />
-              공감해요
+            <LikingButton onClick={toggleLikingComment} selected={comment.isLiked}>
+              <span>공감해요</span>
               <SelectableSpan selected={comment.isLiked}>{comment.likedCount}</SelectableSpan>
             </LikingButton>
             <SubcommentButton onClick={setParentCommentInfo}>답글쓰기</SubcommentButton>

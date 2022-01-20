@@ -158,7 +158,7 @@ const GreyButton = styled.button`
 
 const GridUl = styled.ul`
   display: grid;
-  gap: 2rem;
+  gap: 1rem;
 
   padding: 0.75rem 0.6rem;
 `
