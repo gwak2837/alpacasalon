@@ -19,6 +19,7 @@ import BackIcon from 'src/svgs/back-icon.svg'
 import CalenderIcon from 'src/svgs/calender.svg'
 import ClockIcon from 'src/svgs/clock.svg'
 import styled from 'styled-components'
+
 import { FetchedAllData } from '../index'
 
 const Frame4to3 = styled.div`
@@ -216,6 +217,7 @@ export default function ZoomPage() {
 
   function joinZoom() {
     joinZoomMutation({ variables: { id: zoomId } })
+    router.push('apply')
   }
 
   function goBack() {
