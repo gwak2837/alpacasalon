@@ -735,6 +735,15 @@ export type GroupQuery = {
     | undefined
 }
 
+export type GroupNameQueryVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type GroupNameQuery = {
+  __typename?: 'Query'
+  group?: { __typename?: 'Group'; id: string; name: any } | null | undefined
+}
+
 export type IsGroupNameUniqueQueryVariables = Exact<{
   name: Scalars['NonEmptyString']
 }>
@@ -1878,6 +1887,46 @@ export function useGroupLazyQuery(
 export type GroupQueryHookResult = ReturnType<typeof useGroupQuery>
 export type GroupLazyQueryHookResult = ReturnType<typeof useGroupLazyQuery>
 export type GroupQueryResult = Apollo.QueryResult<GroupQuery, GroupQueryVariables>
+export const GroupNameDocument = gql`
+  query GroupName($id: ID!) {
+    group(id: $id) {
+      id
+      name
+    }
+  }
+`
+
+/**
+ * __useGroupNameQuery__
+ *
+ * To run a query within a React component, call `useGroupNameQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGroupNameQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGroupNameQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGroupNameQuery(
+  baseOptions: Apollo.QueryHookOptions<GroupNameQuery, GroupNameQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GroupNameQuery, GroupNameQueryVariables>(GroupNameDocument, options)
+}
+export function useGroupNameLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GroupNameQuery, GroupNameQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GroupNameQuery, GroupNameQueryVariables>(GroupNameDocument, options)
+}
+export type GroupNameQueryHookResult = ReturnType<typeof useGroupNameQuery>
+export type GroupNameLazyQueryHookResult = ReturnType<typeof useGroupNameLazyQuery>
+export type GroupNameQueryResult = Apollo.QueryResult<GroupNameQuery, GroupNameQueryVariables>
 export const IsGroupNameUniqueDocument = gql`
   query IsGroupNameUnique($name: NonEmptyString!) {
     isGroupNameUnique(name: $name)
