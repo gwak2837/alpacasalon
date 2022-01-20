@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { Fragment, KeyboardEvent, useEffect, useRef, useState } from 'react'
+import React, { KeyboardEvent, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
@@ -158,7 +158,7 @@ const GreyButton = styled.button`
 
 const GridUl = styled.ul`
   display: grid;
-  gap: 2rem;
+  gap: 1rem;
 
   padding: 0.75rem 0.6rem;
 `
@@ -333,17 +333,23 @@ type ParentComment = {
 const description = ''
 
 export default function PostPage() {
+  const router = useRouter()
+  const postId = (router.query.id ?? '') as string
+  const { nickname } = useRecoilValue(currentUser)
+
   const [parentComment, setParentComment] = useState<ParentComment>()
   const [isImageDetailOpen, setIsImageDetailOpen] = useState(false)
   const commentTextareaRef = useRef<HTMLTextAreaElement>()
   const newCommentId = useRef('')
-  const clickedImageNumber = useRef(-1)
-  const { nickname } = useRecoilValue(currentUser)
-  const router = useRouter()
-  const postId = (router.query.id ?? '') as string
 
   const { data, loading: postLoading } = usePostQuery({
-    onError: toastApolloError,
+    onError: (error) => {
+      toastApolloError(error)
+      const extensions = error.graphQLErrors[0].extensions
+      if (extensions.code === 'FORBIDDEN') {
+        router.replace(`/group/${extensions.groupId}/join`)
+      }
+    },
     skip: !postId || !nickname,
     variables: { id: postId },
   })
@@ -422,6 +428,9 @@ export default function PostPage() {
     commentTextareaRef.current = textarea
   }
 
+  // 이미지 미리보기 이동
+  const clickedImageNumber = useRef(-1)
+
   function openImageDetailModal(i: number) {
     clickedImageNumber.current = i
     setIsImageDetailOpen(true)
@@ -456,10 +465,10 @@ export default function PostPage() {
               <Skeleton width="5.5rem" height="1rem" />
             </GridGap>
           </GridContainer>
-        ) : post ? (
+        ) : post && author ? (
           <GridContainer>
             <Image
-              src={author?.imageUrl ?? '/images/default-profile-image.webp'}
+              src={author.imageUrl ?? '/images/default-profile-image.webp'}
               alt="profile"
               width="40"
               height="40"
@@ -467,16 +476,16 @@ export default function PostPage() {
               onClick={goToUserDetailPage}
             />
             <GridGap>
-              <Link href={`/@${author?.nickname}`} passHref>
+              <Link href={`/@${author.nickname}`} passHref>
                 <A disabled={!author}>
-                  <H5>{author?.nickname ?? '탈퇴한 사용자'}</H5>
+                  <H5>{author.nickname ?? '탈퇴한 사용자'}</H5>
                 </A>
               </Link>
               <GreyH5>{new Date(post.creationTime).toLocaleString()}</GreyH5>
             </GridGap>
           </GridContainer>
         ) : (
-          '게시글 없음'
+          <div>작성자 없음</div>
         )}
 
         {postLoading ? (
@@ -522,7 +531,7 @@ export default function PostPage() {
             </Modal>
           </GridGap2>
         ) : (
-          '게시글 없음'
+          <div>게시글 없음</div>
         )}
 
         <HorizontalBorder />

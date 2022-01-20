@@ -13,6 +13,7 @@ import {
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import {
   ALPACA_SALON_COLOR,
+  ALPACA_SALON_DARK_GREY_COLOR,
   ALPACA_SALON_GREY_COLOR,
   ALPACA_SALON_RED_COLOR,
   TABLET_MIN_WIDTH,
@@ -72,9 +73,18 @@ export const TransparentButton = styled.button`
   padding: 1rem;
 `
 
+export const GroupButton = styled.button<{ isSelected: boolean }>`
+  margin: 0.5rem 0.3rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid ${(p) => (p.isSelected ? ALPACA_SALON_COLOR : ALPACA_SALON_DARK_GREY_COLOR)};
+  border-radius: 50px;
+  color: ${(p) => (p.isSelected ? 'white' : ALPACA_SALON_DARK_GREY_COLOR)};
+  background-color: ${(p) => (p.isSelected ? ALPACA_SALON_COLOR : 'white')};
+`
+
 export const Input = styled.input<{ erred?: boolean }>`
   border: none;
-  border-bottom: 2px solid ${(p) => (p.erred ? ALPACA_SALON_RED_COLOR : ALPACA_SALON_COLOR)};
+  border-bottom: 2px solid ${(p) => (p.erred ? ALPACA_SALON_RED_COLOR : ALPACA_SALON_DARK_GREY_COLOR)};
   border-radius: 0;
   color: ${(p) => (p.disabled ? '#888' : '#000')};
   padding: 0.5rem 0;
@@ -82,6 +92,7 @@ export const Input = styled.input<{ erred?: boolean }>`
 
   :focus {
     outline: none;
+    border-bottom: 2px solid ${ALPACA_SALON_COLOR}
   }
 `
 
@@ -98,6 +109,7 @@ export const Textarea = styled.textarea`
   max-height: 50vh;
   padding: 0.5rem 0;
   color: ${(p) => (p.disabled ? '#888' : '#000')};
+  resize: none;
 
   :focus {
     outline: none;
@@ -122,6 +134,7 @@ export const FileInputLabel = styled.label<{ disabled?: boolean }>`
 
 export const GreyH3 = styled.h3`
   color: ${ALPACA_SALON_GREY_COLOR};
+  font-weight: 500;
   text-align: center;
 `
 
@@ -138,6 +151,7 @@ export const Slide = styled.li<{ flexBasis: string }>`
   scroll-snap-align: center;
 
   aspect-ratio: 16 / 11;
+  margin: 1.5rem;
   border: 1px solid #e2e2e2;
   border-radius: 10px;
   flex: 0 0 ${(p) => p.flexBasis};
@@ -286,18 +300,19 @@ export default function PostCreationPage() {
           </TransparentButton>
         </StickyHeader>
 
-        <button
+        <GroupButton
+          isSelected={!selectedGroupId && true}
           onClick={(e) => {
             e.preventDefault()
             setSelectedGroupId('')
           }}
         >
-          {!selectedGroupId && 'O '}
           전체 공개
-        </button>
+        </GroupButton>
         {myGroups?.map((myGroup) => (
-          <button
+          <GroupButton
             key={myGroup.id}
+            isSelected={selectedGroupId === myGroup.id && true}
             onClick={(e) => {
               e.preventDefault()
               if (selectedGroupId === myGroup.id) {
@@ -307,9 +322,8 @@ export default function PostCreationPage() {
               }
             }}
           >
-            {selectedGroupId === myGroup.id && 'O '}
             {myGroup.name}
-          </button>
+          </GroupButton>
         ))}
 
         <GridContainer>

@@ -18,7 +18,16 @@ import { isEmpty, uploadImageFiles } from 'src/utils'
 import styled from 'styled-components'
 
 import { Frame16to11 } from '../post/[id]'
-import { AbsoluteH3, FileInput, GreyH3, StickyHeader, TransparentButton } from '../post/create'
+import {
+  AbsoluteH3,
+  FileInput,
+  GridContainer,
+  Input,
+  Textarea,
+  GreyH3,
+  StickyHeader,
+  TransparentButton,
+} from '../post/create'
 
 type GroupCreationInput = {
   name: string
@@ -49,6 +58,7 @@ const FileInputLabel = styled.label<{ disabled?: boolean }>`
   align-items: center;
   gap: 1rem;
   margin: 1rem;
+  padding: 1.5rem;
 
   border: 1px solid #eee;
   border-radius: 10px;
@@ -181,7 +191,7 @@ export default function GroupCreationPage() {
           ) : (
             <>
               <FileUploadIcon />
-              <GreyH3>그룹 커버로 사용할 이미지를 올려주세요</GreyH3>
+              <GreyH3>그룹 커버로 사용할 이미지를 선택해주세요</GreyH3>
             </>
           )}
           <FileInput
@@ -193,35 +203,33 @@ export default function GroupCreationPage() {
           />
         </FileInputLabel>
 
-        <label htmlFor="name">그룹 이름</label>
-        <input
-          id="name"
-          disabled={groupCreationLoading}
-          // erred={Boolean(errors.name)}
-          // loading={loading}
-          placeholder="그룹 이름을 적어주세요"
-          {...register('name', {
-            required: '그룹 이름을 작성한 후 완료를 눌러주세요',
-            maxLength: {
-              value: 20,
-              message: '이름은 20자 이내로 입력해주세요',
-            },
-            validate: checkNameUniquenessDebouncly,
-          })}
-        />
-
-        <label htmlFor="description">그룹 설명</label>
-        <input
-          id="description"
-          placeholder="이 그룹에 대해 설명해 주세요"
-          {...register('description', {
-            required: '그룹 설명을 작성한 후 완료를 눌러주세요',
-            maxLength: {
-              value: 100,
-              message: '설명은 100자 이내로 입력해주세요',
-            },
-          })}
-        />
+        <GridContainer>
+          <Input
+            id="name"
+            disabled={groupCreationLoading}
+            erred={Boolean(errors.name)}
+            placeholder="그룹 이름을 적어주세요"
+            {...register('name', {
+              required: '그룹 이름을 작성한 후 완료를 눌러주세요',
+              maxLength: {
+                value: 20,
+                message: '이름은 20자 이내로 입력해주세요',
+              },
+              validate: checkNameUniquenessDebouncly,
+            })}
+          />
+          <Textarea
+            id="description"
+            placeholder="이 그룹에 대해 설명해 주세요"
+            {...register('description', {
+              required: '그룹 설명을 작성한 후 완료를 눌러주세요',
+              maxLength: {
+                value: 100,
+                message: '설명은 100자 이내로 입력해주세요',
+              },
+            })}
+          />
+        </GridContainer>
       </form>
     </PageHead>
   )

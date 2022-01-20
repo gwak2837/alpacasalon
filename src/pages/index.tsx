@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil'
 import PageHead from 'src/components/PageHead'
 import Navigation from 'src/layouts/Navigation'
 import { currentUser } from 'src/models/recoil'
-import AlpacasalonText from 'src/svgs/alpacasalon-text.svg'
+import AlpacasalonText from 'src/svgs/alpacasalon-logo.svg'
 import styled from 'styled-components'
 
 import { Slider } from './post/create'
@@ -22,7 +22,7 @@ const Sticky = styled.div`
   align-items: center;
 
   > svg {
-    width: 6rem;
+    width: 15rem;
     height: 100%;
     padding: 0.5rem;
   }

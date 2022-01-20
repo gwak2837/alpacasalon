@@ -16,6 +16,7 @@ import {
 } from 'src/models/constants'
 import WriteIcon from 'src/svgs/write-icon.svg'
 import styled from 'styled-components'
+import { FetchedAllData } from '../zoom/index'
 
 export const PrimaryH3 = styled.h3`
   color: ${ALPACA_SALON_COLOR};
@@ -58,7 +59,7 @@ const FixedButton = styled(PrimaryButton)`
   }
 `
 
-const limit = 5
+const limit = 10
 const description = ''
 
 export default function PostsPage() {
@@ -124,7 +125,7 @@ export default function PostsPage() {
         )}
       </GridContainerPost>
       {!loading && hasMoreData && <div ref={infiniteScrollRef}>무한 스크롤</div>}
-      {!hasMoreData && <div>모든 게시글을 불러왔어요</div>}
+      {!hasMoreData && <FetchedAllData>모든 게시글을 불러왔어요</FetchedAllData>}
 
       <FixedButton onClick={goToPostCreationPage}>
         <WriteIcon />

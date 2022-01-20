@@ -4,9 +4,10 @@ import PageHead from 'src/components/PageHead'
 import { ALPACA_SALON_BACKGROUND_COLOR, ALPACA_SALON_COLOR } from 'src/models/constants'
 import { SquareFrame } from 'src/styles'
 import styled from 'styled-components'
+
+import CheckBoxIcon from '../svgs/CheckBoxIcon'
 import KakaoIcon from '../svgs/kakao-icon.svg'
 import { FlexContainerColumnEnd } from './[userNickname]/setting'
-import CheckBoxIcon from '../svgs/CheckBoxIcon'
 
 const H5 = styled.h5`
   color: #676767;
@@ -68,7 +69,7 @@ const KakaoButton = styled.div`
 export const FlexContainerGrow = styled.div`
   display: flex;
   flex-flow: column;
-  height: 100%;
+  height: 100vh;
 
   > :last-child {
     flex-grow: 1;

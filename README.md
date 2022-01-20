@@ -10,7 +10,7 @@
 
 ### How
 
-https://alpaca-salon.vercel.app 에 들어오세요~
+https://alpacasalon.vercel.app 에 들어오세요~
 
 (gif 또는 이미지 첨부)
 
@@ -41,8 +41,8 @@ $ code --version
 ### Download codes
 
 ```shell
-$ git clone https://github.com/rmfpdlxmtidl/alpaca-salon.git
-$ cd alpaca-salon
+$ git clone https://github.com/rmfpdlxmtidl/alpacasalon.git
+$ cd alpacasalon
 $ git checkout main
 $ yarn
 ```
@@ -130,6 +130,6 @@ $ yarn build
 
 ```
 # https://github.com/integrations/slack#subscribing-and-unsubscribing
-/github subscribe rmfpdlxmtidl/alpaca-salon commits:* reviews comments
-/github unsubscribe rmfpdlxmtidl/alpaca-salon deployments
+/github subscribe rmfpdlxmtidl/alpacasalon commits:* reviews comments
+/github unsubscribe rmfpdlxmtidl/alpacasalon deployments
 ```

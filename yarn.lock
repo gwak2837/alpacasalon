@@ -3524,6 +3524,7 @@ __metadata:
     husky: ^7.0.4
     inko: ^1.1.1
     jest: ^27.4.5
+    moment: ^2.29.1
     next: 12.0.4
     next-pwa: ^5.4.4
     normalize.css: ^8.0.1
@@ -9187,6 +9188,13 @@ __metadata:
     _mocha: ./bin/_mocha
     mocha: ./bin/mocha
   checksum: 08d37a9fa0e67141d8e062356a6915402788fb4d7b1ff9cb7311efa140aa3f255c98f6fa64697981d721d3a41f4eb4d9a28fc986f84499456f1978c0ea2d4109
+  languageName: node
+  linkType: hard
+
+"moment@npm:^2.29.1":
+  version: 2.29.1
+  resolution: "moment@npm:2.29.1"
+  checksum: 1e14d5f422a2687996be11dd2d50c8de3bd577c4a4ca79ba5d02c397242a933e5b941655de6c8cb90ac18f01cc4127e55b4a12ae3c527a6c0a274e455979345e
   languageName: node
   linkType: hard
 

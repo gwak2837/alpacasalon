@@ -126,22 +126,41 @@ const Grid = styled.ul`
 const description = ''
 
 export default function GroupPage() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const router = useRouter()
   const groupId = (router.query.id ?? '') as string
 
+  // Drawer
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+
+  function openDrawer() {
+    setIsDrawerOpen(true)
+  }
+
+  function closeDrawer() {
+    setIsDrawerOpen(false)
+  }
+
+  // 그룹 정보 불러오기
   const { data: data2 } = useGroupQuery({
     onError: toastApolloError,
     skip: !groupId,
     variables: { id: groupId },
   })
 
+  const group = data2?.group
+  const newMembers = data2?.group?.newMembers
+  const newMember = newMembers?.[0]
+
+  // 그룹 게시글 불러오기
   const { data } = usePostsByGroupQuery({
     onError: toastApolloError,
     skip: !groupId,
     variables: { groupId },
   })
 
+  const posts = data?.postsByGroup
+
+  // 그룹 참가 요청
   const [joinGroupMutataion, { loading }] = useJoinGroupMutation({
     onError: toastApolloError,
     refetchQueries: ['Group'],
@@ -150,11 +169,12 @@ export default function GroupPage() {
     },
   })
 
-  const group = data2?.group
-  const posts = data?.postsByGroup
-  const newMembers = data2?.group?.newMembers
-  const newMember = newMembers?.[0]
+  function toggleJoiningGroup() {
+    joinGroupMutataion({ variables: { id: groupId } })
+    setIsDrawerOpen(false)
+  }
 
+  // 클라이언트측 라우팅
   function goToPostCreationPage() {
     if (window.sessionStorage.getItem('jwt') || window.localStorage.getItem('jwt')) {
       router.push(`/post/create?groupId=${groupId}`)
@@ -169,23 +189,10 @@ export default function GroupPage() {
     router.back()
   }
 
-  function openDrawer() {
-    setIsDrawerOpen(true)
-  }
-
-  function closeDrawer() {
-    setIsDrawerOpen(false)
-  }
-
-  function toggleJoiningGroup() {
-    joinGroupMutataion({ variables: { id: groupId } })
-    setIsDrawerOpen(false)
-  }
-
   useNeedToLogin()
 
   return (
-    <PageHead title=" - 알파카살롱" description={description}>
+    <PageHead title={`${group?.name ?? '그룹'} 게시글 - 알파카살롱`} description={description}>
       <Frame16to7>
         <Absolute>
           <BackIcon onClick={goBack} />

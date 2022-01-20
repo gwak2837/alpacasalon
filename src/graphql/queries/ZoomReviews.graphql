@@ -1,0 +1,14 @@
+query ZoomReviews($zoomId: ID!, $pagination: Pagination!) {
+  zoomReviews(zoomId: $zoomId, pagination: $pagination) {
+    id
+    creationTime
+    contents
+    isLiked
+    likedCount
+    writer {
+      id
+      nickname
+      imageUrl
+    }
+  }
+}
