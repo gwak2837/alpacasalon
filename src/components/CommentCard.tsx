@@ -90,8 +90,6 @@ const GridItemDiv = styled.div`
 
   display: flex;
   gap: 0.7rem;
-
-  font-size: 16px;
 `
 
 const GridContainerSubcomments = styled.ul`
