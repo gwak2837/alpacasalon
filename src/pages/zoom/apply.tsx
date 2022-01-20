@@ -1,9 +1,5 @@
+import { useRouter } from 'next/router'
 import PageHead from 'src/components/PageHead'
-import { ContentText, ReviewTitle, XButton } from 'src/pages/zoom/[id]/review'
-import Close from 'src/svgs/close.svg'
-import SuccessIcon from 'src/svgs/zoomApplyIcon.svg'
-import NoticeIcon from 'src/svgs/strokeNoticeIcon.svg'
-import styled from 'styled-components'
 import {
   Grid,
   JoinContent,
@@ -12,7 +8,11 @@ import {
   JoinHeader,
   JoinText,
 } from 'src/pages/group/[id]/join'
-import router from 'next/router'
+import { ContentText, ReviewTitle, XButton } from 'src/pages/zoom/[id]/review'
+import Close from 'src/svgs/close.svg'
+import NoticeIcon from 'src/svgs/strokeNoticeIcon.svg'
+import SuccessIcon from 'src/svgs/zoomApplyIcon.svg'
+import styled from 'styled-components'
 
 const description = ''
 
@@ -37,11 +37,21 @@ const NoticeText = styled.div`
 `
 
 export default function ZoomApplyPage() {
+  const router = useRouter()
+
+  function goBack() {
+    router.back()
+  }
+
+  function goToZoomsPage() {
+    router.replace(`/zoom`)
+  }
+
   return (
     <PageHead title=" - 알파카살롱" description={description}>
       <JoinHeader>
-        <XButton>
-          <Close onClick={() => router.back()} />
+        <XButton onClick={goBack}>
+          <Close />
         </XButton>
       </JoinHeader>
       <Grid>
@@ -63,9 +73,7 @@ export default function ZoomApplyPage() {
               시 제재를 받을 수 있습니다.
             </span>
           </NoticeText>
-          <JoinGroupButton onClick={() => router.push('/zoom')}>
-            다른 줌 대화도 둘러볼래요
-          </JoinGroupButton>
+          <JoinGroupButton onClick={goToZoomsPage}>다른 줌 대화도 둘러볼래요</JoinGroupButton>
         </JoinFooter>
       </Grid>
     </PageHead>
