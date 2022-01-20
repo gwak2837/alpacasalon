@@ -1,0 +1,7 @@
+mutation ToggleLikingZoomReview($id: ID!) {
+  toggleLikingZoomReview(id: $id) {
+    id
+    isLiked
+    likedCount
+  }
+}

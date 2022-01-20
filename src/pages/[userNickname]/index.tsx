@@ -21,12 +21,14 @@ import { currentUser } from 'src/models/recoil'
 import HeartIcon from 'src/svgs/HeartIcon'
 import SettingIcon from 'src/svgs/setting.svg'
 import { getUserNickname } from 'src/utils'
-import { FetchedAllData } from '../zoom'
 import styled from 'styled-components'
+
+import { FetchedAllData } from '../zoom'
 
 const Background = styled.div`
   background-color: #fcfcfc;
   padding-bottom: 10px;
+  min-height: 100vh;
 `
 
 const GridContainerTemplate = styled.div`
@@ -257,37 +259,39 @@ export default function UserPage() {
           <PrimaryColorText>{user?.likedCount ?? '-'}</PrimaryColorText>
         </FlexContainer>
 
-        <ContentBox>
-          <H3>내 ZOOM 대화방</H3>
-          <Slider>
-            {myZooms?.map((myZoom) => (
-              <ZoomContents key={myZoom.id}>
-                <ZoomCard src={myZoom.imageUrl} />
-                <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
-                <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
-              </ZoomContents>
-            ))}
-          </Slider>
+        {userNickname && nickname === userNickname && (
+          <ContentBox>
+            <H3>내 ZOOM 대화방</H3>
+            <Slider>
+              {myZooms?.map((myZoom) => (
+                <ZoomContents key={myZoom.id}>
+                  <ZoomCard src={myZoom.imageUrl} />
+                  <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
+                  <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
+                </ZoomContents>
+              ))}
+            </Slider>
 
-          <H3>알림</H3>
-          <Ul>
-            {notifications
-              ? notifications.map((notification) => (
-                  <NotificationCard key={notification.id} notification={notification} />
-                ))
-              : !notificationLoading && <FetchedAllData>알림이 없어요</FetchedAllData>}
-            {notificationLoading && (
-              <>
-                <NotificationLoadingCard />
-                <NotificationLoadingCard />
-              </>
+            <H3>알림</H3>
+            <Ul>
+              {notifications
+                ? notifications.map((notification) => (
+                    <NotificationCard key={notification.id} notification={notification} />
+                  ))
+                : !notificationLoading && <FetchedAllData>알림이 없어요</FetchedAllData>}
+              {notificationLoading && (
+                <>
+                  <NotificationLoadingCard />
+                  <NotificationLoadingCard />
+                </>
+              )}
+            </Ul>
+            {!notificationLoading && hasMoreData && (
+              <div ref={notificationInfiniteScrollRef}>무한 스크롤</div>
             )}
-          </Ul>
-          {!notificationLoading && hasMoreData && (
-            <div ref={notificationInfiniteScrollRef}>무한 스크롤</div>
-          )}
-          {!hasMoreData && <FetchedAllData>모든 알림을 불러왔어요</FetchedAllData>}
-        </ContentBox>
+            {!hasMoreData && <FetchedAllData>모든 알림을 불러왔어요</FetchedAllData>}
+          </ContentBox>
+        )}
       </Background>
     </PageHead>
   )
