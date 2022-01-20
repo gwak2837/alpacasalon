@@ -345,9 +345,9 @@ export default function PostPage() {
   const { data, loading: postLoading } = usePostQuery({
     onError: (error) => {
       toastApolloError(error)
-
-      if (error.graphQLErrors[0].extensions.code === 'FORBIDDEN') {
-        router.replace(`/group/${1}/join`)
+      const extensions = error.graphQLErrors[0].extensions
+      if (extensions.code === 'FORBIDDEN') {
+        router.replace(`/group/${extensions.groupId}/join`)
       }
     },
     skip: !postId || !nickname,
