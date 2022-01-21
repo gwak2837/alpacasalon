@@ -307,9 +307,7 @@ function PostCard({ post }: Props) {
         </div>
       </FlexCenter>
 
-      <H4>
-        {post.imageUrls && post.imageUrls.length > 0 && <ImageIcon />} {post.title}
-      </H4>
+      <H4>{post.title}</H4>
 
       <OneLineP>
         {contents[0]} {contents.length > 1 && <Span>...</Span>}
