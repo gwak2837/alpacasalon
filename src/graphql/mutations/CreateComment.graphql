@@ -1,5 +1,5 @@
-mutation CreateComment($postId: ID!, $contents: NonEmptyString!, $commentId: ID) {
-  createComment(postId: $postId, contents: $contents, commentId: $commentId) {
+mutation CreateComment($postId: ID!, $contents: NonEmptyString!, $parentCommentId: ID) {
+  createComment(postId: $postId, contents: $contents, parentCommentId: $parentCommentId) {
     id
   }
 }

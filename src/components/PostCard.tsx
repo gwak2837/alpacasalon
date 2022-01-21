@@ -37,6 +37,7 @@ const Li = styled.li`
   background: #fff;
   border: 1px solid #eee;
   border-radius: 0.5rem;
+  cursor: pointer;
   padding: 1rem 0.65rem;
 `
 

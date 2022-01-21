@@ -198,7 +198,7 @@ export default function OAuthRegisterPage() {
   }
 
   useEffect(() => {
-    const queryString = new URLSearchParams(window.location.search.substr(1))
+    const queryString = new URLSearchParams(location.search)
     const jwt = queryString.get('jwt')
 
     setValue('phoneNumber', queryString.get('phoneNumber') ?? '+82 10-')

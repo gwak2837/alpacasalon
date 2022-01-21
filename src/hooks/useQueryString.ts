@@ -13,7 +13,7 @@ export default function useQueryString() {
   const [queryString, setQueryString] = useState<Record<string, any> | null>(null)
 
   useEffect(() => {
-    setQueryString(getJSONFromQueryString(location.search.substr(1)))
+    setQueryString(getJSONFromQueryString(location.search.substring(1)))
   }, [])
 
   return queryString

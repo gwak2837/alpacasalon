@@ -13,6 +13,7 @@ const Li = styled.li`
   background: #fff;
   border: 1px solid #f6f6f6;
   border-radius: 20px;
+  cursor: pointer;
 `
 
 const SquareFrame = styled.div`

@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { memo } from 'react'
 import { NotificationType } from 'src/graphql/generated/types-and-hooks'
 import { TABLET_MIN_WIDTH } from 'src/models/constants'
@@ -82,8 +83,18 @@ type Props = {
 }
 
 function NotificationCard({ notification }: Props) {
+  const router = useRouter()
+
+  function goToTargetPage() {
+    router.push(notification.link)
+  }
+
   return (
-    <Li key={notification.id} bgColor={notification.isRead ? 'white' : '#F5F2F8'}>
+    <Li
+      key={notification.id}
+      bgColor={notification.isRead ? 'white' : '#F5F2F8'}
+      onClick={goToTargetPage}
+    >
       <SquareFrame>
         {notification.type === NotificationType.HotPost ? (
           <CelebrateIcon />
