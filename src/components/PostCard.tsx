@@ -128,6 +128,126 @@ export function PostLoadingCard() {
   )
 }
 
+const Frame16to9 = styled.div<{ imageCount?: number }>`
+  aspect-ratio: 16 / 9;
+  position: relative;
+
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.6rem 0 0;
+
+  display: grid;
+  grid-template-rows: ${(p) => {
+    switch (p.imageCount) {
+      case 1:
+      case 2:
+        return '1fr'
+      case 3:
+      case 4:
+      default:
+        return '1fr 1fr'
+    }
+  }};
+  grid-template-columns: ${(p) => {
+    switch (p.imageCount) {
+      case 1:
+        return '1fr'
+      case 2:
+      case 3:
+      case 4:
+      default:
+        return '1fr 1fr'
+    }
+  }};
+  gap: 0.2rem;
+`
+
+function getImage(imageUrls: any[]) {
+  switch (imageUrls.length) {
+    case 0:
+      return ''
+    case 1:
+      return (
+        <Frame16to9>
+          <Image src={imageUrls[0]} alt="profile image" layout="fill" objectFit="cover" />
+        </Frame16to9>
+      )
+    case 2:
+      return (
+        <Frame16to9 imageCount={2}>
+          <div style={{ gridColumn: '1 / 2', position: 'relative' }}>
+            <Image src={imageUrls[0]} alt={imageUrls[0]} layout="fill" objectFit="cover" />
+          </div>
+          <div style={{ gridColumn: '2 / 3', position: 'relative' }}>
+            <Image src={imageUrls[1]} alt={imageUrls[1]} layout="fill" objectFit="cover" />
+          </div>
+        </Frame16to9>
+      )
+    case 3:
+      return (
+        <Frame16to9 imageCount={3}>
+          <div style={{ gridRow: '1 / 3', gridColumn: '1 / 2', position: 'relative' }}>
+            <Image src={imageUrls[0]} alt={imageUrls[0]} layout="fill" objectFit="cover" />
+          </div>
+          <div style={{ gridRow: '1 / 2', gridColumn: '2 / 3', position: 'relative' }}>
+            <Image src={imageUrls[1]} alt={imageUrls[1]} layout="fill" objectFit="cover" />
+          </div>
+          <div style={{ gridRow: '2 / 3', gridColumn: '2 / 3', position: 'relative' }}>
+            <Image src={imageUrls[2]} alt={imageUrls[2]} layout="fill" objectFit="cover" />
+          </div>
+        </Frame16to9>
+      )
+    case 4:
+      return (
+        <Frame16to9 imageCount={4}>
+          <div style={{ gridRow: '1 / 2', gridColumn: '1 / 2', position: 'relative' }}>
+            <Image src={imageUrls[0]} alt={imageUrls[0]} layout="fill" objectFit="cover" />
+          </div>
+          <div style={{ gridRow: '2 / 3', gridColumn: '1 / 2', position: 'relative' }}>
+            <Image src={imageUrls[1]} alt={imageUrls[1]} layout="fill" objectFit="cover" />
+          </div>
+          <div style={{ gridRow: '1 / 2', gridColumn: '2 / 3', position: 'relative' }}>
+            <Image src={imageUrls[2]} alt={imageUrls[2]} layout="fill" objectFit="cover" />
+          </div>
+          <div style={{ gridRow: '2 / 3', gridColumn: '2 / 3', position: 'relative' }}>
+            <Image src={imageUrls[3]} alt={imageUrls[3]} layout="fill" objectFit="cover" />
+          </div>
+        </Frame16to9>
+      )
+    default:
+      return (
+        <Frame16to9 imageCount={5}>
+          <div style={{ gridRow: '1 / 2', gridColumn: '1 / 2', position: 'relative' }}>
+            <Image src={imageUrls[0]} alt={imageUrls[0]} layout="fill" objectFit="cover" />
+          </div>
+          <div style={{ gridRow: '2 / 3', gridColumn: '1 / 2', position: 'relative' }}>
+            <Image src={imageUrls[1]} alt={imageUrls[1]} layout="fill" objectFit="cover" />
+          </div>
+          <div style={{ gridRow: '1 / 2', gridColumn: '2 / 3', position: 'relative' }}>
+            <Image src={imageUrls[2]} alt={imageUrls[2]} layout="fill" objectFit="cover" />
+          </div>
+          <div style={{ gridRow: '2 / 3', gridColumn: '2 / 3', position: 'relative' }}>
+            <Image src={imageUrls[3]} alt={imageUrls[3]} layout="fill" objectFit="cover" />
+          </div>
+          <div
+            style={{
+              gridRow: '2 / 3',
+              gridColumn: '2 / 3',
+              position: 'relative',
+              color: '#fff',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              background: '#00000093',
+            }}
+          >
+            + {imageUrls.length - 4}장
+          </div>
+        </Frame16to9>
+      )
+  }
+}
+
 type Props = {
   post: Post
 }
@@ -194,7 +314,11 @@ function PostCard({ post }: Props) {
       <OneLineP>
         {contents[0]} {contents.length > 1 && <Span>...</Span>}
       </OneLineP>
+
+      {post.imageUrls && getImage(post.imageUrls)}
+
       <HorizontalBorder />
+
       <FlexContainerBetween>
         <GreySpan>{new Date(post.creationTime).toLocaleString()}</GreySpan>
         <BoldGreySpan>댓글 {post.commentCount}개</BoldGreySpan>
