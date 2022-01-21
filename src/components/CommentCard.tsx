@@ -361,7 +361,7 @@ function SubcommentCard({ subcomment }: Props2) {
 }
 
 type Props = {
-  comment: Commen
+  comment: Comment
   setParentComment: any
   commentInputRef: any
 }
