@@ -10,7 +10,6 @@ import {
   TABLET_MIN_WIDTH,
 } from 'src/models/constants'
 import { FlexContainerBetween, Skeleton } from 'src/styles'
-import ImageIcon from 'src/svgs/image.svg'
 import { stopPropagation } from 'src/utils'
 import styled from 'styled-components'
 
