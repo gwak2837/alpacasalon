@@ -56,9 +56,9 @@ function getNotificationTypeFrom(notificationType: NotificationType) {
     case NotificationType.LikingComment:
       return ' 회원님의 댓글에 공감해요'
     case NotificationType.NewComment:
-      return ' 회원님의 댓글에 답글을 남겼어요'
-    case NotificationType.NewSubcomment:
       return ' 회원님의 게시글에 댓글을 남겼어요'
+    case NotificationType.NewSubcomment:
+      return ' 회원님의 댓글에 답글을 남겼어요'
     case NotificationType.HotPost:
       return '회원님의 게시물이 핫게시글에 올라갔어요'
     default:
