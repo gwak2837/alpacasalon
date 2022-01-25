@@ -19,7 +19,6 @@ import { FetchedAllData } from '../zoom/index'
 
 export const Background = styled.div`
   background: #fcfcfc;
-  min-height: 100vh;
 `
 
 const Flex = styled.div`

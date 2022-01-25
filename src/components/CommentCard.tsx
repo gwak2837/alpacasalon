@@ -17,7 +17,7 @@ import {
   ALPACA_SALON_GREY_COLOR,
   ALPACA_SALON_RED_COLOR,
 } from 'src/models/constants'
-import { currentUser } from 'src/models/recoil'
+import { commentIdToMoveToAtom, currentUser } from 'src/models/recoil'
 import { A, GreyH5, GridGap, H5 } from 'src/pages/post/[id]'
 import { Skeleton } from 'src/styles'
 import { stopPropagation } from 'src/utils'
@@ -240,26 +240,17 @@ export function CommentLoadingCard() {
 
 type Props2 = {
   subcomment: Comment
-  newCommentId: any
 }
 
-function SubcommentCard({ subcomment, newCommentId }: Props2) {
+function SubcommentCard({ subcomment }: Props2) {
   const author = subcomment.user
   const contents = (subcomment.contents as string | null)?.split('\n')
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const router = useRouter()
+
+  // Recoil
   const { nickname } = useRecoilValue(currentUser)
 
-  const [toggleLikingCommentMutation, { loading }] = useToggleLikingCommentMutation({
-    onError: toastApolloError,
-    variables: { id: subcomment.id },
-  })
-
-  const [deleteCommentMutation, { loading: isCommentDeletionLoading }] = useDeleteCommentMutation({
-    onError: toastApolloError,
-    refetchQueries: ['CommentsByPost'],
-    variables: { id: subcomment.id },
-  })
+  // 클라이언트측 라우팅
+  const router = useRouter()
 
   function goToUserDetailPage() {
     if (author) {
@@ -267,22 +258,41 @@ function SubcommentCard({ subcomment, newCommentId }: Props2) {
     }
   }
 
+  // 댓글 좋아요 요청
+  const [toggleLikingCommentMutation, { loading }] = useToggleLikingCommentMutation({
+    onError: toastApolloError,
+    variables: { id: subcomment.id },
+  })
+
   function toggleLikingComment() {
     toggleLikingCommentMutation()
   }
 
-  function registerNewComment(newComment: HTMLLIElement | null) {
-    if (newCommentId.current === subcomment.id && newComment) {
-      newComment.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
-  }
-
-  function openModal() {
-    setIsModalOpen(true)
-  }
+  // 댓글 삭제 요청
+  const [deleteCommentMutation, { loading: isCommentDeletionLoading }] = useDeleteCommentMutation({
+    onError: toastApolloError,
+    refetchQueries: ['CommentsByPost'],
+    variables: { id: subcomment.id },
+  })
 
   function deleteSubcomment() {
     deleteCommentMutation()
+  }
+
+  // 댓글로 이동하기
+  const commentIdToMoveTo = useRecoilValue(commentIdToMoveToAtom)
+
+  function registerNewComment(commentToMoveTo: HTMLLIElement | null) {
+    if (commentIdToMoveTo === subcomment.id && commentToMoveTo) {
+      commentToMoveTo.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+
+  // Modal
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  function openModal() {
+    setIsModalOpen(true)
   }
 
   return (
@@ -354,26 +364,17 @@ type Props = {
   comment: Comment
   setParentComment: any
   commentInputRef: any
-  newCommentId: any
 }
 
-function CommentCard({ comment, setParentComment, commentInputRef, newCommentId }: Props) {
+function CommentCard({ comment, setParentComment, commentInputRef }: Props) {
   const author = comment.user
   const contents = (comment.contents as string | null)?.split('\n')
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const router = useRouter()
+
+  // Recoil
   const { nickname } = useRecoilValue(currentUser)
 
-  const [toggleLikingCommentMutation, { loading }] = useToggleLikingCommentMutation({
-    onError: toastApolloError,
-    variables: { id: comment.id },
-  })
-
-  const [deleteCommentMutation, { loading: isCommentDeletionLoading }] = useDeleteCommentMutation({
-    onError: toastApolloError,
-    refetchQueries: ['CommentsByPost'],
-    variables: { id: comment.id },
-  })
+  // 클라이언트측 라우팅
+  const router = useRouter()
 
   function goToUserDetailPage() {
     if (author) {
@@ -381,12 +382,46 @@ function CommentCard({ comment, setParentComment, commentInputRef, newCommentId 
     }
   }
 
+  // 댓글 좋아요 요청
+  const [toggleLikingCommentMutation, { loading }] = useToggleLikingCommentMutation({
+    onError: toastApolloError,
+    variables: { id: comment.id },
+  })
+
   function toggleLikingComment() {
     if (!loading) {
       toggleLikingCommentMutation()
     }
   }
 
+  // 댓글 삭제 요청
+  const [deleteCommentMutation, { loading: isCommentDeletionLoading }] = useDeleteCommentMutation({
+    onError: toastApolloError,
+    refetchQueries: ['CommentsByPost'],
+    variables: { id: comment.id },
+  })
+
+  function deleteComment() {
+    deleteCommentMutation()
+  }
+
+  // Modal
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  function openModal() {
+    setIsModalOpen(true)
+  }
+
+  // 댓글로 이동하기
+  const commentIdToMoveTo = useRecoilValue(commentIdToMoveToAtom)
+
+  function registerCommentToMoveTo(commentToMoveTo: HTMLLIElement | null) {
+    if (commentIdToMoveTo === comment.id && commentToMoveTo) {
+      commentToMoveTo.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+
+  // 기타
   function setParentCommentInfo() {
     setParentComment({
       id: comment.id,
@@ -396,23 +431,9 @@ function CommentCard({ comment, setParentComment, commentInputRef, newCommentId 
     commentInputRef.current.focus()
   }
 
-  function registerNewComment(newComment: HTMLLIElement | null) {
-    if (newCommentId.current === comment.id && newComment) {
-      newComment.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
-  }
-
-  function openModal() {
-    setIsModalOpen(true)
-  }
-
-  function deleteComment() {
-    deleteCommentMutation()
-  }
-
   return (
     <GridContainerComment>
-      <GridLi ref={registerNewComment}>
+      <GridLi ref={registerCommentToMoveTo}>
         <Image
           src={author?.imageUrl ?? '/images/default-profile-image.webp'}
           alt="profile"
@@ -470,7 +491,7 @@ function CommentCard({ comment, setParentComment, commentInputRef, newCommentId 
 
       <GridContainerSubcomments>
         {comment.subcomments?.map((subcomment) => (
-          <SubcommentCard key={subcomment.id} subcomment={subcomment} newCommentId={newCommentId} />
+          <SubcommentCard key={subcomment.id} subcomment={subcomment} />
         ))}
       </GridContainerSubcomments>
     </GridContainerComment>

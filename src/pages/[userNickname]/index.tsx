@@ -28,7 +28,7 @@ import { FetchedAllData } from '../zoom'
 const Background = styled.div`
   background-color: #fcfcfc;
   padding-bottom: 10px;
-  min-height: 100vh;
+
 `
 
 const GridContainerTemplate = styled.div`
@@ -264,11 +264,15 @@ export default function UserPage() {
             <H3>내 ZOOM 대화방</H3>
             <Slider>
               {myZooms?.map((myZoom) => (
-                <ZoomContents key={myZoom.id}>
-                  <ZoomCard src={myZoom.imageUrl} />
-                  <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
-                  <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
-                </ZoomContents>
+                <Link key={myZoom.id} href={`/zoom/${myZoom.id}`} passHref>
+                  <a>
+                    <ZoomContents>
+                      <ZoomCard src={myZoom.imageUrl} />
+                      <ZoomStartTime>오늘 오후 7시 예정</ZoomStartTime>
+                      <ZoomText>{applyLineBreak(myZoom.title)}</ZoomText>
+                    </ZoomContents>
+                  </a>
+                </Link>
               ))}
             </Slider>
 

@@ -126,8 +126,8 @@ export type Mutation = {
 }
 
 export type MutationCreateCommentArgs = {
-  commentId?: InputMaybe<Scalars['ID']>
   contents: Scalars['NonEmptyString']
+  parentCommentId?: InputMaybe<Scalars['ID']>
   postId: Scalars['ID']
 }
 
@@ -214,6 +214,7 @@ export type Notification = {
   creationTime: Scalars['DateTime']
   id: Scalars['ID']
   isRead: Scalars['Boolean']
+  link: Scalars['NonEmptyString']
   receiver: User
   sender?: Maybe<User>
   type: NotificationType
@@ -338,6 +339,7 @@ export type Query = {
   userByNickname?: Maybe<User>
   /** 글 상세 */
   zoom?: Maybe<Zoom>
+  zoomRecommend?: Maybe<Array<Zoom>>
   /** review 목록 */
   zoomReviews?: Maybe<Array<ZoomReview>>
   zoomTitleById?: Maybe<Zoom>
@@ -483,7 +485,7 @@ export type ZoomReviewCreationInput = {
 export type CreateCommentMutationVariables = Exact<{
   postId: Scalars['ID']
   contents: Scalars['NonEmptyString']
-  commentId?: InputMaybe<Scalars['ID']>
+  parentCommentId?: InputMaybe<Scalars['ID']>
 }>
 
 export type CreateCommentMutation = {
@@ -817,6 +819,7 @@ export type NotificationsQuery = {
         creationTime: any
         type: NotificationType
         contents: any
+        link: any
         isRead: boolean
         sender?:
           | {
@@ -1037,8 +1040,8 @@ export type ZoomsQuery = {
 }
 
 export const CreateCommentDocument = gql`
-  mutation CreateComment($postId: ID!, $contents: NonEmptyString!, $commentId: ID) {
-    createComment(postId: $postId, contents: $contents, commentId: $commentId) {
+  mutation CreateComment($postId: ID!, $contents: NonEmptyString!, $parentCommentId: ID) {
+    createComment(postId: $postId, contents: $contents, parentCommentId: $parentCommentId) {
       id
     }
   }
@@ -1063,7 +1066,7 @@ export type CreateCommentMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      postId: // value for 'postId'
  *      contents: // value for 'contents'
- *      commentId: // value for 'commentId'
+ *      parentCommentId: // value for 'parentCommentId'
  *   },
  * });
  */
@@ -2195,6 +2198,7 @@ export const NotificationsDocument = gql`
       creationTime
       type
       contents
+      link
       isRead
       sender {
         id
@@ -2813,6 +2817,7 @@ export type NotificationKeySpecifier = (
   | 'creationTime'
   | 'id'
   | 'isRead'
+  | 'link'
   | 'receiver'
   | 'sender'
   | 'type'
@@ -2823,6 +2828,7 @@ export type NotificationFieldPolicy = {
   creationTime?: FieldPolicy<any> | FieldReadFunction<any>
   id?: FieldPolicy<any> | FieldReadFunction<any>
   isRead?: FieldPolicy<any> | FieldReadFunction<any>
+  link?: FieldPolicy<any> | FieldReadFunction<any>
   receiver?: FieldPolicy<any> | FieldReadFunction<any>
   sender?: FieldPolicy<any> | FieldReadFunction<any>
   type?: FieldPolicy<any> | FieldReadFunction<any>
@@ -2927,6 +2933,7 @@ export type QueryKeySpecifier = (
   | 'searchZooms'
   | 'userByNickname'
   | 'zoom'
+  | 'zoomRecommend'
   | 'zoomReviews'
   | 'zoomTitleById'
   | 'zooms'
@@ -2954,6 +2961,7 @@ export type QueryFieldPolicy = {
   searchZooms?: FieldPolicy<any> | FieldReadFunction<any>
   userByNickname?: FieldPolicy<any> | FieldReadFunction<any>
   zoom?: FieldPolicy<any> | FieldReadFunction<any>
+  zoomRecommend?: FieldPolicy<any> | FieldReadFunction<any>
   zoomReviews?: FieldPolicy<any> | FieldReadFunction<any>
   zoomTitleById?: FieldPolicy<any> | FieldReadFunction<any>
   zooms?: FieldPolicy<any> | FieldReadFunction<any>

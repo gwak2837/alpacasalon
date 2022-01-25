@@ -31,7 +31,6 @@ const H4 = styled.h4`
 const FlexContainerGrow = styled.div`
   display: flex;
   flex-flow: column;
-  height: 100vh;
   padding: 2rem 0.6rem 0;
 
   > form > :last-child {
@@ -199,7 +198,7 @@ export default function OAuthRegisterPage() {
   }
 
   useEffect(() => {
-    const queryString = new URLSearchParams(window.location.search.substr(1))
+    const queryString = new URLSearchParams(location.search)
     const jwt = queryString.get('jwt')
 
     setValue('phoneNumber', queryString.get('phoneNumber') ?? '+82 10-')

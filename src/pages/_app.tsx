@@ -25,6 +25,7 @@ const fade = cssTransition({
 
 const Main = styled.main`
   max-width: ${TABLET_MIN_WIDTH};
+  min-height: 100vh;
   margin: 0 auto;
 `
 

@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { memo } from 'react'
 import { NotificationType } from 'src/graphql/generated/types-and-hooks'
 import { TABLET_MIN_WIDTH } from 'src/models/constants'
@@ -55,9 +56,9 @@ function getNotificationTypeFrom(notificationType: NotificationType) {
     case NotificationType.LikingComment:
       return ' 회원님의 댓글에 공감해요'
     case NotificationType.NewComment:
-      return ' 회원님의 댓글에 답글을 남겼어요'
-    case NotificationType.NewSubcomment:
       return ' 회원님의 게시글에 댓글을 남겼어요'
+    case NotificationType.NewSubcomment:
+      return ' 회원님의 댓글에 답글을 남겼어요'
     case NotificationType.HotPost:
       return '회원님의 게시물이 핫게시글에 올라갔어요'
     default:
@@ -82,8 +83,18 @@ type Props = {
 }
 
 function NotificationCard({ notification }: Props) {
+  const router = useRouter()
+
+  function goToTargetPage() {
+    router.push(notification.link)
+  }
+
   return (
-    <Li key={notification.id} bgColor={notification.isRead ? 'white' : '#F5F2F8'}>
+    <Li
+      key={notification.id}
+      bgColor={notification.isRead ? 'white' : '#F5F2F8'}
+      onClick={goToTargetPage}
+    >
       <SquareFrame>
         {notification.type === NotificationType.HotPost ? (
           <CelebrateIcon />

@@ -86,6 +86,7 @@ export default function GroupJoinPage() {
 
   function toggleJoiningGroup() {
     joinGroupMutataion({ variables: { id: groupId } })
+    router.back()
   }
 
   return (

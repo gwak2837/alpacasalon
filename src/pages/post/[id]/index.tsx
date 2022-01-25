@@ -1,10 +1,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { KeyboardEvent, useRef, useState } from 'react'
+import React, { KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { toastApolloError } from 'src/apollo/error'
 import Modal from 'src/components/atoms/Modal'
 import CommentCard, { CommentLoadingCard } from 'src/components/CommentCard'
@@ -19,7 +19,7 @@ import {
 } from 'src/graphql/generated/types-and-hooks'
 import useNeedToLogin from 'src/hooks/useNeedToLogin'
 import { ALPACA_SALON_COLOR, ALPACA_SALON_GREY_COLOR, TABLET_MIN_WIDTH } from 'src/models/constants'
-import { currentUser } from 'src/models/recoil'
+import { commentIdToMoveToAtom, currentUser } from 'src/models/recoil'
 import { Skeleton } from 'src/styles'
 import BackIcon from 'src/svgs/back-icon.svg'
 import GreyWriteIcon from 'src/svgs/grey-write-icon.svg'
@@ -333,15 +333,38 @@ type ParentComment = {
 const description = ''
 
 export default function PostPage() {
-  const router = useRouter()
-  const postId = (router.query.id ?? '') as string
+  useNeedToLogin()
+
+  // Recoil
   const { nickname } = useRecoilValue(currentUser)
 
-  const [parentComment, setParentComment] = useState<ParentComment>()
-  const [isImageDetailOpen, setIsImageDetailOpen] = useState(false)
-  const commentTextareaRef = useRef<HTMLTextAreaElement>()
-  const newCommentId = useRef('')
+  // 클라이언트측 라우팅
+  const router = useRouter()
+  const postId = (router.query.id ?? '') as string
 
+  function goBack() {
+    router.back()
+  }
+
+  function goToPostUpdatePage() {
+    router.push(router.asPath + '/update')
+  }
+
+  function goToUserDetailPage() {
+    router.push(`/@${author?.nickname}`)
+  }
+
+  // 댓글로 이동하기
+  const setCommentIdToMoveTo = useSetRecoilState(commentIdToMoveToAtom)
+
+  useEffect(() => {
+    const commentId = new URLSearchParams(location.search).get('commentId')
+    if (commentId) {
+      setCommentIdToMoveTo(commentId)
+    }
+  }, [setCommentIdToMoveTo])
+
+  // 게시글 상세 정보 불러오기
   const { data, loading: postLoading } = usePostQuery({
     onError: (error) => {
       toastApolloError(error)
@@ -358,6 +381,7 @@ export default function PostPage() {
   const commentCount = post?.commentCount
   const author = data?.post?.user
 
+  // 댓글 목록 불러오기
   const { data: data2, loading: commentsLoading } = useCommentsByPostQuery({
     onError: toastApolloError,
     skip: !postId || !nickname,
@@ -366,10 +390,24 @@ export default function PostPage() {
 
   const comments = data2?.commentsByPost
 
+  // 댓글 작성 요청
+  const [parentComment, setParentComment] = useState<ParentComment>()
+
+  function resetParentComment() {
+    setParentComment(undefined)
+  }
+
+  function writeComment() {
+    setParentComment(undefined)
+    setFocus('contents')
+  }
+
+  const commentTextareaRef = useRef<HTMLTextAreaElement>()
+
   const [createCommentMutation, { loading }] = useCreateCommentMutation({
     onCompleted: ({ createComment }) => {
       if (createComment) {
-        newCommentId.current = createComment.id
+        setCommentIdToMoveTo(createComment.id)
         toast.success('댓글을 작성했어요')
         setParentComment(undefined)
         if (commentTextareaRef.current) commentTextareaRef.current.style.height = '2.8rem'
@@ -379,6 +417,15 @@ export default function PostPage() {
     refetchQueries: ['CommentsByPost', 'Post'],
   })
 
+  function createComment({ contents }: CommentCreationForm) {
+    const variables: CreateCommentMutationVariables = { contents, postId }
+    if (parentComment) variables.parentCommentId = parentComment.id
+
+    createCommentMutation({ variables })
+    reset()
+  }
+
+  // 댓글 입력값 상태 관리
   const { handleSubmit, register, reset, setFocus, watch } = useForm<CommentCreationForm>({
     defaultValues: { contents: '' },
   })
@@ -387,35 +434,6 @@ export default function PostPage() {
   const { ref, ...registerCommentCreationForm } = register('contents', {
     required: '댓글을 입력해주세요',
   })
-
-  function createComment({ contents }: CommentCreationForm) {
-    const variables: CreateCommentMutationVariables = { contents, postId }
-    if (parentComment) variables.commentId = parentComment.id
-
-    createCommentMutation({ variables })
-    reset()
-  }
-
-  function goBack() {
-    router.back()
-  }
-
-  function goToPostUpdatePage() {
-    router.push(router.asPath + '/update')
-  }
-
-  function resetParentComment() {
-    setParentComment(undefined)
-  }
-
-  function goToUserDetailPage() {
-    router.push(`/@${author?.nickname}`)
-  }
-
-  function writeComment() {
-    setParentComment(undefined)
-    setFocus('contents')
-  }
 
   function resizeTextareaHeight(e: KeyboardEvent<HTMLTextAreaElement>) {
     const eventTarget = e.target as HTMLTextAreaElement
@@ -428,8 +446,9 @@ export default function PostPage() {
     commentTextareaRef.current = textarea
   }
 
-  // 이미지 미리보기 이동
+  // 이미지 상세 보기 이동
   const clickedImageNumber = useRef(-1)
+  const [isImageDetailOpen, setIsImageDetailOpen] = useState(false)
 
   function openImageDetailModal(i: number) {
     clickedImageNumber.current = i
@@ -442,7 +461,7 @@ export default function PostPage() {
     }
   }
 
-  useNeedToLogin()
+  // 기타
 
   return (
     <PageHead title={`${post?.title ?? '건강문답'} - 알파카살롱`} description={description}>
@@ -549,7 +568,6 @@ export default function PostPage() {
                     comment={comment as Comment}
                     setParentComment={setParentComment}
                     commentInputRef={commentTextareaRef}
-                    newCommentId={newCommentId}
                   />
                 ))
               : !commentsLoading && <GreyDiv>첫 번째로 댓글을 달아보세요</GreyDiv>}

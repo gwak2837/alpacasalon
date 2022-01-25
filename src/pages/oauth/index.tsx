@@ -5,12 +5,12 @@ import PageHead from 'src/components/PageHead'
 
 const description = ''
 
-export default function EventDetailPage() {
+export default function OAuthPage() {
   const url = useRef('')
   const router = useRouter()
 
   useEffect(() => {
-    const queryString = new URLSearchParams(window.location.search.substring(1))
+    const queryString = new URLSearchParams(location.search)
     const jwt = queryString.get('jwt')
     const nickname = queryString.get('nickname')
 

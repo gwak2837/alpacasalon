@@ -21,8 +21,6 @@ import styled from 'styled-components'
 
 import { SquareWidth } from './PostCard'
 
-const isLiked = false
-
 const Li = styled.li`
   background: #fff;
   border: 1px solid #eee;

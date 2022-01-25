@@ -69,7 +69,6 @@ const KakaoButton = styled.div`
 export const FlexContainerGrow = styled.div`
   display: flex;
   flex-flow: column;
-  height: 100vh;
 
   > :last-child {
     flex-grow: 1;

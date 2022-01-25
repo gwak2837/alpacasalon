@@ -12,6 +12,7 @@ const Grid = styled.li`
   background: #fff;
   border: 1px solid #eee;
   border-radius: 10px;
+  cursor: pointer;
   overflow: hidden;
 `
 
