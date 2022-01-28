@@ -1,3 +1,4 @@
+import { Carousel } from 'antd'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
@@ -144,7 +145,22 @@ export default function HomePage() {
         {!nickname && <WhiteButton onClick={() => router.push('/login')}>로그인</WhiteButton>}
       </Sticky>
 
-      <SliderWithoutScollBar>
+      <Carousel autoplay>
+        <Frame16to10>
+          <Image src="/images/banner.webp" alt="banner" layout="fill" objectFit="cover" />
+        </Frame16to10>
+        <Frame16to10>
+          <Image src="/images/banner2.webp" alt="banner" layout="fill" objectFit="cover" />
+        </Frame16to10>
+        <Frame16to10>
+          <Image src="/images/banner3.webp" alt="banner" layout="fill" objectFit="cover" />
+        </Frame16to10>
+        <Frame16to10>
+          <Image src="/images/banner4.webp" alt="banner" layout="fill" objectFit="cover" />
+        </Frame16to10>
+      </Carousel>
+
+      {/* <SliderWithoutScollBar>
         <Frame16to10>
           <SnapNext />
           <Image src="/images/banner.webp" alt="banner" layout="fill" objectFit="cover" />
@@ -161,7 +177,7 @@ export default function HomePage() {
           <SnapStart />
           <Image src="/images/banner4.webp" alt="banner" layout="fill" objectFit="cover" />
         </Frame16to10>
-      </SliderWithoutScollBar>
+      </SliderWithoutScollBar> */}
 
       <h2>👀 추천 Zoom 대화방</h2>
 

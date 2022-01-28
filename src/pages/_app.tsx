@@ -1,4 +1,5 @@
 import 'react-toastify/dist/ReactToastify.min.css'
+import 'antd/dist/antd.css'
 import 'src/styles/animate.css'
 import 'normalize.css'
 import 'src/styles/global.css'
